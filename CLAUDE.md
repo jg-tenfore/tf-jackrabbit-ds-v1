@@ -64,6 +64,13 @@ grep -rn 'data-placeholder-asset' src/
 Hierarchy: `Introduction` → `Foundations` → `Kiosk Core` → `Components` → `Screens`.
 QA a component in `Kiosk Core` in isolation before composing it into a screen.
 
+`Foundations` and `Components` are ported wholesale from `tf-buck-ds-v1` and are
+**reference material, not finished kiosk UI** — they were authored for a desktop
+app with a cursor. Before promoting one into a kiosk screen: swap `hover:` for
+`active:`, raise touch targets to 64px, and re-scale type/spacing for 750px
+arm's-length reading. Buck's admin-product stories (`App Chrome`, `App Screens`,
+`Sign in ∕ Sign up`) are deliberately **not** ported.
+
 Reference exports are served at `/reference-flows/…`. Pair one with `KioskFrame`'s
 `overlaySrc` to diff a build against its design — matching pixels render black
 under `mix-blend-difference`.

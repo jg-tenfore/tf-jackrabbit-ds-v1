@@ -1,0 +1,78 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Foundations/Data Visualization" />
+
+# Data Visualization
+
+Rules for every chart, metric, and dashboard in Buck. They reconcile **Shopify Polaris'
+data-viz guidance** with our validated chart system (`chart-kit.tsx`) and the
+`dataviz` method (colorblind-safe palette, thin marks, legend + direct labels).
+
+Everything here is enforceable with the shared kit — import from
+`@/components/application/charts/chart-kit`: `ChartCard`, `ChartTooltip`, `ChartLegend`,
+`CHART_SERIES`, `BRAND`, `COMPARISON`, `CHART_INK`, `axisProps`, `formatCompact` — plus
+`MetricCard` from `@/components/application/metrics/metric-card`.
+
+---
+
+## 1. Pick the form by the data's job
+
+| Job | Use | Rule of thumb |
+|---|---|---|
+| A single headline number | **Metric / stat tile** (`MetricCard`) | One value + unit, optional delta & sparkline |
+| Compare discrete categories | **Bar** | **≤ 6 categories** — past that, use a **table** |
+| Change over time, few points | **Column (vertical bar)** | **< 31 points** (hourly/daily/weekly/monthly) |
+| Change over time, many points | **Line / area** | **≥ 30 points** (quarterly/yearly, continuous) |
+| Part-to-whole | **Donut/Pie** | **≤ 5 slices**, always with direct value labels |
+| Accurate lookup of many variables | **Table** | When reading exact values matters more than the trend |
+
+If the answer is *not a chart* (one number), ship a **stat tile**, not a plot.
+
+## 2. Color follows the job — never decoration
+
+- **Single series** → **brand green** (`BRAND[600]`). The title names it; no legend needed.
+- **Current vs a past period** → `COMPARISON.current` (brand) for now, `COMPARISON.past` (neutral gray) for the comparison.
+- **Multi-series (categorical)** → assign `CHART_SERIES` **in fixed order, never cycled**. Cap at **4–5 series**; a 6th folds into "Other" or becomes small multiples. A **legend is always present for ≥ 2 series**.
+- **Positive / negative (deltas, biased data)** → `text-success-primary` / `text-error-primary` (green up / red down), always **icon + label**, never color alone.
+- **Status** (good/warning/error) is reserved — never reuse a status color as "series 4".
+- Text (values, labels, legends) stays in **ink tokens** (`text-primary/secondary/tertiary`), never the series color.
+
+## 3. Numbers & axes
+
+- **Compact values** with `formatCompact()` → `1.2k`, `$3.4m`, `1.1b` (≤ 3 digits, 1 decimal, 1 unit letter). Use it for Y-axis ticks and tooltips.
+- **Dates**: weekdays `Mon Tue Wed`, months `Feb Mar`, time `12am 6pm` — first-three-letters / lowercase 12-hour.
+- **Axes are recessive** — spread `axisProps` (hairline, muted ticks, `axisLine={false}`, `tickLine={false}`). Gridlines: horizontal only (`CartesianGrid vertical={false}` in `CHART_INK.grid`).
+- Labels sit **outside** the plot. Bars are **~2× as wide as the gaps** (`maxBarSize` ~22–28); rounded data-ends (`radius={[4,4,0,0]}`).
+- **One axis only** — never a dual-axis (two y-scales) chart. Two measures of different scale → two charts or index to a common base.
+
+## 4. Interaction
+
+- Hover **tooltip by default** on every plotted chart — use `<Tooltip content={<ChartTooltip valueFormatter={…} />} />`. It shows a color swatch + series name + value per row.
+- Crosshair cursor on line/area (`cursor={{ stroke: CHART_INK.axis }}`), soft fill cursor on bars.
+
+## 5. Accessibility (non-negotiable)
+
+- **Never rely on color alone** — ≥ 2 series always get a **legend**; ≤ 4 may also be **direct-labelled**. Low-contrast palette slots (aqua/yellow/magenta on white) require visible labels or a table (the relief rule).
+- Provide the **data as a table** alongside any non-trivial chart (accurate lookup + screen-reader access).
+- Decorative SVG marks are `aria-hidden`; the chart has a text equivalent (title + the table).
+- Validate any **new** categorical palette with the `dataviz` skill's `validate_palette.js` before shipping. The default `CHART_SERIES` is already validated.
+
+## 6. Metrics & stat tiles
+
+- Label · large value (proportional figures) · signed delta (**icon + label + color**) · optional brand sparkline. Use `MetricCard`.
+- Group KPIs in a row of 3–4 above the charts (see `App Screens/Dashboard`).
+
+---
+
+## Checklist (before shipping a dashboard screen)
+
+- [ ] One specific question per chart; tested with sparse **and** abundant data
+- [ ] Chart type matches the data-point count (bar ≤ 6 · column < 31 · line ≥ 30 · donut ≤ 5)
+- [ ] Color by role: single = brand · current/past = brand/gray · multi = `CHART_SERIES` in order (≤ 4–5) · +/− = success/error
+- [ ] Legend present for ≥ 2 series; values use `formatCompact`; dates abbreviated
+- [ ] Recessive axes (`axisProps`), horizontal gridlines only, labels outside
+- [ ] Hover tooltip via `ChartTooltip`
+- [ ] Data also available as a table; SVG `aria-hidden`; no color-only meaning
+- [ ] New palette? validated with the `dataviz` script
+
+_Reference implementations: `App Screens/Dashboard`, `Components/Charts & Data/*`._

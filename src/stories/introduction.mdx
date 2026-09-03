@@ -79,10 +79,27 @@ between screens.
 
 ## Working in here
 
-- **`Kiosk Core`** — the frame, keyboard, nav and auth primitives. QA these in
-  isolation before composing screens.
-- **`Components`** — kiosk-specific compositions built on the Untitled UI base.
+- **`Foundations`** — the token layer: colors, typography, spacing, radius,
+  border, effect styles, icons, logos, and the data-visualization rules.
+  Everything below is expressed in these.
+- **`Kiosk Core`** — the primitives that exist *only* because this is a touch
+  kiosk: the canvas frame, the on-screen keyboard, the action rail, the
+  simulated scan. QA these in isolation before composing screens.
+- **`Components`** — the shared Untitled UI library, ported from Buck. This is
+  **source material, not finished kiosk UI**: it is authored for a desktop app
+  with a cursor, so it carries `hover:` states and web-sized touch targets.
+  Pull from it, then refine against the kiosk constraints above before a
+  component graduates into a screen.
 - **`Screens`** — full flows, assembled from the above.
+
+### Refining a ported component
+
+The three things to check when promoting something out of `Components`:
+
+1. Replace `hover:` states with `active:` — there is no cursor.
+2. Raise touch targets to the 64px floor (`KIOSK_MIN_TOUCH_TARGET`).
+3. Re-scale type and spacing for arm's-length reading at 750px wide. The
+   ported components assume a ~1440px desktop viewport.
 
 The reference exports are served at `/reference-flows/…`. Pair one with
 `KioskFrame`'s `overlaySrc` to diff a build against its design — matching pixels

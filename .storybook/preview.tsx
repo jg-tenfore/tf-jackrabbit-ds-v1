@@ -12,7 +12,21 @@ const preview: Preview = {
         options: {
             storySort: {
                 method: "alphabetical",
-                order: ["Introduction", "Foundations", "Kiosk Core", ["Kiosk Frame", "Keyboard", "Global Nav", "Authentication"], "Components", "Screens"],
+                order: [
+                    "Introduction",
+                    // Tokens first — everything below is expressed in them.
+                    "Foundations",
+                    ["Colors", "Typography", "Spacing", "Radius", "Border", "Effect Styles", "Icons", "Logos", "Data Visualization"],
+                    // Kiosk-native primitives: the parts that exist only because
+                    // this is a touch kiosk, not a desktop app.
+                    "Kiosk Core",
+                    ["Kiosk Frame", "Keyboard", "Global Nav", "Authentication"],
+                    // The shared Untitled UI library, ported from Buck. Source
+                    // material to pull from and refine into kiosk components.
+                    "Components",
+                    ["Actions", "Forms", "Feedback & Status", "Layout & Structure", "Charts & Data", "Media & Visuals", "Navigation"],
+                    "Screens",
+                ],
             },
         },
         controls: {
