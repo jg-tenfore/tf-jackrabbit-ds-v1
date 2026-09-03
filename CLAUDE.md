@@ -45,6 +45,32 @@ the Buck equivalents:
   square, so a 3-column numeric pad (234px keys) has ~12x the area of a QWERTY
   key in the same space. Drop keys a layout does not need.
 
+## Booking
+
+Simulator and pickleball are **one flow**, driven by an `ActivityConfig`
+(`booking/activity-config.ts`). They ask the same four questions in the same
+order and differ only in wording and offered durations. Never fork them — a new
+activity is a config object, not a component.
+
+Tee time is genuinely a different shape (filter rail + paired slot grid + rate
+modal) and stays its own component.
+
+The left rail is pinned at `-left-16` and clipped by the canvas on purpose:
+only the inner edge of each card shows, which reads as tabs hanging off the
+edge without spending the horizontal room a full sidebar would cost. That room
+is what the slot grid needs.
+
+## Modals
+
+There is **one modal**: `KioskModal`, plus thin named variants in
+`modal-variants.tsx` (RatePicker, ProductDetail, DestructiveConfirm, Choice,
+CheckoutMethod, InfoSheet). Overlay, dismissal and focus containment live in the
+base — never hand-roll a new overlay. Focus containment is React Aria's, because
+a kiosk runs unattended and a leaking modal leaves the previous customer's
+session reachable behind it.
+
+The overlay is scoped to the kiosk canvas, not the browser viewport.
+
 ## No data visualization
 
 Charts, gauges, sparklines and the metric cards were removed, along with
