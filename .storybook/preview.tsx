@@ -16,7 +16,7 @@ const preview: Preview = {
                     "Introduction",
                     // Tokens first — everything below is expressed in them.
                     "Foundations",
-                    ["Colors", "Typography", "Spacing", "Radius", "Border", "Effect Styles", "Icons", "Logos", "Data Visualization"],
+                    ["Colors", "Typography", "Spacing", "Radius", "Border", "Effect Styles", "Touch Targets", "Icons", "Logos"],
                     // Kiosk-native primitives: the parts that exist only because
                     // this is a touch kiosk, not a desktop app.
                     "Kiosk Core",
@@ -24,7 +24,7 @@ const preview: Preview = {
                     // The shared Untitled UI library, ported from Buck. Source
                     // material to pull from and refine into kiosk components.
                     "Components",
-                    ["Actions", "Forms", "Feedback & Status", "Layout & Structure", "Charts & Data", "Media & Visuals", "Navigation"],
+                    ["Actions", "Forms", "Feedback & Status", "Layout & Structure", "Media & Visuals", "Navigation"],
                     "Screens",
                 ],
             },

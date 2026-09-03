@@ -30,9 +30,27 @@ the Buck equivalents:
 - **No hover.** There is no cursor. Define `active:` states; do not add `hover:`.
 - **64px minimum touch target** (`KIOSK_MIN_TOUCH_TARGET`), not the 44px web norm —
   kiosks are used standing, in gloves, in sunlight.
-- **No physical keyboard.** All text entry goes through `OnScreenKeyboard`.
-  Layouts live in `keyboard/layouts.ts` as data; adding one is a data change,
-  never a new component.
+- **No physical keyboard.** All text entry goes through `OnScreenKeyboard`,
+  `NumericKeypad` or `KeyboardField`. Layouts live in `keyboard/layouts.ts` as
+  data; adding one is a data change, never a new component.
+- **Target size is argued in millimetres, not pixels** (`src/kiosk/touch.ts`).
+  Pixels cannot express hittability — the same 64px is generous on a 21" panel
+  and cramped on a 55" one. Every size is validated against the *smallest*
+  panel (21.5"), since that is the binding constraint. Floors: 11mm any target,
+  14mm primary actions.
+- **Every touchable cell is a `KioskKey`.** Never hand-size a key — the scale in
+  `touch.ts` is derived from row arithmetic against the 750px canvas, so `md`
+  (64px) is exactly the widest key that fits a 10-column row.
+- **Fewer columns is a usability decision.** Target *area* scales with the
+  square, so a 3-column numeric pad (234px keys) has ~12x the area of a QWERTY
+  key in the same space. Drop keys a layout does not need.
+
+## No data visualization
+
+Charts, gauges, sparklines and the metric cards were removed, along with
+`recharts`. A kiosk presents a single linear task to a standing user; it has no
+dashboards. Do not reintroduce a charting dependency without a concrete screen
+that needs one.
 
 ## Session and the simulated scan
 

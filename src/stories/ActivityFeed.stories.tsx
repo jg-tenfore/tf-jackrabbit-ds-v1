@@ -3,7 +3,7 @@ import { CalendarCheck01, CurrencyDollar, Mail01, SlashCircle01, Star01, UserPlu
 import { ActivityFeed } from "@/components/application/activity-feed/activity-feed";
 
 const meta = {
-    title: "Components/Charts & Data/Activity Feed",
+    title: "Components/Feedback & Status/Activity Feed",
     parameters: { layout: "padded" },
 } satisfies Meta;
 
