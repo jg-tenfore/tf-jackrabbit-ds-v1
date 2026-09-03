@@ -38,7 +38,7 @@ export const StepRail = ({
         aria-label="Booking progress"
         // Negative inset is the point: the cards are anchored off-canvas so only
         // their inner edge shows, exactly as drawn in the references.
-        className={cx("absolute top-0 -left-16 z-10 flex w-[240px] flex-col", className)}
+        className={cx("absolute top-0 -left-16 z-10 flex w-[272px] flex-col", className)}
     >
         {steps.map((step) => {
             const isComplete = completedStepIds.includes(step.id);
@@ -60,7 +60,9 @@ export const StepRail = ({
                     <StepMarker isComplete={isComplete} isCurrent={isCurrent} />
                     <span
                         className={cx(
-                            "text-lg",
+                            // nowrap: a two-word step label ("Bay location")
+                            // wraps and breaks the rail's fixed row height.
+                            "text-lg whitespace-nowrap",
                             isCurrent ? "font-semibold text-brand-secondary underline decoration-2 underline-offset-8" : isComplete ? "text-primary" : "text-quaternary",
                         )}
                     >
@@ -101,7 +103,7 @@ export const FilterRail = ({
     onChange: (groupId: string, optionId: string) => void;
     className?: string;
 }) => (
-    <nav aria-label="Tee sheet filters" className={cx("absolute top-0 -left-16 z-10 flex w-[240px] flex-col gap-6", className)}>
+    <nav aria-label="Tee sheet filters" className={cx("absolute top-0 -left-16 z-10 flex w-[272px] flex-col gap-6", className)}>
         {groups.map((group) => (
             <div key={group.id} className="flex flex-col">
                 {group.options.map((option) => {
@@ -116,7 +118,7 @@ export const FilterRail = ({
                         >
                             <span
                                 className={cx(
-                                    "text-lg",
+                                    "text-lg whitespace-nowrap",
                                     isActive ? "font-semibold text-brand-secondary underline decoration-2 underline-offset-8" : "text-primary",
                                 )}
                             >

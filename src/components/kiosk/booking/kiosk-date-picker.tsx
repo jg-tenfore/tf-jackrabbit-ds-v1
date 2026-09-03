@@ -35,7 +35,11 @@ interface KioskDatePickerProps {
     onSelect: (date: Date) => void;
     /** Days to offer. Defaults to the next 14 from today, all available. */
     days?: DayAvailability[];
-    /** How many days the collapsed strip shows before the expand affordance. */
+    /**
+     * How many days the collapsed strip shows. Five fits beside the expand
+     * chevron inside a rail-inset column (750 - 232 rail - 32 padding); pass 6
+     * only when the strip has the full canvas width.
+     */
     stripLength?: number;
     mode?: "week" | "month";
     onModeChange?: (mode: "week" | "month") => void;
@@ -53,7 +57,7 @@ const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), 
 const defaultDays = (from: Date, count: number): DayAvailability[] =>
     Array.from({ length: count }, (_, i) => ({ date: addDays(from, i), isAvailable: true, hasInventory: true }));
 
-export const KioskDatePicker = ({ selected, onSelect, days, stripLength = 6, mode: modeProp, onModeChange, className }: KioskDatePickerProps) => {
+export const KioskDatePicker = ({ selected, onSelect, days, stripLength = 5, mode: modeProp, onModeChange, className }: KioskDatePickerProps) => {
     const [internalMode, setInternalMode] = useState<"week" | "month">("week");
     const mode = modeProp ?? internalMode;
 
@@ -195,7 +199,9 @@ const MonthGrid = ({
                 <h3 className="text-3xl font-bold text-primary">
                     {MONTH[month]} {year}
                 </h3>
-                <KioskKey size="md" variant="action" span={0} onPress={onToday} className="px-8">
+                {/* span 0 means content-width, so it needs an explicit floor to stay a
+                    pill rather than collapsing toward square. */}
+                <KioskKey size="md" variant="action" span={0} onPress={onToday} className="w-[160px]">
                     Today
                 </KioskKey>
             </div>

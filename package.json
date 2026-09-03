@@ -9,7 +9,8 @@
         "storybook": "storybook dev -p 6020",
         "build-storybook": "storybook build",
         "app": "vite --config vite.app.config.ts",
-        "build-app": "vite build --config vite.app.config.ts"
+        "build-app": "vite build --config vite.app.config.ts",
+        "shoot": "node scripts/screenshot.mjs"
     },
     "dependencies": {
         "@tailwindcss/postcss": "^4.2.2",
@@ -47,6 +48,7 @@
         "@types/react": "^19.2.14",
         "@types/react-dom": "^19.2.3",
         "@vitejs/plugin-react": "^6.0.5",
+        "playwright": "^1.61.0",
         "postcss": "^8.5.8",
         "postcss-loader": "^8.2.1",
         "prettier": "^3.8.1",

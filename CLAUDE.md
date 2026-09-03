@@ -45,6 +45,19 @@ the Buck equivalents:
   square, so a 3-column numeric pad (234px keys) has ~12x the area of a QWERTY
   key in the same space. Drop keys a layout does not need.
 
+## Visual QA is not optional
+
+`tsc` passing and Storybook building prove a component compiles, not that it
+looks right. Run `npm run shoot` (dev server on 6020) to drive a real browser
+over the kiosk stories and write PNGs, then **look at them**. Shots are taken of
+`[data-kiosk-frame]`, so they come out at exactly 750x1298 and diff directly
+against `references/flows`.
+
+This is load-bearing: the first run caught a price colliding with its meta line,
+a step label wrapping and breaking the rail's fixed row height, and a day strip
+clipped behind its own expand control — none of which type-check as errors. Do
+this before building anything on top of a new layout, or the error compounds.
+
 ## Booking
 
 Simulator and pickleball are **one flow**, driven by an `ActivityConfig`

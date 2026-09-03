@@ -1,6 +1,6 @@
 "use client";
 
-import { Flag01, Users01 } from "@untitledui/icons";
+import { Car01, Flag01, Users01 } from "@untitledui/icons";
 import { cx } from "@/utils/cx";
 
 export interface TeeTimeSlot {
@@ -60,7 +60,9 @@ export const SlotCard = ({
 
             <div className="flex items-end justify-between gap-2">
                 <SlotMeta slot={slot} />
-                <span className="text-2xl font-bold text-primary tabular-nums">
+                {/* shrink-0 so the price never yields width to the meta line —
+                    without it the two overlap once the meta wraps wide. */}
+                <span className="shrink-0 text-2xl font-bold text-primary tabular-nums">
                     ${dollars}
                     <sup className="text-sm font-semibold">{cents}</sup>
                 </span>
@@ -71,16 +73,20 @@ export const SlotCard = ({
 
 /** The compact "2-4 · 18 · cart" line. */
 export const SlotMeta = ({ slot }: { slot: TeeTimeSlot }) => (
-    <div className="flex items-center gap-1.5 text-sm text-tertiary">
-        <Users01 className="size-4 shrink-0" aria-hidden="true" />
+    <div className="flex min-w-0 items-center gap-1 overflow-hidden text-xs whitespace-nowrap text-tertiary">
+        <Users01 className="size-3.5 shrink-0" aria-hidden="true" />
         <span className="tabular-nums">
             {slot.players[0]}-{slot.players[1]}
         </span>
         <span aria-hidden="true">·</span>
-        <Flag01 className="size-4 shrink-0" aria-hidden="true" />
+        <Flag01 className="size-3.5 shrink-0" aria-hidden="true" />
         <span className="tabular-nums">{slot.holes}</span>
         <span aria-hidden="true">·</span>
-        <span className="capitalize">{slot.transport}</span>
+        {slot.transport === "cart" ? (
+            <Car01 className="size-3.5 shrink-0" aria-label="Cart" />
+        ) : (
+            <Flag01 className="size-3.5 shrink-0" aria-label="Walking" />
+        )}
     </div>
 );
 
