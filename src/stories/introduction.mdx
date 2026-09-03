@@ -1,0 +1,98 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introduction" />
+
+# JackRabbit Kiosk Design System
+
+The component library for the TenFore Golf self-service kiosk. Built on
+**Untitled UI + React Aria Components**, using the same brand palette and token
+set as the Buck design system — `src/styles/theme.css` is ported unchanged, so a
+component moved between the two repos renders identically.
+
+## The 750 × 1298 canvas
+
+Every screen in `references/flows` is exported at exactly **750 × 1298**. That is
+the coordinate space we author against, so an element at `x=64` in the design
+sits at `x=64` in the build and QA is a genuine pixel diff rather than an
+eyeball comparison.
+
+Physical kiosk hardware is bigger — 1080 × 1920 is the common portrait panel. Rather
+than re-authoring per panel, `KioskFrame` transform-scales the canvas to fill the
+target. Scale is uniform, never stretched: the two aspect ratios differ slightly
+(0.578 vs 0.563), so the looser axis letterboxes instead of distorting the design.
+
+```tsx
+<KioskFrame target="fhd">   {/* same markup, fills 1080x1920 */}
+    <KioskScreen header={<KioskHeader />} footer={<KioskFooterBar />}>
+        …
+    </KioskScreen>
+</KioskFrame>
+```
+
+`KioskScreen` owns the three-slot geometry — fixed header rail, scrollable body,
+pinned footer rail — so headers and footers land identically on every screen.
+
+## Kiosk constraints that shape the components
+
+A kiosk is not a phone with a big screen. Three constraints drive most decisions
+in here:
+
+- **No hover.** There is no cursor, so a press state carries the entire
+  affordance. Components define `active:` states and skip `hover:` entirely.
+- **Bigger touch targets.** Kiosks are used standing, sometimes in gloves and
+  direct sunlight. `KIOSK_MIN_TOUCH_TARGET` is 64px, above the 44px web norm.
+- **No physical keyboard.** Every text entry point drives `OnScreenKeyboard`.
+  Layouts live in `layouts.ts` as data, so a new layout is a data change rather
+  than a new component.
+
+## Authentication and the simulated scan
+
+On hardware, a member logs in by holding a TenFore Golf Wallet pass to the
+scanner. In the design system that read is **simulated in software** by
+`KioskSessionProvider`, so every visual state is reachable in a story with no
+hardware and no camera.
+
+The scan is a state machine — `idle → scanning → success | not-found | expired` —
+rather than a boolean, so the beam animation, the retry, and the signed-in
+greeting all render from one source of truth. Fixtures live in
+`src/data/members.ts`; a story picks its outcome by choosing a wallet code.
+
+```tsx
+<KioskSessionProvider initialMember={MEMBERS[0]}>…</KioskSessionProvider>
+```
+
+Manual entry (the "Enter your code" fallback) resolves against
+`MANUAL_ENTRY_CODES` — try **482913**.
+
+## Global navigation
+
+The kiosk's global nav is a persistent **action rail**, not a set of
+destinations. A kiosk session is a single linear task, so the only things that
+must always be reachable are:
+
+1. **Start Over** — abandon the session and return to the attract loop.
+2. **The cart** — what you have added so far, with a running total.
+3. **The wallet drawer** — the one, always-present entry point to logging in.
+
+Because the rail is pinned by `KioskScreen`, those three targets never move
+between screens.
+
+## Working in here
+
+- **`Kiosk Core`** — the frame, keyboard, nav and auth primitives. QA these in
+  isolation before composing screens.
+- **`Components`** — kiosk-specific compositions built on the Untitled UI base.
+- **`Screens`** — full flows, assembled from the above.
+
+The reference exports are served at `/reference-flows/…`. Pair one with
+`KioskFrame`'s `overlaySrc` to diff a build against its design — matching pixels
+render black under `mix-blend-difference`, so misalignment is all you see.
+
+## Placeholder assets
+
+Imagery is not exported yet. Every stand-in is tagged `data-placeholder-asset`,
+so the full outstanding list is one grep:
+
+```bash
+grep -rn 'data-placeholder-asset' src/
+```
