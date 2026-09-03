@@ -1,0 +1,4 @@
+Storybook's staticDirs lists ../public, and the build hard-fails if the
+directory is missing. Git does not track empty directories, so this file keeps
+public/ present on a fresh clone and in CI. Safe to delete once real static
+assets (favicon, exported imagery) land here.
