@@ -84,18 +84,18 @@ export const WalletDrawer = ({
 export const SignedInCard = ({ firstName, onSignOut, className }: { firstName: string; onSignOut?: () => void; className?: string }) => (
     <div
         className={cx(
-            "flex h-[100px] w-[174px] flex-col items-center gap-2.5 rounded-2xl bg-primary px-3 pt-6 pb-3 ring-1 ring-border-secondary",
+            "flex h-[100px] w-[174px] flex-col items-center gap-2 rounded-t-2xl bg-primary px-4 pt-3.5 pb-3 ring-1 ring-border-secondary",
             className,
         )}
     >
         <button
             type="button"
             onClick={onSignOut}
-            className="h-[32px] w-full shrink-0 rounded-md bg-error-solid text-[13px] font-semibold text-white transition duration-100 ease-linear active:bg-error-solid_hover"
+            className="h-[37px] w-full shrink-0 rounded-lg bg-error-solid text-[15px] font-semibold text-white transition duration-100 ease-linear active:bg-error-solid_hover"
         >
             Log out
         </button>
-        <span className="text-[18px] font-bold text-primary">{firstName}</span>
+        <span className="text-[19px] font-bold text-primary">{firstName}</span>
     </div>
 );
 
