@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
+import { WelcomeNav } from "@/components/kiosk/app-chrome/welcome-nav";
 import { MEMBERS } from "@/data/members";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
-import { KioskSessionProvider } from "@/providers/kiosk-session";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
 const meta = {
@@ -113,45 +113,27 @@ export const LoggedInWithItems: Story = {
 };
 
 /**
- * Every state stacked on one black surface, for comparing them against each
- * other the way the annotated export does.
+ * The attract screen's navigation.
+ *
+ * A separate component from the rail, not a variant: there is no Start Over, no
+ * cart, the drawer moves left and roughly triples, and two large choice cards
+ * take the remaining width. Folding it into `GlobalNav` would give one
+ * component two unrelated layouts.
+ *
+ * The drawer's anatomy inverts here too. On the rail the illustration leads,
+ * because the drawer is small and the picture is what catches the eye. At this
+ * size the label leads and the illustration supports it — same control, but on
+ * the attract screen it is one of three equally-weighted ways in rather than a
+ * persistent affordance hanging off the edge. Neither card is brand-filled for
+ * the same reason: styling one as primary would push guests toward a path they
+ * may not want.
  */
-export const AllStates: Story = {
+export const WelcomeScreen: Story = {
     args: {},
-    parameters: { layout: "fullscreen" },
+    decorators: [withKioskSession(), withKioskFrame()],
     render: () => (
-        <div className="flex min-h-screen w-full flex-col gap-10 overflow-x-hidden bg-black py-10">
-            {(
-                [
-                    ["Logged out", { member: null, props: {} }],
-                    ["Logged out, empty order", { member: null, props: { hasOrder: true, cartCount: 0, cartTotal: 0 } }],
-                    ["With items", { member: null, props: { cartCount: 4, cartTotal: 34.45 } }],
-                    ["Logged in", { member: MEMBERS[0], props: { cartCount: 4, cartTotal: 34.45 } }],
-                ] as const
-            ).map(([label, config]) => (
-                <div key={label} className="flex flex-col gap-2">
-                    <span className="px-10 text-sm text-white/50">{label}</span>
-                    <StateRow member={config.member} navProps={config.props} />
-                </div>
-            ))}
-        </div>
+        <KioskScreen className="bg-black" footer={<WelcomeNav onStartOrder={() => {}} onJoinWaitlist={() => {}} />}>
+            <div className="flex h-full items-center justify-center p-16 text-center text-[16px] text-white/40">Hero area</div>
+        </KioskScreen>
     ),
 };
-
-/**
- * One rail rendered at canvas width, outside the full 1298px frame.
- *
- * Uses the provider directly rather than the story decorator: a decorator takes
- * (Story, context) from Storybook, and calling it by hand here would depend on
- * internals that are not ours to rely on.
- */
-const StateRow = ({ member, navProps }: { member: (typeof MEMBERS)[number] | null; navProps: Partial<Parameters<typeof GlobalNav>[0]> }) => (
-    <KioskSessionProvider initialMember={member}>
-        {/* Full width, and pt-28 rather than overflow-hidden: the drawer
-            overhangs the rail upward, and clipping it hides the exact
-            silhouette these rows exist to show. */}
-        <div className="w-full pt-28">
-            <GlobalNav {...navProps} />
-        </div>
-    </KioskSessionProvider>
-);

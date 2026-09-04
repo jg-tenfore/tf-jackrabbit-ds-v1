@@ -2,14 +2,16 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { HowToLogInScreen } from "@/components/kiosk/screens/how-to-log-in-screen";
 import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
-import { assetUrl } from "@/utils/asset-url";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
 const meta = {
     title: "Screens/How to Log In",
     component: HowToLogInScreen,
     parameters: {
-        layout: "centered",
+        // "centered" wraps the story in a padded box. At the kiosk viewport
+        // (750x1298) a full-canvas frame then overflows by exactly that padding
+        // — 32px — and the preview scrolls sideways on a panel that cannot.
+        layout: "fullscreen",
         docs: {
             description: {
                 component: `The three-step explainer, built from the exported assets in \`references/build/how-to-login\`.
@@ -33,32 +35,6 @@ export const Default: Story = {
     decorators: [withKioskSession(), withKioskFrame()],
     render: (args) => (
         <KioskScreen footer={<GlobalNav />}>
-            <HowToLogInScreen {...args} onDismiss={() => {}} />
-        </KioskScreen>
-    ),
-};
-
-/**
- * Pixel diff against the export. The reference is a @1x 375x649 capture of the
- * 750x1298 canvas, so it scales exactly 2x. Matching pixels render black under
- * `mix-blend-difference` — anything visible is drift.
- */
-export const ReferenceOverlay: Story = {
-    args: {},
-    decorators: [withKioskSession(), withKioskFrame({ overlaySrc: assetUrl("screen-assets/how-to-login/reference.png") })],
-    render: (args) => (
-        <KioskScreen footer={<GlobalNav />}>
-            <HowToLogInScreen {...args} onDismiss={() => {}} />
-        </KioskScreen>
-    ),
-};
-
-/** The content alone, without the rail — for reviewing spacing in isolation. */
-export const ContentOnly: Story = {
-    args: {},
-    decorators: [withKioskFrame()],
-    render: (args) => (
-        <KioskScreen>
             <HowToLogInScreen {...args} onDismiss={() => {}} />
         </KioskScreen>
     ),

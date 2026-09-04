@@ -8,7 +8,9 @@ const meta = {
     title: "Kiosk Core/Kiosk Frame",
     component: KioskFrame,
     parameters: {
-        layout: "centered",
+        // "centered" pads the story; at the 750px kiosk viewport that padding
+        // becomes 32px of horizontal overflow on a panel that cannot scroll.
+        layout: "fullscreen",
         docs: {
             description: {
                 component: `Every screen in \`references/flows\` is exported at exactly ${KIOSK_WIDTH}x${KIOSK_HEIGHT}, so that is the coordinate space we author against — an element at x=64 in Figma sits at x=64 here, which makes side-by-side QA pixel-exact. Physical panels are larger, so \`KioskFrame\` transform-scales the canvas to fill them rather than reflowing. Scale is uniform (never stretched); 750x1298 and 1080x1920 differ slightly in aspect, so the leftover axis letterboxes.`,

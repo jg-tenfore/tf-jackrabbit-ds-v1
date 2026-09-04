@@ -131,3 +131,83 @@ export const FilterRail = ({
         ))}
     </nav>
 );
+
+/**
+ * The menu's category rail — the third mode of this geometry.
+ *
+ * Same peeking treatment as `StepRail` and `FilterRail`: anchored off-canvas so
+ * only each card's inner edge shows. It lives beside them rather than in its
+ * own file precisely so the clip offset, width and radius stay one set of
+ * numbers — three copies of `-left-16 w-[272px]` would drift the first time one
+ * of them was nudged.
+ *
+ * It differs in carrying two sections. The top group is destinations (Home,
+ * Deals, Members); the bottom is the category the grid is currently showing.
+ * They are separated by a gap rather than a divider, because a divider would
+ * read as one list with a rule through it rather than two lists.
+ */
+export interface RailEntry {
+    id: string;
+    label: string;
+    /** Small leading glyph. Exported artwork, so it is a path not a component. */
+    iconSrc?: string;
+}
+
+export const CategoryRail = ({
+    destinations,
+    categories,
+    activeCategoryId,
+    onSelect,
+    logoSrc,
+    className,
+}: {
+    destinations: RailEntry[];
+    categories: RailEntry[];
+    activeCategoryId?: string;
+    onSelect?: (id: string) => void;
+    logoSrc?: string;
+    className?: string;
+}) => (
+    <nav aria-label="Menu categories" className={cx("absolute top-0 -left-16 z-10 flex w-[272px] flex-col gap-6", className)}>
+        {logoSrc && (
+            <div className="flex h-[152px] items-center justify-end rounded-r-2xl bg-primary pr-8 shadow-sm ring-1 ring-border-secondary">
+                <img src={logoSrc} alt="" aria-hidden="true" className="size-20" />
+            </div>
+        )}
+
+        <div className="flex flex-col">
+            {destinations.map((entry) => (
+                <RailRow key={entry.id} entry={entry} onPress={() => onSelect?.(entry.id)} />
+            ))}
+        </div>
+
+        <div className="flex flex-col">
+            {categories.map((entry) => (
+                <RailRow key={entry.id} entry={entry} isActive={entry.id === activeCategoryId} onPress={() => onSelect?.(entry.id)} />
+            ))}
+        </div>
+    </nav>
+);
+
+const RailRow = ({ entry, isActive = false, onPress }: { entry: RailEntry; isActive?: boolean; onPress?: () => void }) => (
+    <button
+        type="button"
+        onClick={onPress}
+        aria-current={isActive ? "true" : undefined}
+        className="flex h-16 items-center gap-3 rounded-r-2xl bg-primary pr-6 pl-20 text-left shadow-sm ring-1 ring-border-secondary transition duration-100 ease-linear active:bg-secondary"
+    >
+        {entry.iconSrc ? (
+            <img src={entry.iconSrc} alt="" aria-hidden="true" className="size-7 shrink-0 object-contain" />
+        ) : (
+            <span data-placeholder-asset="category-icon" className="size-7 shrink-0 rounded bg-secondary" aria-hidden="true" />
+        )}
+        <span
+            className={cx(
+                "text-[17px] whitespace-nowrap",
+                isActive ? "font-semibold text-brand-secondary underline decoration-2 underline-offset-8" : "text-primary",
+            )}
+        >
+            {entry.label}
+        </span>
+    </button>
+);

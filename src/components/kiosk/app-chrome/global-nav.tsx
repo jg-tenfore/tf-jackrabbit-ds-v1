@@ -101,7 +101,7 @@ export const GlobalNav = ({
                     className={cx("flex flex-col justify-end gap-6 border-t border-secondary px-16 py-7", isExpanded && !isAuthenticated ? "min-h-[114px]" : "min-h-[244px]")}>
                     <div className="flex w-[387px] flex-col gap-6">
                         {hasOrder && (
-                            <div className="flex items-center justify-between gap-6">
+                            <div className="flex items-end justify-between gap-6">
                                 <div className="relative flex items-end gap-2">
                                     <img src={ASSET("golf-bag.svg")} alt="" aria-hidden="true" className="h-[117px] w-[50px] object-contain" />
                                     <span
@@ -110,13 +110,13 @@ export const GlobalNav = ({
                                     >
                                         {cartCount}
                                     </span>
-                                    <span className="pb-2 text-[32px] font-bold text-primary tabular-nums">${cartTotal.toFixed(2)}</span>
+                                    <span className="text-[32px] leading-none font-bold text-primary tabular-nums">${cartTotal.toFixed(2)}</span>
                                 </div>
 
                                 <button
                                     type="button"
                                     onClick={onViewOrder}
-                                    className="h-[68px] shrink-0 rounded-lg bg-brand-solid px-[18px] text-[18px] font-bold whitespace-nowrap text-white transition duration-100 ease-linear active:bg-brand-solid_hover"
+                                    className="h-[56px] shrink-0 rounded-lg bg-brand-solid px-[18px] text-[18px] font-bold whitespace-nowrap text-white transition duration-100 ease-linear active:bg-brand-solid_hover"
                                 >
                                     View My Order
                                 </button>

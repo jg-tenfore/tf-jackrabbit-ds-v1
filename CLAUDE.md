@@ -61,6 +61,15 @@ verified by `npm run shoot` instead — a snapshot on class strings would pass
 through every defect that harness has actually caught, while making refactors
 expensive.
 
+## Story layout
+
+Kiosk stories must use `layout: "fullscreen"`, never `"centered"`. Centered wraps
+the story in a padded box, and at the 750x1298 kiosk viewport that padding
+becomes exactly 32px of horizontal overflow — the preview scrolls sideways on a
+panel that physically cannot. The only story allowed to exceed the canvas is
+`Kiosk Frame / Full HD Panel`, which exists to show the canvas scaled onto a
+1080px panel.
+
 ## Visual QA is not optional
 
 `tsc` passing and Storybook building prove a component compiles, not that it
@@ -200,6 +209,28 @@ Their footers differ too: a dialog uses the edge-to-edge split bar (it has a car
 edge to span); a full-screen modal uses two centred pills (it does not).
 
 Name destructive actions for what they do ("Remove"), not "Confirm".
+
+## Entry screens
+
+Enter your code, email and name are one `EntryScreen` template with a **field
+slot**, not a `type` prop — the three fields have genuinely different shapes and
+a union would push the differences into the template rather than remove them.
+`showSignInPanel` is on for code and email, off for name: by name entry the user
+has chosen guest checkout, and re-offering the scan reopens a settled decision.
+
+## Ordering
+
+`CategoryRail` is the third mode of `step-rail.tsx`, beside `StepRail` and
+`FilterRail`, so the clip offset, width and radius stay one set of numbers.
+
+Menu sub-filters are keyed **per category** (`MENU_SUBFILTERS`). The reference
+shows beverage filters under a Sandwiches heading, which is a mock artefact.
+
+`src/data/menu-catalog.ts` is hand-written but uses the same `ProShopProduct`
+shape as the generated pro-shop catalogue, so both feed the same cards and a
+future `build-menu-images` can replace it wholesale. Its `image` paths point at
+`menu-images/`, which does not exist yet — `ProductImage` renders a deliberate
+empty state, so the screens are reviewable before the food exports land.
 
 ## Pro shop and menu imagery
 

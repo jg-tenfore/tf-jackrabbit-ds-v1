@@ -5,7 +5,9 @@ const meta = {
     title: "Kiosk Core/Global Nav/Header",
     component: KioskHeader,
     parameters: {
-        layout: "centered",
+        // "centered" pads the story; at the 750px kiosk viewport that padding
+        // becomes 32px of horizontal overflow on a panel that cannot scroll.
+        layout: "fullscreen",
         docs: {
             description: {
                 component:
