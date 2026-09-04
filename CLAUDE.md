@@ -73,6 +73,46 @@ only the inner edge of each card shows, which reads as tabs hanging off the
 edge without spending the horizontal room a full sidebar would cost. That room
 is what the slot grid needs.
 
+## Overlays: two kinds, and the difference matters
+
+There are exactly two overlay components, and choosing between them is a
+question about **what the overlay is doing, not how big its content is**.
+
+`KioskDialog` — a card that sits *on* the current screen. The page stays visible
+around and beneath it, footer rail included. Use it when the overlay is a step
+*inside* the current task (picking a rate for the time you just tapped, setting
+a quantity for the item you just picked). Backing out should cost nothing.
+
+**No scrim by default.** Every card overlay in `references/flows` sits on an
+undimmed page — the standby card overlays the hero photograph at full
+brightness. `scrim` exists but is not the house style; enabling it makes a
+dialog read as a takeover when it is not one.
+
+`KioskFullScreenModal` — replaces the entire screen. No card, no page behind, the
+footer rail covered. Use it for a **hard stop**: the flow cannot continue until
+it is answered, and the context is deliberately removed so nothing competes with
+the question. Destroying an order, choosing where to pay, interstitials. It
+takes no scrim and no card — a dimmed page behind would reintroduce exactly what
+it is stripping away.
+
+Their footers differ too: a dialog uses the edge-to-edge split bar (it has a card
+edge to span); a full-screen modal uses two centred pills (it does not).
+
+Name destructive actions for what they do ("Remove"), not "Confirm".
+
+## Pro shop and menu imagery
+
+The raw capture in `references/pos-item-imagery` is ~134MB and is **gitignored**.
+`npm run build-pos-images` curates it to one hero per product at 800px WebP —
+1.2MB, 23x smaller — into `public/pos-images/`, which **is** committed. Re-run it
+after changing the raw capture.
+
+Catalog image paths are stored **base-relative** (`pos-images/...`, no leading
+slash) and must be resolved with `assetUrl()` from `@/utils/asset-url`. GitHub
+Pages serves this project from `/tf-jackrabbit-ds-v1/`, so a rooted path works
+locally and 404s after deploy. Render catalog images through `ProductImage`,
+which applies `assetUrl` and owns the missing-image fallback.
+
 ## Modals
 
 There is **one modal**: `KioskModal`, plus thin named variants in

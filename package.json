@@ -10,7 +10,8 @@
         "build-storybook": "storybook build",
         "app": "vite --config vite.app.config.ts",
         "build-app": "vite build --config vite.app.config.ts",
-        "shoot": "node scripts/screenshot.mjs"
+        "shoot": "node scripts/screenshot.mjs",
+        "build-pos-images": "node scripts/build-pos-images.mjs"
     },
     "dependencies": {
         "@tailwindcss/postcss": "^4.2.2",
@@ -53,6 +54,7 @@
         "postcss-loader": "^8.2.1",
         "prettier": "^3.8.1",
         "prettier-plugin-tailwindcss": "^0.7.2",
+        "sharp": "^0.34.4",
         "storybook": "^10.5.4",
         "typescript": "^5.9.3",
         "vite": "^8.1.5"

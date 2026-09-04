@@ -1,6 +1,6 @@
 "use client";
 
-import { Car01, Flag01, Users01 } from "@untitledui/icons";
+import { Car01, Flag01, Route, Users01 } from "@untitledui/icons";
 import { cx } from "@/utils/cx";
 
 export interface TeeTimeSlot {
@@ -82,10 +82,12 @@ export const SlotMeta = ({ slot }: { slot: TeeTimeSlot }) => (
         <Flag01 className="size-3.5 shrink-0" aria-hidden="true" />
         <span className="tabular-nums">{slot.holes}</span>
         <span aria-hidden="true">·</span>
+        {/* Flag01 already denotes the hole count, so walking needs a distinct
+            glyph — two flags in one line read as one repeated fact. */}
         {slot.transport === "cart" ? (
             <Car01 className="size-3.5 shrink-0" aria-label="Cart" />
         ) : (
-            <Flag01 className="size-3.5 shrink-0" aria-label="Walking" />
+            <Route className="size-3.5 shrink-0" aria-label="Walking" />
         )}
     </div>
 );

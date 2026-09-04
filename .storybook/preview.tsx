@@ -20,7 +20,7 @@ const preview: Preview = {
                     // Kiosk-native primitives: the parts that exist only because
                     // this is a touch kiosk, not a desktop app.
                     "Kiosk Core",
-                    ["Kiosk Frame", "Keyboard", "Global Nav", "Authentication", "Booking", "Modals"],
+                    ["Kiosk Frame", "Keyboard", "Global Nav", "Authentication", "Booking", "Store", "Overlays"],
                     // The shared Untitled UI library, ported from Buck. Source
                     // material to pull from and refine into kiosk components.
                     "Components",

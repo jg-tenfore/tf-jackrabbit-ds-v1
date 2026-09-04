@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { KioskDatePicker } from "@/components/kiosk/booking/kiosk-date-picker";
 import { FilterRail } from "@/components/kiosk/booking/step-rail";
 import { SlotCard, type TeeTimeSlot } from "@/components/kiosk/booking/slot-card";
-import { RatePickerModal } from "@/components/kiosk/modals/modal-variants";
+import { RatePickerDialog } from "@/components/kiosk/modals/dialog-variants";
 import { RATES_FOR_TIME } from "@/data/booking";
 import { cx } from "@/utils/cx";
 
@@ -100,7 +100,7 @@ export const TeeTimeBooking = ({ slots, className }: { slots: TeeTimeSlot[]; cla
             </div>
 
             {openSlot && (
-                <RatePickerModal
+                <RatePickerDialog
                     isOpen={Boolean(openSlot)}
                     onOpenChange={(open) => !open && setOpenSlot(null)}
                     time={openSlot.time}

@@ -13,71 +13,66 @@ import { KIOSK_WIDTH } from "@/kiosk/constants";
 import { cx } from "@/utils/cx";
 
 /**
- * The one modal in the kiosk.
+ * A card overlay — the first of the two overlay kinds in this kiosk.
  *
- * Every overlay in the references — rate picker, product detail, destructive
- * confirm, standby choice, checkout method, info sheet — is the same anatomy
- * with different content: a centered card over a dimmed ground, an optional
- * close affordance, a title block, a body, and a footer of large actions.
- * Building them separately would mean reimplementing overlay, dismissal and
- * focus containment six times, and they would diverge on the details that
- * matter least and break most.
+ * A dialog is a rounded card that sits *on* the current screen. The page stays
+ * visible around and beneath it, including the persistent footer rail, so the
+ * user can see what they were doing and that they have not left it. Use it when
+ * the overlay is a step inside the current task: choosing a rate for the tee
+ * time you just tapped, setting a quantity for the item you just picked.
  *
- * Focus containment comes from React Aria rather than being hand-rolled: a
- * kiosk runs unattended for hours, and a modal that leaks focus leaves the
- * previous customer's session reachable behind the overlay.
+ * Note there is **no scrim by default**. Every card overlay in the references
+ * sits on an undimmed page — the standby card overlays the hero photograph at
+ * full brightness. Dimming is available via `scrim` for cases where the page
+ * behind is genuinely distracting, but it is not the house style, and turning
+ * it on makes a dialog read as a full-screen takeover when it is not one.
+ *
+ * For an overlay that replaces the screen entirely, use `KioskFullScreenModal`.
  */
 
-export type ModalFooterLayout =
-    /** Cancel | Confirm, edge to edge with no padding, as drawn in the references. */
+export type DialogFooterLayout =
+    /** Cancel | Confirm, edge to edge with no padding — reads as one divided bar. */
     | "split"
-    /** Full-width buttons stacked vertically — used when actions are not opposites. */
+    /** Full-width buttons stacked vertically, for actions that are not opposites. */
     | "stacked"
     | "none";
 
-export interface KioskModalProps extends Omit<AriaModalOverlayProps, "children"> {
+export interface KioskDialogProps extends Omit<AriaModalOverlayProps, "children"> {
     children?: ReactNode;
     title?: ReactNode;
     subtitle?: ReactNode;
-    /** Large glyph above the title — the destructive and success treatments. */
     icon?: FC<{ className?: string }>;
-    iconTone?: "brand" | "error" | "warning" | "success";
-    /** Round close affordance in the top-left, as on the product detail modal. */
+    /** Round close affordance top-left, as on the product detail card. */
     onClose?: () => void;
     footer?: ReactNode;
-    footerLayout?: ModalFooterLayout;
-    /** Center the title block. Off for content-led modals like the rate picker. */
+    footerLayout?: DialogFooterLayout;
     align?: "center" | "start";
+    /** Dim the page behind. Off by default — see the note above. */
+    scrim?: boolean;
     className?: string;
 }
 
-const ICON_TONES = {
-    brand: "text-fg-brand-primary",
-    error: "text-fg-error-primary",
-    warning: "text-fg-warning-primary",
-    success: "text-fg-success-primary",
-} as const;
-
-export const KioskModal = ({
+export const KioskDialog = ({
     children,
     title,
     subtitle,
     icon: Icon,
-    iconTone = "brand",
     onClose,
     footer,
     footerLayout = "none",
     align = "center",
+    scrim = false,
     className,
     ...props
-}: KioskModalProps) => (
+}: KioskDialogProps) => (
     <AriaModalOverlay
         {...props}
-        // The overlay is scoped to the kiosk canvas, not the browser viewport,
-        // so a modal dims exactly the panel and nothing outside it.
+        // Scoped to the kiosk canvas, not the browser viewport, so the overlay
+        // never extends past the panel.
         className={({ isEntering, isExiting }) =>
             cx(
-                "absolute inset-0 z-50 flex items-center justify-center bg-overlay/70 px-8",
+                "absolute inset-0 z-50 flex items-center justify-center px-8",
+                scrim && "bg-overlay/70",
                 isEntering && "duration-150 ease-out animate-in fade-in",
                 isExiting && "duration-100 ease-in animate-out fade-out",
             )
@@ -102,16 +97,12 @@ export const KioskModal = ({
                                 type="button"
                                 onClick={onClose}
                                 aria-label="Close"
-                                // Self-aligned start so it sits top-left without
-                                // knocking a centered title off centre.
                                 className="mb-4 flex size-16 shrink-0 items-center justify-center self-start rounded-full ring-1 ring-border-primary transition duration-100 ease-linear active:bg-secondary"
                             >
                                 <CloseIcon className="size-7 text-fg-secondary" />
                             </button>
                         )}
-
-                        {Icon && <Icon className={cx("mb-5 size-20", ICON_TONES[iconTone])} aria-hidden="true" />}
-
+                        {Icon && <Icon className="mb-5 size-16 text-fg-brand-primary" aria-hidden="true" />}
                         {title && <h2 className="text-4xl font-bold text-balance text-primary">{title}</h2>}
                         {subtitle && <p className="mt-3 text-xl text-tertiary">{subtitle}</p>}
                     </div>
@@ -120,8 +111,6 @@ export const KioskModal = ({
                 {children && <div className="min-h-0 flex-1 overflow-y-auto px-8 py-8 scrollbar-hide">{children}</div>}
 
                 {footer && footerLayout === "split" && (
-                    // Edge to edge, no padding, no gap — the split footer in the
-                    // references reads as one bar divided, not two buttons.
                     <div className="grid grid-cols-2 border-t border-secondary [&>*]:h-24 [&>*]:rounded-none">{footer}</div>
                 )}
                 {footer && footerLayout === "stacked" && <div className="flex flex-col gap-4 px-8 pt-2 pb-8">{footer}</div>}
@@ -131,14 +120,8 @@ export const KioskModal = ({
     </AriaModalOverlay>
 );
 
-/**
- * The Cancel / Confirm pair used by most modals.
- *
- * Confirm carries the destructive tone rather than Cancel, because at a kiosk
- * the risky action is the one being confirmed and it must be the one that looks
- * consequential.
- */
-export const ModalSplitFooter = ({
+/** The edge-to-edge Cancel | Confirm pair used by the card dialogs. */
+export const DialogSplitFooter = ({
     cancelLabel = "Cancel",
     confirmLabel = "Confirm",
     onCancel,
