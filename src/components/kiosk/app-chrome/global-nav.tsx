@@ -97,12 +97,13 @@ export const GlobalNav = ({
                     The content column is a fixed 387 so Start Over ends where
                     View My Order does — they are aligned in the reference, and
                     a full-width button would run past it toward the drawer. */}
-                <div className="flex min-h-[244px] flex-col justify-end gap-6 border-t border-secondary px-16 py-7">
+                <div data-nav-rail
+                    className={cx("flex flex-col justify-end gap-6 border-t border-secondary px-16 py-7", isExpanded && !isAuthenticated ? "min-h-[114px]" : "min-h-[244px]")}>
                     <div className="flex w-[387px] flex-col gap-6">
                         {hasOrder && (
                             <div className="flex items-center justify-between gap-6">
                                 <div className="relative flex items-end gap-2">
-                                    <img src={ASSET("golf-bag.svg")} alt="" aria-hidden="true" className="h-[112px] w-[52px] object-contain" />
+                                    <img src={ASSET("golf-bag.svg")} alt="" aria-hidden="true" className="h-[117px] w-[50px] object-contain" />
                                     <span
                                         className="absolute top-2 left-8 flex size-9 items-center justify-center rounded-full bg-error-solid text-[16px] font-bold text-white"
                                         aria-label={`${cartCount} items in order`}
@@ -115,7 +116,7 @@ export const GlobalNav = ({
                                 <button
                                     type="button"
                                     onClick={onViewOrder}
-                                    className="h-16 shrink-0 rounded-lg bg-brand-solid px-8 text-[18px] font-bold whitespace-nowrap text-white transition duration-100 ease-linear active:bg-brand-solid_hover"
+                                    className="h-[68px] shrink-0 rounded-lg bg-brand-solid px-[18px] text-[18px] font-bold whitespace-nowrap text-white transition duration-100 ease-linear active:bg-brand-solid_hover"
                                 >
                                     View My Order
                                 </button>

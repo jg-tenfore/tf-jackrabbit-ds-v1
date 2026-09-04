@@ -43,12 +43,12 @@ export const WalletDrawer = ({
             aria-expanded={isExpanded}
             aria-label="Tap your wallet to log in"
             className={cx(
-                "flex h-[214px] w-[174px] flex-col items-center justify-center gap-2 px-3 text-center text-white transition duration-100 ease-linear",
+                "flex w-[174px] flex-col items-center justify-center gap-2 px-3 text-center text-white transition duration-100 ease-linear",
                 // Expanded, the panel above already carries a large wallet
                 // illustration; repeating it in the drawer would say the same
                 // thing twice in the same glance. Collapsed, the illustration is
                 // the whole affordance, so the card grows to hold it.
-                !isExpanded && "rounded-t-2xl",
+                isExpanded ? "h-[114px]" : "h-[214px] rounded-t-2xl",
                 hasError ? "bg-error-solid" : "bg-brand-solid active:bg-brand-solid_hover",
                 className,
             )}
@@ -82,24 +82,16 @@ export const WalletDrawer = ({
  * control on the rail and it sits where the user's thumb already is.
  */
 export const SignedInCard = ({ firstName, onSignOut, className }: { firstName: string; onSignOut?: () => void; className?: string }) => (
-    // Measured off the logged-in reference (1:1 with this canvas — its card is
-    // 174 wide): 174x100, fully rounded, sitting inside the rail rather than
-    // overhanging it the way the wallet drawer does.
-    //
-    // That difference is the point. The drawer is tall and overhangs because it
-    // is advertising an action the user has not taken yet. Once signed in there
-    // is nothing left to advertise, so the card shrinks into the rail and stops
-    // pulling the eye.
     <div
         className={cx(
-            "flex h-[100px] w-[174px] flex-col items-center justify-center gap-2 rounded-2xl bg-primary px-3 ring-1 ring-border-secondary",
+            "flex h-[100px] w-[174px] flex-col items-center gap-2.5 rounded-2xl bg-primary px-3 pt-6 pb-3 ring-1 ring-border-secondary",
             className,
         )}
     >
         <button
             type="button"
             onClick={onSignOut}
-            className="h-[34px] rounded-md bg-error-solid px-4 text-[13px] font-semibold text-white transition duration-100 ease-linear active:bg-error-solid_hover"
+            className="h-[32px] w-full shrink-0 rounded-md bg-error-solid text-[13px] font-semibold text-white transition duration-100 ease-linear active:bg-error-solid_hover"
         >
             Log out
         </button>
@@ -122,7 +114,7 @@ export const SignInPrompt = ({
      * content is laid out for that proportion — at 225 it is legible but tight.
      * Exposed as a prop so both can be compared rather than one being asserted.
      */
-    height = 450,
+    height = 309,
     className,
 }: {
     onHowToLogIn?: () => void;
@@ -145,10 +137,10 @@ export const SignInPrompt = ({
             aria-live="polite"
         >
             <div className="flex min-w-0 flex-col gap-2">
-                <h2 className="text-[36px] leading-none font-bold">
+                <h2 className="text-[34px] leading-none font-bold">
                     {isScanning ? "Reading your wallet…" : hasError ? "We couldn't read that" : "Scan your code"}
                 </h2>
-                <p className="text-[21px] text-white/95">
+                <p className="text-[18px] text-white/95">
                     {isScanning ? "Hold your pass steady" : hasError ? "Hold the pass flat and try again" : "Use the scanner below to log in"}
                 </p>
 
@@ -156,7 +148,7 @@ export const SignInPrompt = ({
                     <>
                         {/* Three on the first line, one on the second, as drawn —
                             a plain wrap would break after "Make Purchases". */}
-                        <div className="mt-1 flex gap-x-8 text-[14px] whitespace-nowrap text-white/90">
+                        <div className="mt-2 flex gap-x-9 text-[14px] whitespace-nowrap text-white/90">
                             <span>Reserve a table</span>
                             <span>Book a tee time</span>
                             <span>Make Purchases</span>
@@ -169,7 +161,7 @@ export const SignInPrompt = ({
                     <button
                         type="button"
                         onClick={onHowToLogIn}
-                        className="mt-3 h-14 w-fit rounded-lg px-6 text-[16px] font-bold ring-1 ring-white ring-inset transition duration-100 ease-linear active:bg-white/15"
+                        className="mt-6 h-[46px] w-[184px] rounded-lg text-[16px] font-bold ring-1 ring-white ring-inset transition duration-100 ease-linear active:bg-white/15"
                     >
                         How do I Log In?
                     </button>
@@ -182,7 +174,7 @@ export const SignInPrompt = ({
                 aria-hidden="true"
                 // Fills the band's height rather than a fixed size, so it stays
                 // proportional whichever height the panel is set to.
-                className="h-[64%] w-auto shrink-0 object-contain"
+                className="h-[238px] w-[162px] shrink-0 object-contain"
             />
         </div>
     );

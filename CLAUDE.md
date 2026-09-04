@@ -131,7 +131,13 @@ The rail is fixed chrome, not a component that flows with content:
 taken off a mock doubles. That mismatch caused a run of "the sizing is off"
 corrections — check the scale before applying a number.
 
-- **min 244px** tall (the collapsed state lands exactly on 244)
+- rail is **min 244px collapsed**, compressing to **min 114px** when the sign-in
+  panel is open, so the whole nav stays ~423 rather than stacking to 553
+- drawer is **174x214 collapsed** and **174x114 expanded** — it drops its
+  illustration when the panel above is already carrying one
+- signed-in identity card is **174x100**, fully rounded, sitting *inside* the
+  rail rather than overhanging: once signed in there is no action left to
+  advertise, so it stops pulling the eye
 - **64px left and right inset** for everything, the drawer included
 - content is **bottom-anchored**, so Start Over holds the same line in every
   state rather than drifting as the cart row appears
