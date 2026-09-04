@@ -235,7 +235,6 @@ export const Brand: Story = {
  * adapt automatically across light and dark mode.
  */
 export const Tokens: Story = {
-    name: "Tokens",
     render: () => (
         <Page>
             <Section title="Base" subtitle="Absolute values that never change with theme.">

@@ -1,0 +1,38 @@
+name: CI
+
+# Runs on every push and PR. The Pages workflow only builds Storybook, so
+# without this the typecheck, lint and tests would never gate anything.
+on:
+    push:
+        branches: [main]
+    pull_request:
+    workflow_dispatch:
+
+jobs:
+    validate:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+
+            - uses: actions/setup-node@v5
+              with:
+                  node-version: 22
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Typecheck
+              run: npx tsc --noEmit
+
+            - name: Lint
+              run: npm run lint
+
+            - name: Test
+              run: npm test
+
+            - name: Build Storybook
+              run: npm run build-storybook
+
+            - name: Build Next app
+              run: npm run build

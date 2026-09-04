@@ -1,7 +1,5 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { ActivityBooking } from "@/components/kiosk/booking/activity-booking";
-import { PICKLEBALL_CONFIG, SIMULATOR_CONFIG } from "@/components/kiosk/booking/activity-config";
 import { DueBar, PriceBreakdown, VenueSummary } from "@/components/kiosk/booking/booking-summary";
 import { GroupSizeSelector, SegmentedSelector, TransportSelector } from "@/components/kiosk/booking/segmented-selector";
 import { SlotCard, TimeSlotCard } from "@/components/kiosk/booking/slot-card";

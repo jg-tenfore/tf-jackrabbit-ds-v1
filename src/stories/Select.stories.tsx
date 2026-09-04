@@ -235,7 +235,7 @@ export const Native: Story = {
 export const Tags: Story = {
     args: renderPlaceholder,
     render: () => {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
+         
         const selectedItems = useListData<SelectItemType>({
             initialItems: [{ id: GOLFERS[0].id, label: GOLFERS[0].name, avatarUrl: CADDIE_AVATARS[0] }],
         });

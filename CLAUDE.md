@@ -45,6 +45,22 @@ the Buck equivalents:
   square, so a 3-column numeric pad (234px keys) has ~12x the area of a QWERTY
   key in the same space. Drop keys a layout does not need.
 
+## Validation
+
+`npm run lint` · `npm test` · `npx tsc --noEmit` · `npm run build-storybook` ·
+`npm run build`. All five run in CI on every push and PR (`.github/workflows/ci.yml`).
+
+Lint deliberately ignores `components/base`, `foundations`, `shared-assets`,
+`application`, `marketing` and `booking` — that is the Untitled UI library
+ported verbatim from Buck, upstream code we do not author. Linting it would bury
+the findings that matter.
+
+Tests cover arithmetic and parsing, not markup: touch-target maths, phone
+formatting, email domain completion, keyboard layout geometry. Layout is
+verified by `npm run shoot` instead — a snapshot on class strings would pass
+through every defect that harness has actually caught, while making refactors
+expensive.
+
 ## Visual QA is not optional
 
 `tsc` passing and Storybook building prove a component compiles, not that it
