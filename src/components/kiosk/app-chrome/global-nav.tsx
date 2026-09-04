@@ -83,7 +83,7 @@ export const GlobalNav = ({
             <div className="relative bg-primary">
                 {/* The drawer overhangs the rail, so it is absolutely placed and
                     the rail reserves its width with padding instead. */}
-                <div className="absolute right-0 bottom-0">
+                <div className="absolute right-16 bottom-0">
                     {isAuthenticated ? (
                         <SignedInCard firstName={member.firstName} onSignOut={signOut} />
                     ) : (
@@ -91,37 +91,45 @@ export const GlobalNav = ({
                     )}
                 </div>
 
-                <div className="flex min-h-[122px] flex-col justify-center gap-3 border-t border-secondary py-5 pr-[131px] pl-12">
-                    {hasOrder && (
-                        <div className="flex items-center gap-6">
-                            <div className="relative flex items-center gap-3">
-                                <img src={ASSET("golf-bag.svg")} alt="" aria-hidden="true" className="h-[70px] w-[31px] object-contain" />
-                                <span
-                                    className="absolute -top-1 left-5 flex size-7 items-center justify-center rounded-full bg-error-solid text-sm font-bold text-white"
-                                    aria-label={`${cartCount} items in order`}
+                {/* Measured off the cart reference, which is 1:1 with this
+                    canvas (its drawer is 174px, matching the spec). Left inset
+                    68, rows 112 and 52 tall, 24 between, 28/30 above and below.
+                    The content column is a fixed 387 so Start Over ends where
+                    View My Order does — they are aligned in the reference, and
+                    a full-width button would run past it toward the drawer. */}
+                <div className="flex min-h-[244px] flex-col justify-end gap-6 border-t border-secondary px-16 py-7">
+                    <div className="flex w-[387px] flex-col gap-6">
+                        {hasOrder && (
+                            <div className="flex items-center justify-between gap-6">
+                                <div className="relative flex items-end gap-2">
+                                    <img src={ASSET("golf-bag.svg")} alt="" aria-hidden="true" className="h-[112px] w-[52px] object-contain" />
+                                    <span
+                                        className="absolute top-2 left-8 flex size-9 items-center justify-center rounded-full bg-error-solid text-lg font-bold text-white"
+                                        aria-label={`${cartCount} items in order`}
+                                    >
+                                        {cartCount}
+                                    </span>
+                                    <span className="pb-2 text-4xl font-bold text-primary tabular-nums">${cartTotal.toFixed(2)}</span>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={onViewOrder}
+                                    className="h-16 shrink-0 rounded-lg bg-brand-solid px-8 text-xl font-bold whitespace-nowrap text-white transition duration-100 ease-linear active:bg-brand-solid_hover"
                                 >
-                                    {cartCount}
-                                </span>
-                                <span className="text-3xl font-bold text-primary tabular-nums">${cartTotal.toFixed(2)}</span>
+                                    View My Order
+                                </button>
                             </div>
+                        )}
 
-                            <button
-                                type="button"
-                                onClick={onViewOrder}
-                                className="h-14 shrink-0 rounded-lg bg-brand-solid px-7 text-lg font-bold whitespace-nowrap text-white transition duration-100 ease-linear active:bg-brand-solid_hover"
-                            >
-                                View My Order
-                            </button>
-                        </div>
-                    )}
-
-                    <button
-                        type="button"
-                        onClick={handleStartOver}
-                        className="h-14 w-full rounded-lg text-lg text-tertiary ring-1 ring-border-primary ring-inset transition duration-100 ease-linear active:bg-secondary"
-                    >
-                        Start Over
-                    </button>
+                        <button
+                            type="button"
+                            onClick={handleStartOver}
+                            className="h-[52px] w-full rounded-lg text-xl text-tertiary ring-1 ring-border-primary ring-inset transition duration-100 ease-linear active:bg-secondary"
+                        >
+                            Start Over
+                        </button>
+                    </div>
                 </div>
             </div>
         </nav>

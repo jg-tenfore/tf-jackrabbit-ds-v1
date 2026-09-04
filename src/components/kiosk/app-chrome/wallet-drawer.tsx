@@ -43,12 +43,12 @@ export const WalletDrawer = ({
             aria-expanded={isExpanded}
             aria-label="Tap your wallet to log in"
             className={cx(
-                "flex w-[107px] flex-col items-center justify-center gap-1 px-2 text-center text-white transition duration-100 ease-linear",
+                "flex h-[214px] w-[174px] flex-col items-center justify-center gap-2 px-3 text-center text-white transition duration-100 ease-linear",
                 // Expanded, the panel above already carries a large wallet
                 // illustration; repeating it in the drawer would say the same
                 // thing twice in the same glance. Collapsed, the illustration is
                 // the whole affordance, so the card grows to hold it.
-                isExpanded ? "py-5" : "rounded-t-2xl pt-5 pb-4",
+                !isExpanded && "rounded-t-2xl",
                 hasError ? "bg-error-solid" : "bg-brand-solid active:bg-brand-solid_hover",
                 className,
             )}
@@ -58,17 +58,17 @@ export const WalletDrawer = ({
                     src={ASSET("wallet-small.svg")}
                     alt=""
                     aria-hidden="true"
-                    className={cx("h-auto w-full object-contain", isScanning && "animate-pulse")}
+                    className={cx("h-[88px] w-[174px] shrink-0 object-contain", isScanning && "animate-pulse")}
                 />
             )}
-            <span className="text-[11px] leading-tight text-white/90">
+            <span className="text-base leading-tight text-white/90">
                 {isScanning ? "Reading your wallet…" : hasError ? "Try again" : "Tap your wallet below"}
             </span>
-            <span className="text-lg leading-none font-bold">{hasError ? "Not recognized" : "Log In"}</span>
+            <span className="text-3xl leading-none font-bold">{hasError ? "Not recognized" : "Log In"}</span>
             {/* Always points down. It is not a disclosure triangle — it points at
                 the physical scanner below the screen, which is where "tap your
                 wallet below" is telling the user to reach. */}
-            <ChevronDown className="size-5" aria-hidden="true" />
+            <ChevronDown className="size-8" aria-hidden="true" />
         </button>
     );
 };
@@ -82,15 +82,15 @@ export const WalletDrawer = ({
  * control on the rail and it sits where the user's thumb already is.
  */
 export const SignedInCard = ({ firstName, onSignOut, className }: { firstName: string; onSignOut?: () => void; className?: string }) => (
-    <div className={cx("flex w-[107px] flex-col items-center gap-1.5 rounded-t-2xl bg-primary px-2 pt-3 pb-3 ring-1 ring-border-secondary", className)}>
+    <div className={cx("flex h-[214px] w-[174px] flex-col items-center justify-center gap-4 rounded-t-2xl bg-primary px-3 ring-1 ring-border-secondary", className)}>
         <button
             type="button"
             onClick={onSignOut}
-            className="h-11 w-full rounded-lg bg-error-solid text-sm font-semibold text-white transition duration-100 ease-linear active:bg-error-solid_hover"
+            className="h-20 w-full rounded-lg bg-error-solid text-2xl font-semibold text-white transition duration-100 ease-linear active:bg-error-solid_hover"
         >
             Log out
         </button>
-        <span className="text-base font-bold text-primary">{firstName}</span>
+        <span className="text-2xl font-bold text-primary">{firstName}</span>
     </div>
 );
 
@@ -109,7 +109,7 @@ export const SignInPrompt = ({
      * content is laid out for that proportion — at 225 it is legible but tight.
      * Exposed as a prop so both can be compared rather than one being asserted.
      */
-    height = 225,
+    height = 450,
     className,
 }: {
     onHowToLogIn?: () => void;
@@ -123,7 +123,7 @@ export const SignInPrompt = ({
     return (
         <div
             className={cx(
-                "flex w-full items-center justify-between gap-8 pr-12 pl-16 text-white",
+                "flex w-full items-center justify-between gap-8 px-16 text-white",
                 hasError ? "bg-error-solid" : "bg-brand-solid",
                 className,
             )}

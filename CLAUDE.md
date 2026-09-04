@@ -127,14 +127,20 @@ it survives the canvas scale cleanly.
 
 The rail is fixed chrome, not a component that flows with content:
 
-- **min 122px** tall (the collapsed state lands exactly on 122)
+**The mocks are @1x (375x649); this canvas is @2x (750x1298).** Every dimension
+taken off a mock doubles. That mismatch caused a run of "the sizing is off"
+corrections — check the scale before applying a number.
+
+- **min 244px** tall (the collapsed state lands exactly on 244)
+- **64px left and right inset** for everything, the drawer included
+- content is **bottom-anchored**, so Start Over holds the same line in every
+  state rather than drifting as the cart row appears
 - **z-50** with an upward shadow — it always sits above screen content, and a
   shadow is what makes that legible on a white page where a border would read
   as a divider rather than a layer
 - **full-bleed**: 100% width, no horizontal scrolling anywhere in the canvas
-- wallet drawer / identity card is **107px** wide; the rail's right padding
-  (`pr-[131px]`) reserves that plus a gap, so they must move together
-- expanded sign-in band is **225px** (`promptHeight` prop; the annotated export
+- wallet drawer / identity card is **174 x 214**, inset 64 from the right
+- expanded sign-in band is **450px** (`promptHeight` prop; the annotated export
   measures nearer 304 — compare the two stories before settling it)
 
 Do not put `overflow-x-hidden` on the nav itself. CSS promotes the other axis to
