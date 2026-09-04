@@ -1,29 +1,18 @@
 "use client";
 
 import { ArrowUp, Delete } from "@untitledui/icons";
+import { KioskKey } from "@/components/kiosk/keyboard/kiosk-key";
 import { LAYOUTS, type KeyDef, type LayoutName } from "@/components/kiosk/keyboard/layouts";
-import { cx, sortCx } from "@/utils/cx";
-
-const styles = sortCx({
-    key: {
-        base: [
-            "flex select-none items-center justify-center rounded-md bg-primary text-primary ring-1 ring-border-primary ring-inset",
-            "transition duration-100 ease-linear",
-            // No hover state on a touch panel — the press state is what a user
-            // actually perceives, so it carries the whole affordance.
-            "active:scale-[0.97] active:bg-brand-solid active:text-white active:ring-brand",
-            "disabled:cursor-not-allowed disabled:opacity-50",
-        ].join(" "),
-        action: "bg-secondary text-secondary",
-        held: "bg-brand-solid text-white ring-brand",
-    },
-});
+import { KEYBOARD_INSET, KEY_GAP, type KeySize } from "@/kiosk/touch";
+import { cx } from "@/utils/cx";
 
 export interface OnScreenKeyboardProps {
     /** Current field value; the keyboard is fully controlled. */
     value: string;
     onChange: (next: string) => void;
     layout?: LayoutName;
+    /** Key size from the `KEY_SIZES` scale. Defaults per layout — see below. */
+    size?: KeySize;
     /** Stop accepting characters past this length (codes, phone numbers). */
     maxLength?: number;
     /** Uppercase latch. Omit to let the keyboard manage it internally. */
@@ -31,31 +20,50 @@ export interface OnScreenKeyboardProps {
     onShiftChange?: (next: boolean) => void;
     onEnter?: () => void;
     isDisabled?: boolean;
+    /** Inset the keyboard from the canvas edge. Off for full-bleed keypads. */
+    inset?: boolean;
     className?: string;
 }
 
 /**
+ * Default key size per layout.
+ *
+ * A 10-column QWERTY can only afford 64px keys at 750px wide, but a 3-column
+ * numeric pad has width to spare — so it takes `lg` and spends the surplus on
+ * target area rather than leaving it as empty margin.
+ */
+const DEFAULT_SIZE: Record<LayoutName, KeySize> = {
+    qwerty: "md",
+    email: "md",
+    numeric: "lg",
+    phone: "lg",
+};
+
+/**
  * The kiosk on-screen keyboard.
  *
- * Renders a layout from `layouts.ts` and applies presses to the controlled
- * `value`. Keys are real `<button>`s so screen readers and the a11y addon see
- * them, and every key clears the 64px kiosk touch-target floor.
+ * Renders a layout from `layouts.ts` onto `KioskKey`, so every target in the
+ * app is sized from one scale. Rows consume the full available width — leftover
+ * horizontal space is wasted target area, which is the thing this component
+ * exists to avoid.
  */
 export const OnScreenKeyboard = ({
     value,
     onChange,
     layout = "qwerty",
+    size,
     maxLength,
     isShifted,
     onShiftChange,
     onEnter,
     isDisabled = false,
+    inset = true,
     className,
 }: OnScreenKeyboardProps) => {
     // Shift is uncontrolled unless the caller opts in, so the common case needs
     // no extra state wiring at the call site.
     const shifted = isShifted ?? false;
-
+    const keySize = size ?? DEFAULT_SIZE[layout];
     const rows = LAYOUTS[layout];
 
     const commit = (next: string) => {
@@ -64,67 +72,53 @@ export const OnScreenKeyboard = ({
     };
 
     const handleKey = (key: KeyDef) => {
-        if (isDisabled) return;
-
         switch (key.action) {
             case "backspace":
-                commit(value.slice(0, -1));
-                return;
+                return commit(value.slice(0, -1));
             case "clear":
-                commit("");
-                return;
+                return commit("");
             case "space":
-                commit(value + " ");
-                return;
+                return commit(value + " ");
             case "shift":
-                onShiftChange?.(!shifted);
-                return;
+                return onShiftChange?.(!shifted);
             case "enter":
-                onEnter?.();
-                return;
+                return onEnter?.();
             default:
                 if (!key.value) return;
-                // Multi-character keys like ".com" are inserted verbatim; single
+                // Multi-character keys like ".com" insert verbatim; single
                 // letters follow the shift latch.
                 commit(value + (key.value.length > 1 ? key.value : shifted ? key.value.toUpperCase() : key.value.toLowerCase()));
         }
     };
 
     return (
-        <div className={cx("flex w-full flex-col gap-2", className)} role="group" aria-label="On-screen keyboard">
+        <div
+            className={cx("flex w-full flex-col", className)}
+            style={{ gap: KEY_GAP, paddingInline: inset ? KEYBOARD_INSET : 0 }}
+            role="group"
+            aria-label="On-screen keyboard"
+        >
             {rows.map((row, rowIndex) => (
-                <div key={rowIndex} className="flex w-full gap-2">
+                <div key={rowIndex} className="flex w-full" style={{ gap: KEY_GAP }}>
                     {row.map((key, keyIndex) => {
-                        const isAction = Boolean(key.action);
                         const isShiftKey = key.action === "shift";
-                        const label = key.label ?? (key.value && key.value.length === 1 ? (shifted ? key.value.toUpperCase() : key.value) : key.value);
+                        const isBackspace = key.action === "backspace";
+                        const label = key.label ?? (key.value?.length === 1 ? (shifted ? key.value.toUpperCase() : key.value) : key.value);
 
                         return (
-                            <button
+                            <KioskKey
                                 key={`${rowIndex}-${keyIndex}`}
-                                type="button"
-                                disabled={isDisabled}
-                                onClick={() => handleKey(key)}
-                                aria-label={key.action ?? key.value}
-                                aria-pressed={isShiftKey ? shifted : undefined}
-                                // `flex-1` + `flexGrow` share the row proportionally, so a
-                                // span of 1.5 is 1.5x a standard key at any row width.
-                                style={{ flexGrow: key.span ?? 1, flexBasis: 0 }}
-                                className={cx(
-                                    styles.key.base,
-                                    "h-16 min-w-0 text-lg font-medium",
-                                    isAction && styles.key.action,
-                                    isShiftKey && shifted && styles.key.held,
-                                )}
+                                size={keySize}
+                                span={key.span ?? 1}
+                                variant={key.action ? "action" : "character"}
+                                isActive={isShiftKey && shifted}
+                                isDisabled={isDisabled}
+                                onPress={() => handleKey(key)}
+                                label={key.action ?? key.value}
+                                icon={isBackspace ? Delete : isShiftKey ? ArrowUp : undefined}
                             >
-                                {key.action === "backspace" ? (
-                                    <Delete className="size-6" aria-hidden="true" />
-                                ) : isShiftKey ? (
-                                    <ArrowUp className="size-6" aria-hidden="true" />
-                                ) : (
-                                    label
-                                )}
-                            </button>
+                                {label}
+                            </KioskKey>
                         );
                     })}
                 </div>

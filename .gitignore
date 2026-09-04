@@ -50,3 +50,10 @@ next-env.d.ts
 # Local Netlify folder
 .netlify
 dist-app/
+screenshots/
+
+# Raw POS capture: ~134MB of full-resolution product photography. The servable
+# set is built from it into public/pos-images/ (1.2MB) by
+# scripts/build-pos-images.mjs, and that output IS committed. Keeping the raw
+# capture out keeps clones and the Pages deploy small.
+/references/pos-item-imagery

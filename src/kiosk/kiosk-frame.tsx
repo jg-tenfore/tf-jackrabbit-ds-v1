@@ -90,8 +90,10 @@ interface KioskScreenProps {
     className?: string;
 }
 
+// overflow-x-hidden: a kiosk panel has no way to scroll sideways, so any
+// horizontal overflow is a defect rather than something to expose.
 export const KioskScreen = ({ header, footer, children, scroll = true, className }: KioskScreenProps) => (
-    <div className={cx("flex h-full w-full flex-col bg-primary", className)}>
+    <div className={cx("flex h-full w-full flex-col overflow-x-hidden bg-primary", className)}>
         {header && <div className="relative z-20 shrink-0">{header}</div>}
 
         <div className={cx("relative min-h-0 flex-1", scroll ? "overflow-y-auto scrollbar-hide" : "overflow-hidden")}>{children}</div>
