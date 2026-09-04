@@ -1,55 +1,87 @@
 /**
- * Prepares exported screen assets for use in components.
+ * Copies exported screen assets into `public/screen-assets/` and prepares them
+ * for use in components.
  *
- * Right now that means one job: knocking the baked-in green background out of
- * the wallet illustrations.
+ * Source of truth is `references/build/<screen>/`. This script copies from
+ * there rather than mutating files in place, so it is idempotent and can be
+ * re-run whenever an export is replaced.
  *
- * The exports carry a solid rgb(7,148,85) ground, which does not match the
- * design-system token `--color-bg-brand-solid` (rgb(50,131,85)) — so dropping
- * them onto the drawer shows a visible rectangle. Recolouring the drawer to
- * match the asset would fix that one case and break another: the drawer turns
- * **red** when a scan fails, and a green-boxed illustration on a red card looks
- * broken rather than themed.
+ * The one transform it applies: the wallet illustrations ship with a solid
+ * #079455 background rect. That does not match the design-system token
+ * `--color-bg-brand-solid`, so dropping them onto the drawer shows a visible
+ * rectangle. Recolouring the drawer to match the asset would fix that one case
+ * and break another — the drawer turns **red** when a scan fails, and a
+ * green-boxed illustration on a red card looks broken rather than themed.
  *
- * So the background comes out and the token stays authoritative.
+ * So the ground comes out and the token stays authoritative. The remaining art
+ * is white line work, which then takes the colour of whatever card it sits on.
  *
  *   node scripts/build-screen-assets.mjs
  */
-import { readFile, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import sharp from "sharp";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
-const DIR = path.join(ROOT, "public/screen-assets/global-nav");
 
-/** The ground colour baked into the exports. */
-const GROUND = [7, 148, 85];
-/** Per-channel tolerance, to catch anti-aliased edge pixels of the same hue. */
-const TOLERANCE = 26;
+/** The solid ground baked into the wallet exports. */
+const GROUND = "#079455";
 
-const TARGETS = ["wallet-small.png", "wallet-large.png"];
+/**
+ * from  — path under references/build/
+ * to    — path under public/screen-assets/
+ * strip — remove a full-bleed background rect of GROUND
+ */
+const ASSETS = [
+    // Global nav
+    { from: "globalNav/wallet-normal.svg", to: "global-nav/wallet-small.svg", strip: true },
+    { from: "globalNav/waller-big.svg", to: "global-nav/wallet-large.svg", strip: true },
+    { from: "globalNav/golfbag.svg", to: "global-nav/golf-bag.svg" },
+    { from: "globalNav/reference-loggedout.png", to: "global-nav/reference-logged-out.png" },
+    { from: "globalNav/reference-cart-loggedin.png", to: "global-nav/reference-logged-in.png" },
 
-for (const file of TARGETS) {
-    const src = path.join(DIR, file);
-    const { data, info } = await sharp(await readFile(src)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    // How to log in
+    { from: "how-to-login/hero-logo.png", to: "how-to-login/hero-logo.png" },
+    { from: "how-to-login/01.png", to: "how-to-login/step-1-badge.png" },
+    { from: "how-to-login/02.png", to: "how-to-login/step-2-badge.png" },
+    { from: "how-to-login/03.png", to: "how-to-login/step-3-badge.png" },
+    { from: "how-to-login/01-image.png", to: "how-to-login/step-1-image.png" },
+    { from: "how-to-login/02-image.png", to: "how-to-login/step-2-image.png" },
+    { from: "how-to-login/03-image.png", to: "how-to-login/step-3-image.png" },
+    { from: "how-to-login/app store.png", to: "how-to-login/app-store-badges.png" },
+    { from: "how-to-login/reference.png", to: "how-to-login/reference.png" },
+];
 
-    let cleared = 0;
-    for (let i = 0; i < data.length; i += 4) {
-        const near =
-            Math.abs(data[i] - GROUND[0]) <= TOLERANCE &&
-            Math.abs(data[i + 1] - GROUND[1]) <= TOLERANCE &&
-            Math.abs(data[i + 2] - GROUND[2]) <= TOLERANCE;
-        if (near) {
-            data[i + 3] = 0;
-            cleared++;
-        }
+/**
+ * Drops the first full-bleed background rect matching the ground colour.
+ *
+ * Matched by *shape and colour together* — a rect spanning the full viewBox and
+ * filled with GROUND — so a same-coloured detail elsewhere in the artwork is
+ * left alone.
+ */
+const stripGround = (svg) => {
+    const viewBox = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
+    if (!viewBox) return { svg, removed: false };
+    const [, w, h] = viewBox;
+
+    const pattern = new RegExp(`<rect\\s+width="${w}"\\s+height="${h}"\\s+fill="${GROUND}"\\s*/>\\s*`, "i");
+    if (!pattern.test(svg)) return { svg, removed: false };
+
+    return { svg: svg.replace(pattern, ""), removed: true };
+};
+
+for (const asset of ASSETS) {
+    const src = path.join(ROOT, "references/build", asset.from);
+    const dest = path.join(ROOT, "public/screen-assets", asset.to);
+    await mkdir(path.dirname(dest), { recursive: true });
+
+    if (asset.strip) {
+        const { svg, removed } = stripGround(await readFile(src, "utf8"));
+        await writeFile(dest, svg);
+        console.log(`  ${asset.to}${removed ? "  (ground removed)" : "  (no ground rect found — check the export)"}`);
+    } else {
+        await copyFile(src, dest);
+        console.log(`  ${asset.to}`);
     }
-
-    const out = await sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } }).png().toBuffer();
-    await writeFile(src, out);
-
-    const pct = ((cleared / (info.width * info.height)) * 100).toFixed(0);
-    console.log(`  ${file}: cleared ${pct}% of pixels to transparent`);
 }
 
-console.log("\nWallet illustrations are now background-free and take the colour of whatever card they sit on.");
+console.log(`\n${ASSETS.length} assets written to public/screen-assets/`);

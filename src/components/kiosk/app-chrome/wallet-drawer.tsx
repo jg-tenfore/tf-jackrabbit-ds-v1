@@ -49,7 +49,7 @@ export const WalletDrawer = ({
             )}
         >
             <img
-                src={ASSET("wallet-small.png")}
+                src={ASSET("wallet-small.svg")}
                 alt=""
                 aria-hidden="true"
                 className={cx("h-[88px] w-[174px] object-contain", isScanning && "animate-pulse")}
@@ -127,7 +127,7 @@ export const SignInPrompt = ({ onHowToLogIn, className }: { onHowToLogIn?: () =>
                 )}
             </div>
 
-            <img src={ASSET("wallet-large.png")} alt="" aria-hidden="true" className="h-[208px] w-[174px] shrink-0 object-contain" />
+            <img src={ASSET("wallet-large.svg")} alt="" aria-hidden="true" className="h-[208px] w-[174px] shrink-0 object-contain" />
         </div>
     );
 };

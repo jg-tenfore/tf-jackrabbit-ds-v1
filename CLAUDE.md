@@ -89,12 +89,20 @@ into `public/screen-assets/<screen>/`, which Storybook serves in dev and copies
 into the static build. Reference them base-relative through `assetUrl()` —
 never with a leading slash, or they 404 on GitHub Pages.
 
-Some exports carry a baked-in background. The wallet illustrations shipped with
-a solid rgb(7,148,85) ground that does not match `--color-bg-brand-solid`, which
-showed as a visible rectangle. `npm run build-screen-assets` knocks it out to
-transparent rather than recolouring the drawer to match: the drawer turns **red**
-on a failed scan, and a green-boxed illustration on a red card looks broken
-rather than themed. The token stays authoritative; the asset adapts.
+`npm run build-screen-assets` copies from `references/build/` into
+`public/screen-assets/` — it never mutates in place, so it is idempotent and
+safe to re-run whenever an export is replaced. Add new assets to the `ASSETS`
+list in that script rather than copying by hand.
+
+Some exports carry a baked-in background. The wallet illustrations ship with a
+solid `#079455` ground that does not match `--color-bg-brand-solid`, which shows
+as a visible rectangle. The script strips it rather than recolouring the drawer
+to match: the drawer turns **red** on a failed scan, and a green-boxed
+illustration on a red card looks broken rather than themed. The token stays
+authoritative; the asset adapts.
+
+Prefer SVG for line art and UI marks — it stays crisp when `KioskFrame` scales
+the canvas onto a 1080px panel, where a 1x raster would soften.
 
 ## KioskKey span
 

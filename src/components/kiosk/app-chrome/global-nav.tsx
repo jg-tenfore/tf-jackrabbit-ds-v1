@@ -82,7 +82,7 @@ export const GlobalNav = ({
                     {hasOrder && (
                         <div className="flex items-center gap-8">
                             <div className="relative flex items-center gap-3">
-                                <img src={ASSET("golf-bag.png")} alt="" aria-hidden="true" className="h-[118px] w-[52px] object-contain" />
+                                <img src={ASSET("golf-bag.svg")} alt="" aria-hidden="true" className="h-[118px] w-[52px] object-contain" />
                                 <span
                                     className="absolute top-3 left-9 flex size-9 items-center justify-center rounded-full bg-error-solid text-base font-bold text-white"
                                     aria-label={`${cartCount} items in order`}
