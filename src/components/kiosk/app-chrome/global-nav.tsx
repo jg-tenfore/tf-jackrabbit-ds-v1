@@ -104,18 +104,18 @@ export const GlobalNav = ({
                                 <div className="relative flex items-end gap-2">
                                     <img src={ASSET("golf-bag.svg")} alt="" aria-hidden="true" className="h-[112px] w-[52px] object-contain" />
                                     <span
-                                        className="absolute top-2 left-8 flex size-9 items-center justify-center rounded-full bg-error-solid text-lg font-bold text-white"
+                                        className="absolute top-2 left-8 flex size-9 items-center justify-center rounded-full bg-error-solid text-[16px] font-bold text-white"
                                         aria-label={`${cartCount} items in order`}
                                     >
                                         {cartCount}
                                     </span>
-                                    <span className="pb-2 text-4xl font-bold text-primary tabular-nums">${cartTotal.toFixed(2)}</span>
+                                    <span className="pb-2 text-[32px] font-bold text-primary tabular-nums">${cartTotal.toFixed(2)}</span>
                                 </div>
 
                                 <button
                                     type="button"
                                     onClick={onViewOrder}
-                                    className="h-16 shrink-0 rounded-lg bg-brand-solid px-8 text-xl font-bold whitespace-nowrap text-white transition duration-100 ease-linear active:bg-brand-solid_hover"
+                                    className="h-16 shrink-0 rounded-lg bg-brand-solid px-8 text-[18px] font-bold whitespace-nowrap text-white transition duration-100 ease-linear active:bg-brand-solid_hover"
                                 >
                                     View My Order
                                 </button>
@@ -125,7 +125,7 @@ export const GlobalNav = ({
                         <button
                             type="button"
                             onClick={handleStartOver}
-                            className="h-[52px] w-full rounded-lg text-xl text-tertiary ring-1 ring-border-primary ring-inset transition duration-100 ease-linear active:bg-secondary"
+                            className="h-[52px] w-full rounded-lg text-[18px] text-tertiary ring-1 ring-border-primary ring-inset transition duration-100 ease-linear active:bg-secondary"
                         >
                             Start Over
                         </button>

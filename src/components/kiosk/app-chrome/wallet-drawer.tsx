@@ -61,10 +61,10 @@ export const WalletDrawer = ({
                     className={cx("h-[88px] w-[174px] shrink-0 object-contain", isScanning && "animate-pulse")}
                 />
             )}
-            <span className="text-base leading-tight text-white/90">
+            <span className="text-[14px] leading-tight text-white/90">
                 {isScanning ? "Reading your wallet…" : hasError ? "Try again" : "Tap your wallet below"}
             </span>
-            <span className="text-3xl leading-none font-bold">{hasError ? "Not recognized" : "Log In"}</span>
+            <span className="text-[27px] leading-none font-bold">{hasError ? "Not recognized" : "Log In"}</span>
             {/* Always points down. It is not a disclosure triangle — it points at
                 the physical scanner below the screen, which is where "tap your
                 wallet below" is telling the user to reach. */}
@@ -86,11 +86,11 @@ export const SignedInCard = ({ firstName, onSignOut, className }: { firstName: s
         <button
             type="button"
             onClick={onSignOut}
-            className="h-20 w-full rounded-lg bg-error-solid text-2xl font-semibold text-white transition duration-100 ease-linear active:bg-error-solid_hover"
+            className="h-20 w-full rounded-lg bg-error-solid text-[21px] font-semibold text-white transition duration-100 ease-linear active:bg-error-solid_hover"
         >
             Log out
         </button>
-        <span className="text-2xl font-bold text-primary">{firstName}</span>
+        <span className="text-[21px] font-bold text-primary">{firstName}</span>
     </div>
 );
 
@@ -132,10 +132,10 @@ export const SignInPrompt = ({
             aria-live="polite"
         >
             <div className="flex min-w-0 flex-col gap-2">
-                <h2 className="text-[40px] leading-none font-bold">
+                <h2 className="text-[36px] leading-none font-bold">
                     {isScanning ? "Reading your wallet…" : hasError ? "We couldn't read that" : "Scan your code"}
                 </h2>
-                <p className="text-2xl text-white/95">
+                <p className="text-[21px] text-white/95">
                     {isScanning ? "Hold your pass steady" : hasError ? "Hold the pass flat and try again" : "Use the scanner below to log in"}
                 </p>
 
@@ -143,12 +143,12 @@ export const SignInPrompt = ({
                     <>
                         {/* Three on the first line, one on the second, as drawn —
                             a plain wrap would break after "Make Purchases". */}
-                        <div className="mt-1 flex gap-x-8 text-base whitespace-nowrap text-white/90">
+                        <div className="mt-1 flex gap-x-8 text-[14px] whitespace-nowrap text-white/90">
                             <span>Reserve a table</span>
                             <span>Book a tee time</span>
                             <span>Make Purchases</span>
                         </div>
-                        <div className="text-base whitespace-nowrap text-white/90">Access to 500+ courses nationwide</div>
+                        <div className="text-[14px] whitespace-nowrap text-white/90">Access to 500+ courses nationwide</div>
                     </>
                 )}
 
@@ -156,7 +156,7 @@ export const SignInPrompt = ({
                     <button
                         type="button"
                         onClick={onHowToLogIn}
-                        className="mt-3 h-14 w-fit rounded-lg px-6 text-lg font-bold ring-1 ring-white ring-inset transition duration-100 ease-linear active:bg-white/15"
+                        className="mt-3 h-14 w-fit rounded-lg px-6 text-[16px] font-bold ring-1 ring-white ring-inset transition duration-100 ease-linear active:bg-white/15"
                     >
                         How do I Log In?
                     </button>
