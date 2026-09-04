@@ -82,15 +82,28 @@ export const WalletDrawer = ({
  * control on the rail and it sits where the user's thumb already is.
  */
 export const SignedInCard = ({ firstName, onSignOut, className }: { firstName: string; onSignOut?: () => void; className?: string }) => (
-    <div className={cx("flex h-[214px] w-[174px] flex-col items-center justify-center gap-4 rounded-t-2xl bg-primary px-3 ring-1 ring-border-secondary", className)}>
+    // Measured off the logged-in reference (1:1 with this canvas — its card is
+    // 174 wide): 174x100, fully rounded, sitting inside the rail rather than
+    // overhanging it the way the wallet drawer does.
+    //
+    // That difference is the point. The drawer is tall and overhangs because it
+    // is advertising an action the user has not taken yet. Once signed in there
+    // is nothing left to advertise, so the card shrinks into the rail and stops
+    // pulling the eye.
+    <div
+        className={cx(
+            "flex h-[100px] w-[174px] flex-col items-center justify-center gap-2 rounded-2xl bg-primary px-3 ring-1 ring-border-secondary",
+            className,
+        )}
+    >
         <button
             type="button"
             onClick={onSignOut}
-            className="h-20 w-full rounded-lg bg-error-solid text-[21px] font-semibold text-white transition duration-100 ease-linear active:bg-error-solid_hover"
+            className="h-[34px] rounded-md bg-error-solid px-4 text-[13px] font-semibold text-white transition duration-100 ease-linear active:bg-error-solid_hover"
         >
             Log out
         </button>
-        <span className="text-[21px] font-bold text-primary">{firstName}</span>
+        <span className="text-[18px] font-bold text-primary">{firstName}</span>
     </div>
 );
 
