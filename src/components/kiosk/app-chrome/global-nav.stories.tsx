@@ -112,20 +112,6 @@ export const LoggedInWithItems: Story = {
     render: (args) => <NavHarness label="Screen area" footer={<GlobalNav {...args} />} />,
 };
 
-/** Live scan. Tap the drawer to run it: reading → recognised or not. */
-export const ScanInteractive: Story = {
-    args: {},
-    decorators: [withKioskSession(), withKioskFrame()],
-    render: (args) => <NavHarness label="Tap the green drawer to run the simulated scan" footer={<GlobalNav {...args} onHowToLogIn={() => {}} />} />,
-};
-
-/** Unrecognised pass — the drawer and prompt both take the error tone. */
-export const ScanNotRecognized: Story = {
-    args: { isPromptExpanded: true },
-    decorators: [withKioskSession({ defaultWalletCode: "TF-NOT-A-REAL-PASS" }), withKioskFrame()],
-    render: (args) => <NavHarness label="Tap the drawer to trigger the failure path" footer={<GlobalNav {...args} onHowToLogIn={() => {}} />} />,
-};
-
 /**
  * Every state stacked on one black surface, for comparing them against each
  * other the way the annotated export does.
