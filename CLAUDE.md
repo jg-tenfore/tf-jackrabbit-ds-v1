@@ -112,6 +112,17 @@ that combination previously applied `flex-basis: 0`, which let the default
 shrink collapse a button to min-content and wrap its label one character per
 line. It is now explicitly opted out.
 
+## Raster assets need 2x
+
+A raster needs at least **2x its CSS render width**. Kiosk panels are HiDPI, and
+`KioskFrame` then transform-scales the 750px canvas up to 1080px on hardware —
+so a 1x export is soft twice over. `npm run build-screen-assets` audits every
+raster with a `renderWidth` and prints the exact dimensions to re-export at.
+Upscaling does not help; the pixels are not there.
+
+**Prefer SVG for line art and UI marks** — it has no density to get wrong, and
+it survives the canvas scale cleanly.
+
 ## Global nav geometry
 
 The rail is fixed chrome, not a component that flows with content:

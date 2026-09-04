@@ -91,24 +91,24 @@ export const GlobalNav = ({
                     )}
                 </div>
 
-                <div className="flex min-h-[122px] flex-col justify-center gap-4 border-t border-secondary py-[21px] pr-[248px] pl-12">
+                <div className="flex min-h-[122px] flex-col justify-center gap-3 border-t border-secondary py-5 pr-[248px] pl-12">
                     {hasOrder && (
-                        <div className="flex items-center gap-8">
+                        <div className="flex items-center gap-6">
                             <div className="relative flex items-center gap-3">
-                                <img src={ASSET("golf-bag.svg")} alt="" aria-hidden="true" className="h-[118px] w-[52px] object-contain" />
+                                <img src={ASSET("golf-bag.svg")} alt="" aria-hidden="true" className="h-[70px] w-[31px] object-contain" />
                                 <span
-                                    className="absolute top-3 left-9 flex size-9 items-center justify-center rounded-full bg-error-solid text-base font-bold text-white"
+                                    className="absolute -top-1 left-5 flex size-7 items-center justify-center rounded-full bg-error-solid text-sm font-bold text-white"
                                     aria-label={`${cartCount} items in order`}
                                 >
                                     {cartCount}
                                 </span>
-                                <span className="text-4xl font-bold text-primary tabular-nums">${cartTotal.toFixed(2)}</span>
+                                <span className="text-3xl font-bold text-primary tabular-nums">${cartTotal.toFixed(2)}</span>
                             </div>
 
                             <button
                                 type="button"
                                 onClick={onViewOrder}
-                                className="h-20 shrink-0 rounded-lg bg-brand-solid px-8 text-2xl font-bold whitespace-nowrap text-white transition duration-100 ease-linear active:bg-brand-solid_hover"
+                                className="h-14 shrink-0 rounded-lg bg-brand-solid px-7 text-lg font-bold whitespace-nowrap text-white transition duration-100 ease-linear active:bg-brand-solid_hover"
                             >
                                 View My Order
                             </button>
@@ -118,7 +118,7 @@ export const GlobalNav = ({
                     <button
                         type="button"
                         onClick={handleStartOver}
-                        className="h-20 w-full rounded-lg text-2xl text-tertiary ring-1 ring-border-primary ring-inset transition duration-100 ease-linear active:bg-secondary"
+                        className="h-14 w-full rounded-lg text-lg text-tertiary ring-1 ring-border-primary ring-inset transition duration-100 ease-linear active:bg-secondary"
                     >
                         Start Over
                     </button>

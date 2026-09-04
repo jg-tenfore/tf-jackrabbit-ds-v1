@@ -10,7 +10,11 @@ const meta = {
     title: "App Chrome/Global Nav",
     component: GlobalNav,
     parameters: {
-        layout: "centered",
+        // "centered" pads and centres the story, which at 750x1298 overflows the
+        // preview in both axes. "fullscreen" hands over the whole iframe, and
+        // the default kiosk viewport is exactly 750x1298, so the frame fits with
+        // no padding and nothing to scroll.
+        layout: "fullscreen",
         // Dark surround so the frame edge is visible too — the rail is the
         // thing under test, and it should not blend into the Storybook canvas.
         backgrounds: { value: "ink" },

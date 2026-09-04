@@ -44,16 +44,15 @@ const ASSETS = [
     // The exported step layout, used whole rather than rebuilt from parts.
     // Exported with a 2px black artboard border on every edge, which would
     // otherwise draw a hairline box across the middle of the screen.
-    { from: "how-to-login/howtologin-screen .png", to: "how-to-login/steps.png", cropBorder: 2 },
+    { from: "how-to-login/howtologin-screen .png", to: "how-to-login/steps.png", cropBorder: 2, renderWidth: 750 },
     { from: "how-to-login/hero-logo.svg", to: "how-to-login/hero-logo.svg" },
-    { from: "how-to-login/hero-logo.png", to: "how-to-login/hero-logo.png" },
     { from: "how-to-login/01.png", to: "how-to-login/step-1-badge.png" },
     { from: "how-to-login/02.png", to: "how-to-login/step-2-badge.png" },
     { from: "how-to-login/03.png", to: "how-to-login/step-3-badge.png" },
     { from: "how-to-login/01-image.png", to: "how-to-login/step-1-image.png" },
     { from: "how-to-login/02-image.png", to: "how-to-login/step-2-image.png" },
     { from: "how-to-login/03-image.png", to: "how-to-login/step-3-image.png" },
-    { from: "how-to-login/app store.png", to: "how-to-login/app-store-badges.png" },
+    { from: "how-to-login/app store.png", to: "how-to-login/app-store-badges.png", renderWidth: 274 },
     { from: "how-to-login/reference.png", to: "how-to-login/reference.png" },
 ];
 
@@ -98,3 +97,40 @@ for (const asset of ASSETS) {
 }
 
 console.log(`\n${ASSETS.length} assets written to public/screen-assets/`);
+
+/**
+ * Pixel-density audit.
+ *
+ * A raster needs at least 2x its CSS render width to stay sharp: kiosk panels
+ * are HiDPI, and on top of that `KioskFrame` transform-scales the 750px canvas
+ * up to 1080px on real hardware. An asset authored at 1x is therefore soft
+ * twice over — which is exactly what "compressed-looking" imagery is.
+ *
+ * This cannot be fixed by upscaling; the pixels are not there. The only fix is
+ * re-exporting at 2x. So this reports rather than silently passing, and gives
+ * the exact dimensions to ask for.
+ */
+const audit = [];
+for (const asset of ASSETS) {
+    if (!asset.renderWidth) continue;
+    const dest = path.join(ROOT, "public/screen-assets", asset.to);
+    const { width, height } = await sharp(dest).metadata();
+    const density = width / asset.renderWidth;
+    if (density < 2) {
+        audit.push({
+            asset: asset.to,
+            have: `${width}x${height}`,
+            density: `${density.toFixed(2)}x`,
+            need: `${asset.renderWidth * 2}x${Math.round((height / width) * asset.renderWidth * 2)}`,
+        });
+    }
+}
+
+if (audit.length) {
+    console.log("\nUNDER 2x — these will look soft on a HiDPI panel. Re-export at:");
+    for (const a of audit) {
+        console.log(`  ${a.asset.padEnd(38)} have ${a.have.padEnd(10)} ${a.density.padEnd(6)} -> need ${a.need}`);
+    }
+    console.log("\nPrefer SVG for line art and UI marks; it has no density to get wrong.");
+}
+
