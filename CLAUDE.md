@@ -112,6 +112,27 @@ that combination previously applied `flex-basis: 0`, which let the default
 shrink collapse a button to min-content and wrap its label one character per
 line. It is now explicitly opted out.
 
+## Global nav geometry
+
+The rail is fixed chrome, not a component that flows with content:
+
+- **min 122px** tall (the collapsed state lands exactly on 122)
+- **z-50** with an upward shadow — it always sits above screen content, and a
+  shadow is what makes that legible on a white page where a border would read
+  as a divider rather than a layer
+- **full-bleed**: 100% width, no horizontal scrolling anywhere in the canvas
+- expanded sign-in band is **225px** (`promptHeight` prop; the annotated export
+  measures nearer 304 — compare the two stories before settling it)
+
+Do not put `overflow-x-hidden` on the nav itself. CSS promotes the other axis to
+`auto` when one is `hidden`, which clips the drawer's upward overhang.
+`KioskScreen` and the frame canvas already prevent horizontal scrolling.
+
+App Chrome stories deliberately black out the screen body. The rail's surfaces
+are white and brand green, so on a white screen its top edge, the drawer
+overhang and the identity card ring all disappear. Black makes the silhouette
+readable. It is a test surface, not the product.
+
 ## Overlays: two kinds, and the difference matters
 
 There are exactly two overlay components, and choosing between them is a

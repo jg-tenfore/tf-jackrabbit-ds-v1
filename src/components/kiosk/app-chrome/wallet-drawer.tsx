@@ -90,44 +90,77 @@ export const SignedInCard = ({ firstName, onSignOut, className }: { firstName: s
  * Full width, not a card: it is the drawer opening out, so it reads as the same
  * surface growing rather than a new object appearing on top of the screen.
  */
-export const SignInPrompt = ({ onHowToLogIn, className }: { onHowToLogIn?: () => void; className?: string }) => {
+export const SignInPrompt = ({
+    onHowToLogIn,
+    /**
+     * Band height. Defaults to the specified 225px.
+     *
+     * Measured off the annotated export the panel is nearer 300px, and the
+     * content is laid out for that proportion — at 225 it is legible but tight.
+     * Exposed as a prop so both can be compared rather than one being asserted.
+     */
+    height = 225,
+    className,
+}: {
+    onHowToLogIn?: () => void;
+    height?: number;
+    className?: string;
+}) => {
     const { scanStatus } = useKioskSession();
     const isScanning = scanStatus === "scanning";
     const hasError = scanStatus === "not-found" || scanStatus === "expired";
 
     return (
         <div
-            className={cx("flex w-full items-center justify-between gap-6 px-12 py-10 text-white", hasError ? "bg-error-solid" : "bg-brand-solid", className)}
+            className={cx(
+                "flex w-full items-center justify-between gap-8 pr-12 pl-16 text-white",
+                hasError ? "bg-error-solid" : "bg-brand-solid",
+                className,
+            )}
+            style={{ height }}
             role="status"
             aria-live="polite"
         >
-            <div className="flex flex-col gap-3">
-                <h2 className="text-5xl font-bold">{isScanning ? "Reading your wallet…" : hasError ? "We couldn't read that" : "Scan your code"}</h2>
-                <p className="text-xl text-white/90">
+            <div className="flex min-w-0 flex-col gap-2">
+                <h2 className="text-[40px] leading-none font-bold">
+                    {isScanning ? "Reading your wallet…" : hasError ? "We couldn't read that" : "Scan your code"}
+                </h2>
+                <p className="text-2xl text-white/95">
                     {isScanning ? "Hold your pass steady" : hasError ? "Hold the pass flat and try again" : "Use the scanner below to log in"}
                 </p>
 
                 {!isScanning && !hasError && (
-                    <div className="mt-1 flex max-w-[420px] flex-wrap gap-x-8 gap-y-1 text-base text-white/85">
-                        <span>Reserve a table</span>
-                        <span>Book a tee time</span>
-                        <span>Make Purchases</span>
-                        <span>Access to 500+ courses nationwide</span>
-                    </div>
+                    <>
+                        {/* Three on the first line, one on the second, as drawn —
+                            a plain wrap would break after "Make Purchases". */}
+                        <div className="mt-1 flex gap-x-8 text-base whitespace-nowrap text-white/90">
+                            <span>Reserve a table</span>
+                            <span>Book a tee time</span>
+                            <span>Make Purchases</span>
+                        </div>
+                        <div className="text-base whitespace-nowrap text-white/90">Access to 500+ courses nationwide</div>
+                    </>
                 )}
 
                 {onHowToLogIn && (
                     <button
                         type="button"
                         onClick={onHowToLogIn}
-                        className="mt-3 h-16 w-fit rounded-lg px-6 text-lg font-bold ring-1 ring-white/80 ring-inset transition duration-100 ease-linear active:bg-white/15"
+                        className="mt-3 h-14 w-fit rounded-lg px-6 text-lg font-bold ring-1 ring-white ring-inset transition duration-100 ease-linear active:bg-white/15"
                     >
                         How do I Log In?
                     </button>
                 )}
             </div>
 
-            <img src={ASSET("wallet-large.svg")} alt="" aria-hidden="true" className="h-[208px] w-[174px] shrink-0 object-contain" />
+            <img
+                src={ASSET("wallet-large.svg")}
+                alt=""
+                aria-hidden="true"
+                // Fills the band's height rather than a fixed size, so it stays
+                // proportional whichever height the panel is set to.
+                className="h-[64%] w-auto shrink-0 object-contain"
+            />
         </div>
     );
 };

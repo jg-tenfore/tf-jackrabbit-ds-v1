@@ -35,12 +35,23 @@ export const GlobalNav = ({
     onViewOrder,
     onStartOver,
     onHowToLogIn,
+    /**
+     * Whether an order exists at all. Defaults to "there is something in it",
+     * but must be settable independently: the reference draws the bag with a 0
+     * badge and $0.00 for an order that has been started and is still empty,
+     * and count/total alone cannot tell that apart from having no order.
+     */
+    hasOrder: hasOrderProp,
     /** Force the expanded prompt open — for stories and for the scan step. */
     isPromptExpanded,
+    /** Height of the expanded sign-in band. See SignInPrompt. */
+    promptHeight,
     className,
 }: {
     cartCount?: number;
     cartTotal?: number;
+    hasOrder?: boolean;
+    promptHeight?: number;
     onViewOrder?: () => void;
     onStartOver?: () => void;
     onHowToLogIn?: () => void;
@@ -52,10 +63,9 @@ export const GlobalNav = ({
 
     const isExpanded = isPromptExpanded ?? isExpandedInternal;
     const isAuthenticated = mode === "authenticated" && member;
-    // The bag shows whenever an order exists, including at zero — the reference
-    // draws "$0.00" with a 0 badge, because a started order is a state the user
-    // needs to see even before anything is in it.
-    const hasOrder = cartCount > 0 || cartTotal > 0;
+    // The bag shows whenever an order exists, including at zero — a started
+    // order is a state the user needs to see before anything is in it.
+    const hasOrder = hasOrderProp ?? (cartCount > 0 || cartTotal > 0);
 
     const handleStartOver = () => {
         setIsExpandedInternal(false);
@@ -64,8 +74,11 @@ export const GlobalNav = ({
     };
 
     return (
-        <nav aria-label="Kiosk navigation" className={cx("w-full", className)}>
-            {isExpanded && !isAuthenticated && <SignInPrompt onHowToLogIn={onHowToLogIn} />}
+        // z-50 + a shadow cast upward: the rail always sits above screen
+        // content, and the shadow is what makes that legible when the content
+        // behind it is white — a border alone reads as a divider, not a layer.
+        <nav aria-label="Kiosk navigation" className={cx("relative z-50 w-full max-w-full shadow-[0_-4px_16px_rgba(0,0,0,0.08)]", className)}>
+            {isExpanded && !isAuthenticated && <SignInPrompt onHowToLogIn={onHowToLogIn} height={promptHeight} />}
 
             <div className="relative bg-primary">
                 {/* The drawer overhangs the rail, so it is absolutely placed and
@@ -78,7 +91,7 @@ export const GlobalNav = ({
                     )}
                 </div>
 
-                <div className="flex flex-col gap-4 border-t border-secondary py-6 pr-[248px] pl-12">
+                <div className="flex min-h-[122px] flex-col justify-center gap-4 border-t border-secondary py-[21px] pr-[248px] pl-12">
                     {hasOrder && (
                         <div className="flex items-center gap-8">
                             <div className="relative flex items-center gap-3">

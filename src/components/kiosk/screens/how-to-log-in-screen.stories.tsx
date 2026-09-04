@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { HowToLogInScreen } from "@/components/kiosk/screens/how-to-log-in-screen";
-import { KioskFooterBar } from "@/components/kiosk/nav/kiosk-footer-bar";
+import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { assetUrl } from "@/utils/asset-url";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
@@ -32,7 +32,7 @@ export const Default: Story = {
     args: {},
     decorators: [withKioskSession(), withKioskFrame()],
     render: (args) => (
-        <KioskScreen footer={<KioskFooterBar />}>
+        <KioskScreen footer={<GlobalNav />}>
             <HowToLogInScreen {...args} onDismiss={() => {}} />
         </KioskScreen>
     ),
@@ -47,7 +47,7 @@ export const ReferenceOverlay: Story = {
     args: {},
     decorators: [withKioskSession(), withKioskFrame({ overlaySrc: assetUrl("screen-assets/how-to-login/reference.png") })],
     render: (args) => (
-        <KioskScreen footer={<KioskFooterBar />}>
+        <KioskScreen footer={<GlobalNav />}>
             <HowToLogInScreen {...args} onDismiss={() => {}} />
         </KioskScreen>
     ),

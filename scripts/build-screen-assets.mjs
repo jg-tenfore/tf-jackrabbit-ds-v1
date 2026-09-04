@@ -20,6 +20,7 @@
  */
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import sharp from "sharp";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 
@@ -40,6 +41,11 @@ const ASSETS = [
     { from: "globalNav/reference-cart-loggedin.png", to: "global-nav/reference-logged-in.png" },
 
     // How to log in
+    // The exported step layout, used whole rather than rebuilt from parts.
+    // Exported with a 2px black artboard border on every edge, which would
+    // otherwise draw a hairline box across the middle of the screen.
+    { from: "how-to-login/howtologin-screen .png", to: "how-to-login/steps.png", cropBorder: 2 },
+    { from: "how-to-login/hero-logo.svg", to: "how-to-login/hero-logo.svg" },
     { from: "how-to-login/hero-logo.png", to: "how-to-login/hero-logo.png" },
     { from: "how-to-login/01.png", to: "how-to-login/step-1-badge.png" },
     { from: "how-to-login/02.png", to: "how-to-login/step-2-badge.png" },
@@ -74,7 +80,14 @@ for (const asset of ASSETS) {
     const dest = path.join(ROOT, "public/screen-assets", asset.to);
     await mkdir(path.dirname(dest), { recursive: true });
 
-    if (asset.strip) {
+    if (asset.cropBorder) {
+        const n = asset.cropBorder;
+        const { width, height } = await sharp(src).metadata();
+        await sharp(src)
+            .extract({ left: n, top: n, width: width - n * 2, height: height - n * 2 })
+            .toFile(dest);
+        console.log(`  ${asset.to}  (cropped ${n}px artboard border)`);
+    } else if (asset.strip) {
         const { svg, removed } = stripGround(await readFile(src, "utf8"));
         await writeFile(dest, svg);
         console.log(`  ${asset.to}${removed ? "  (ground removed)" : "  (no ground rect found — check the export)"}`);
