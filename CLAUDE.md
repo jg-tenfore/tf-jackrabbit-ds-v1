@@ -132,6 +132,8 @@ The rail is fixed chrome, not a component that flows with content:
   shadow is what makes that legible on a white page where a border would read
   as a divider rather than a layer
 - **full-bleed**: 100% width, no horizontal scrolling anywhere in the canvas
+- wallet drawer / identity card is **107px** wide; the rail's right padding
+  (`pr-[131px]`) reserves that plus a gap, so they must move together
 - expanded sign-in band is **225px** (`promptHeight` prop; the annotated export
   measures nearer 304 — compare the two stories before settling it)
 

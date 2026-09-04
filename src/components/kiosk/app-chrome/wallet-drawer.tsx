@@ -43,7 +43,7 @@ export const WalletDrawer = ({
             aria-expanded={isExpanded}
             aria-label="Tap your wallet to log in"
             className={cx(
-                "flex w-[232px] flex-col items-center justify-center gap-1 px-6 text-white transition duration-100 ease-linear",
+                "flex w-[107px] flex-col items-center justify-center gap-1 px-2 text-center text-white transition duration-100 ease-linear",
                 // Expanded, the panel above already carries a large wallet
                 // illustration; repeating it in the drawer would say the same
                 // thing twice in the same glance. Collapsed, the illustration is
@@ -58,17 +58,17 @@ export const WalletDrawer = ({
                     src={ASSET("wallet-small.svg")}
                     alt=""
                     aria-hidden="true"
-                    className={cx("h-[88px] w-[174px] object-contain", isScanning && "animate-pulse")}
+                    className={cx("h-auto w-full object-contain", isScanning && "animate-pulse")}
                 />
             )}
-            <span className="text-sm text-white/90">
+            <span className="text-[11px] leading-tight text-white/90">
                 {isScanning ? "Reading your wallet…" : hasError ? "Try again" : "Tap your wallet below"}
             </span>
-            <span className="text-2xl leading-none font-bold">{hasError ? "Not recognized" : "Log In"}</span>
+            <span className="text-lg leading-none font-bold">{hasError ? "Not recognized" : "Log In"}</span>
             {/* Always points down. It is not a disclosure triangle — it points at
                 the physical scanner below the screen, which is where "tap your
                 wallet below" is telling the user to reach. */}
-            <ChevronDown className="size-7" aria-hidden="true" />
+            <ChevronDown className="size-5" aria-hidden="true" />
         </button>
     );
 };
@@ -82,15 +82,15 @@ export const WalletDrawer = ({
  * control on the rail and it sits where the user's thumb already is.
  */
 export const SignedInCard = ({ firstName, onSignOut, className }: { firstName: string; onSignOut?: () => void; className?: string }) => (
-    <div className={cx("flex w-[232px] flex-col items-center gap-1.5 rounded-t-2xl bg-primary px-4 pt-3 pb-3 ring-1 ring-border-secondary", className)}>
+    <div className={cx("flex w-[107px] flex-col items-center gap-1.5 rounded-t-2xl bg-primary px-2 pt-3 pb-3 ring-1 ring-border-secondary", className)}>
         <button
             type="button"
             onClick={onSignOut}
-            className="h-12 w-full rounded-lg bg-error-solid text-lg font-semibold text-white transition duration-100 ease-linear active:bg-error-solid_hover"
+            className="h-11 w-full rounded-lg bg-error-solid text-sm font-semibold text-white transition duration-100 ease-linear active:bg-error-solid_hover"
         >
             Log out
         </button>
-        <span className="text-lg font-bold text-primary">{firstName}</span>
+        <span className="text-base font-bold text-primary">{firstName}</span>
     </div>
 );
 

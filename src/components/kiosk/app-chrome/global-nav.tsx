@@ -91,7 +91,7 @@ export const GlobalNav = ({
                     )}
                 </div>
 
-                <div className="flex min-h-[122px] flex-col justify-center gap-3 border-t border-secondary py-5 pr-[248px] pl-12">
+                <div className="flex min-h-[122px] flex-col justify-center gap-3 border-t border-secondary py-5 pr-[131px] pl-12">
                     {hasOrder && (
                         <div className="flex items-center gap-6">
                             <div className="relative flex items-center gap-3">
