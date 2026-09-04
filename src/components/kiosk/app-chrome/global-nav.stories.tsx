@@ -4,7 +4,6 @@ import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { WelcomeNav } from "@/components/kiosk/app-chrome/welcome-nav";
 import { MEMBERS } from "@/data/members";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
-import { assetUrl } from "@/utils/asset-url";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
 const meta = {
@@ -135,17 +134,6 @@ export const WelcomeScreen: Story = {
     render: () => (
         <KioskScreen className="bg-black" footer={<WelcomeNav onStartOrder={() => {}} onJoinWaitlist={() => {}} />}>
             <div className="flex h-full items-center justify-center p-16 text-center text-[16px] text-white/40">Hero area</div>
-        </KioskScreen>
-    ),
-};
-
-/** Pixel diff against the export, which is @2x (1500x800) of this canvas. */
-export const WelcomeScreenReferenceOverlay: Story = {
-    args: {},
-    decorators: [withKioskSession(), withKioskFrame({ overlaySrc: assetUrl("screen-assets/global-nav/reference-welcome.png") })],
-    render: () => (
-        <KioskScreen footer={<WelcomeNav onStartOrder={() => {}} onJoinWaitlist={() => {}} />}>
-            <div className="h-full" />
         </KioskScreen>
     ),
 };

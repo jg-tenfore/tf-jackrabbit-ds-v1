@@ -9,7 +9,9 @@ const meta = {
     title: "Kiosk Core/Keyboard/Numeric Keypad",
     component: NumericKeypad,
     parameters: {
-        layout: "centered",
+        // "centered" pads the story; at the 750px kiosk viewport that padding
+        // becomes 32px of horizontal overflow on a panel that cannot scroll.
+        layout: "fullscreen",
         docs: {
             description: {
                 component: `Separate from the keyboard's numeric layout because it is a different *ergonomic* proposition, not just a different key set. Three columns at 750px gives a ${maxKeyWidthForColumns(3)}px key (${pxToMm(maxKeyWidthForColumns(3)).toFixed(0)}mm) — roughly twelve times the target area of a QWERTY key in the same screen space. Digits run phone-style (123 on top) rather than calculator-style, because the numbers entered here come off a phone screen or a printed card.`,

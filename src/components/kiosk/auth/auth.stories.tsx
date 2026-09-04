@@ -14,7 +14,10 @@ const meta = {
     title: "Kiosk Core/Authentication/Scan Prompt",
     component: ScanPrompt,
     parameters: {
-        layout: "centered",
+        // "centered" wraps the story in a padded box. At the kiosk viewport
+        // (750x1298) a full-canvas frame then overflows by exactly that padding
+        // — 32px — and the preview scrolls sideways on a panel that cannot.
+        layout: "fullscreen",
         docs: {
             description: {
                 component:

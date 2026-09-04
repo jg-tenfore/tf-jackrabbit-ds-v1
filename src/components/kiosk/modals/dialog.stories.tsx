@@ -13,7 +13,10 @@ const meta = {
     title: "Kiosk Core/Overlays/Dialog (card)",
     component: KioskDialog,
     parameters: {
-        layout: "centered",
+        // "centered" wraps the story in a padded box. At the kiosk viewport
+        // (750x1298) a full-canvas frame then overflows by exactly that padding
+        // — 32px — and the preview scrolls sideways on a panel that cannot.
+        layout: "fullscreen",
         docs: {
             description: {
                 component: `A **card overlay**: a rounded card that sits *on* the current screen. The page stays visible around and beneath it, including the persistent footer rail, so the user can see what they were doing and that they have not left it.

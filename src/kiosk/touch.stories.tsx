@@ -7,7 +7,9 @@ import { cx } from "@/utils/cx";
 const meta = {
     title: "Foundations/Touch Targets",
     parameters: {
-        layout: "centered",
+        // "centered" pads the story; at the 750px kiosk viewport that padding
+        // becomes 32px of horizontal overflow on a panel that cannot scroll.
+        layout: "fullscreen",
         docs: {
             description: {
                 component:

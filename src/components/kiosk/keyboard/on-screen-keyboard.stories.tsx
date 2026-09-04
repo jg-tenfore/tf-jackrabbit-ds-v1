@@ -8,7 +8,9 @@ const meta = {
     title: "Kiosk Core/Keyboard/On-Screen Keyboard",
     component: OnScreenKeyboard,
     parameters: {
-        layout: "centered",
+        // "centered" pads the story; at the 750px kiosk viewport that padding
+        // becomes 32px of horizontal overflow on a panel that cannot scroll.
+        layout: "fullscreen",
         docs: {
             description: {
                 component: `The kiosk has no physical keyboard, so every text entry point drives this. Layouts are data (\`layouts.ts\`), not markup. Every key is a \`KioskKey\`, so target sizing is decided in one place — the default \`md\` key is ${KEY_SIZES.md}px (${pxToMm(KEY_SIZES.md).toFixed(1)}mm on the reference panel), which is precisely the widest key that fits a 10-column row edge to edge at 750px. Rows always consume the full width, because leftover horizontal space is wasted target area.`,

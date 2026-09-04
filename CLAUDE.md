@@ -61,6 +61,15 @@ verified by `npm run shoot` instead — a snapshot on class strings would pass
 through every defect that harness has actually caught, while making refactors
 expensive.
 
+## Story layout
+
+Kiosk stories must use `layout: "fullscreen"`, never `"centered"`. Centered wraps
+the story in a padded box, and at the 750x1298 kiosk viewport that padding
+becomes exactly 32px of horizontal overflow — the preview scrolls sideways on a
+panel that physically cannot. The only story allowed to exceed the canvas is
+`Kiosk Frame / Full HD Panel`, which exists to show the canvas scaled onto a
+1080px panel.
+
 ## Visual QA is not optional
 
 `tsc` passing and Storybook building prove a component compiles, not that it

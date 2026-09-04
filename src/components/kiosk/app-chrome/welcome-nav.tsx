@@ -45,14 +45,14 @@ export const WelcomeNav = ({
     const hasError = scanStatus === "not-found" || scanStatus === "expired";
 
     return (
-        <nav aria-label="Welcome" className={cx("relative z-50 w-full max-w-full px-16 pt-[62px]", className)}>
-            <div className="flex gap-[17px]">
+        <nav aria-label="Welcome" className={cx("relative z-50 h-[400px] w-full max-w-full bg-primary px-16 pt-[62px]", className)}>
+            <div className="flex h-full gap-[17px]">
                 <button
                     type="button"
                     onClick={() => beginScan()}
                     aria-label="Tap your wallet to log in"
                     className={cx(
-                        "flex w-[254px] shrink-0 flex-col items-center gap-2 rounded-t-2xl px-6 pt-9 pb-6 text-center text-white transition duration-100 ease-linear",
+                        "flex h-full w-[254px] shrink-0 flex-col items-center gap-2 rounded-t-2xl px-6 pt-8 text-center text-white transition duration-100 ease-linear",
                         hasError ? "bg-error-solid" : "bg-brand-solid active:bg-brand-solid_hover",
                     )}
                 >
@@ -64,10 +64,10 @@ export const WelcomeNav = ({
                         src={ASSET("wallet-large.svg")}
                         alt=""
                         aria-hidden="true"
-                        className={cx("mt-3 h-[163px] w-[130px] object-contain", isScanning && "animate-pulse")}
+                        className={cx("mt-2 h-[163px] w-[130px] object-contain", isScanning && "animate-pulse")}
                     />
                     {/* Points down at the physical scanner, not a disclosure caret. */}
-                    <ChevronDown className="mt-3 size-9" aria-hidden="true" />
+                    <ChevronDown className="mt-2 size-9" aria-hidden="true" />
                 </button>
 
                 <div className="flex min-w-0 flex-1 flex-col gap-[11px]">

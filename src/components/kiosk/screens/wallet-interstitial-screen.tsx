@@ -21,7 +21,7 @@ const ASSET = (file: string) => assetUrl(`screen-assets/welcome/${file}`);
  * equal ways forward.
  */
 export const WalletInterstitialScreen = ({ className }: { className?: string }) => (
-    <div className={cx("flex h-full w-full flex-col", className)}>
+    <div className={cx("flex h-full w-full flex-col justify-center", className)}>
         <img
             src={ASSET("wallet-interstitial.png")}
             alt="Log in below for everything for your round. Redeem points on the TenFore Golf app."

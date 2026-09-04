@@ -14,7 +14,10 @@ const meta = {
     title: "Kiosk Core/Store/Pro Shop Grid",
     component: ProductGrid,
     parameters: {
-        layout: "centered",
+        // "centered" wraps the story in a padded box. At the kiosk viewport
+        // (750x1298) a full-canvas frame then overflows by exactly that padding
+        // — 32px — and the preview scrolls sideways on a panel that cannot.
+        layout: "fullscreen",
         docs: {
             description: {
                 component: `Real product imagery, served the way the deployed prototype will serve it.
@@ -86,7 +89,7 @@ export const WithOutOfStock: Story = {
 export const MissingImagery: Story = {
     args: { products: [] },
     render: () => (
-        <div className="grid w-[720px] grid-cols-2 gap-4 p-8">
+        <div className="grid w-[750px] grid-cols-2 gap-4 p-8">
             <ProductCard product={PRO_SHOP_PRODUCTS[0]} />
             <ProductCard product={{ ...PRO_SHOP_PRODUCTS[0], id: "no-image", name: "Awaiting photography", image: "" }} />
             <ProductCard product={{ ...PRO_SHOP_PRODUCTS[2], id: "bad-path", name: "Broken path", image: "pos-images/pro-shop/does-not-exist.webp" }} />
@@ -99,7 +102,7 @@ export const MissingImagery: Story = {
 export const AllProducts: Story = {
     args: { products: PRO_SHOP_PRODUCTS },
     render: () => (
-        <div className="grid w-[1100px] grid-cols-4 gap-4 p-8">
+        <div className="grid w-[750px] grid-cols-3 gap-4 p-8">
             {PRO_SHOP_PRODUCTS.map((p) => (
                 <ProductCard key={p.id} product={p} />
             ))}
