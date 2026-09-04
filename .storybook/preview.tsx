@@ -23,9 +23,14 @@ const preview: Preview = {
                     ["Kiosk Frame", "Keyboard", "Global Nav", "Authentication", "Booking", "Store", "Overlays"],
                     // The shared Untitled UI library, ported from Buck. Source
                     // material to pull from and refine into kiosk components.
+                    // Persistent chrome that frames every screen.
+                    "App Chrome",
+                    // Assembled screens, built from the primitives above.
+                    "Screens",
+                    // The shared Untitled UI library, ported from Buck. Source
+                    // material to pull from and refine into kiosk components.
                     "Components",
                     ["Actions", "Forms", "Feedback & Status", "Layout & Structure", "Media & Visuals", "Navigation"],
-                    "Screens",
                 ],
             },
         },

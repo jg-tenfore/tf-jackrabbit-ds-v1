@@ -73,6 +73,37 @@ only the inner edge of each card shows, which reads as tabs hanging off the
 edge without spending the horizontal room a full sidebar would cost. That room
 is what the slot grid needs.
 
+## Storybook categories
+
+`Foundations` -> `App Chrome` -> `Kiosk Core` -> `Screens` -> `Components`.
+
+`App Chrome` is the persistent frame around every screen (the global nav rail).
+`Screens` is assembled surfaces built from the primitives. `Kiosk Core` is the
+kiosk-native building blocks. `Components` is the ported Buck library — source
+material, not finished kiosk UI.
+
+## Exported design assets
+
+Assets exported from Figma land in `references/build/<screen>/` and are copied
+into `public/screen-assets/<screen>/`, which Storybook serves in dev and copies
+into the static build. Reference them base-relative through `assetUrl()` —
+never with a leading slash, or they 404 on GitHub Pages.
+
+Some exports carry a baked-in background. The wallet illustrations shipped with
+a solid rgb(7,148,85) ground that does not match `--color-bg-brand-solid`, which
+showed as a visible rectangle. `npm run build-screen-assets` knocks it out to
+transparent rather than recolouring the drawer to match: the drawer turns **red**
+on a failed scan, and a green-boxed illustration on a red card looks broken
+rather than themed. The token stays authoritative; the asset adapts.
+
+## KioskKey span
+
+`span={0}` means "not in a key row" — width comes from a class. Any other value
+is a flex ratio within a row. Do not pass `span={0}` and expect flex sizing:
+that combination previously applied `flex-basis: 0`, which let the default
+shrink collapse a button to min-content and wrap its label one character per
+line. It is now explicitly opted out.
+
 ## Overlays: two kinds, and the difference matters
 
 There are exactly two overlay components, and choosing between them is a

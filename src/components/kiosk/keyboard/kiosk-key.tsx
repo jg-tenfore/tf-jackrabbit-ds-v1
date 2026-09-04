@@ -11,7 +11,7 @@ const styles = sortCx({
         // `select-none` and `touch-manipulation` together kill the 300ms tap
         // delay and the text-selection flash that make a web keyboard feel
         // unresponsive next to a native one.
-        "flex min-w-0 shrink-0 select-none touch-manipulation items-center justify-center rounded-lg font-medium",
+        "flex min-w-0 shrink-0 select-none touch-manipulation items-center justify-center rounded-lg text-center font-medium",
         "transition duration-75 ease-linear",
         // No hover state: there is no cursor on a kiosk, so the press state
         // carries the entire affordance and must be unmistakable.
@@ -85,7 +85,16 @@ export const KioskKey = ({
         aria-pressed={isActive ? true : undefined}
         // flexBasis:0 with a proportional grow makes span a true ratio, so a
         // 1.5-span key is exactly 1.5x a standard key at any row width.
-        style={{ height: KEY_SIZES[size], flexGrow: span, flexBasis: 0 }}
+        //
+        // span={0} opts out of flex sizing entirely, for keys placed outside a
+        // key row (modal footers, standalone actions) where width comes from a
+        // class. Applying basis:0 there let the default flex-shrink collapse the
+        // button to min-content, wrapping its label one character per line.
+        style={
+            span === 0
+                ? { height: KEY_SIZES[size] }
+                : { height: KEY_SIZES[size], flexGrow: span, flexBasis: 0 }
+        }
         className={cx(
             styles.base,
             styles.variants[variant],

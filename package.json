@@ -11,7 +11,8 @@
         "app": "vite --config vite.app.config.ts",
         "build-app": "vite build --config vite.app.config.ts",
         "shoot": "node scripts/screenshot.mjs",
-        "build-pos-images": "node scripts/build-pos-images.mjs"
+        "build-pos-images": "node scripts/build-pos-images.mjs",
+        "build-screen-assets": "node scripts/build-screen-assets.mjs"
     },
     "dependencies": {
         "@tailwindcss/postcss": "^4.2.2",
