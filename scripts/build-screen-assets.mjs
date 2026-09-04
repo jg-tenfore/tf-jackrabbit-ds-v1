@@ -38,6 +38,12 @@ const ASSETS = [
     { from: "globalNav/waller-big.svg", to: "global-nav/wallet-large.svg", strip: true },
     { from: "globalNav/golfbag.svg", to: "global-nav/golf-bag.svg" },
     { from: "globalNav/reference-loggedout.png", to: "global-nav/reference-logged-out.png" },
+    { from: "welcomeScreen/Kiosk.png", to: "global-nav/reference-welcome.png" },
+
+    // Welcome-flow screen graphics. Both exported @2x, so they render at half
+    // their pixel width and stay sharp on a HiDPI panel.
+    { from: "welcomeScreen/do you want to log in.png", to: "welcome/scan-prompt-hero.png", renderWidth: 750 },
+    { from: "welcomeScreen/login below for everything.png", to: "welcome/wallet-interstitial.png", renderWidth: 750, cropBorder: 4 },
     { from: "globalNav/reference-cart-loggedin.png", to: "global-nav/reference-logged-in.png" },
 
     // How to log in

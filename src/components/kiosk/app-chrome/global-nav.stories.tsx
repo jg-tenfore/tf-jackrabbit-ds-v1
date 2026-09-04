@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
+import { WelcomeNav } from "@/components/kiosk/app-chrome/welcome-nav";
 import { MEMBERS } from "@/data/members";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
+import { assetUrl } from "@/utils/asset-url";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
 const meta = {
@@ -109,4 +111,41 @@ export const LoggedInWithItems: Story = {
     args: { cartCount: 4, cartTotal: 34.45 },
     decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
     render: (args) => <NavHarness label="Screen area" footer={<GlobalNav {...args} />} />,
+};
+
+/**
+ * The attract screen's navigation.
+ *
+ * A separate component from the rail, not a variant: there is no Start Over, no
+ * cart, the drawer moves left and roughly triples, and two large choice cards
+ * take the remaining width. Folding it into `GlobalNav` would give one
+ * component two unrelated layouts.
+ *
+ * The drawer's anatomy inverts here too. On the rail the illustration leads,
+ * because the drawer is small and the picture is what catches the eye. At this
+ * size the label leads and the illustration supports it — same control, but on
+ * the attract screen it is one of three equally-weighted ways in rather than a
+ * persistent affordance hanging off the edge. Neither card is brand-filled for
+ * the same reason: styling one as primary would push guests toward a path they
+ * may not want.
+ */
+export const WelcomeScreen: Story = {
+    args: {},
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: () => (
+        <KioskScreen className="bg-black" footer={<WelcomeNav onStartOrder={() => {}} onJoinWaitlist={() => {}} />}>
+            <div className="flex h-full items-center justify-center p-16 text-center text-[16px] text-white/40">Hero area</div>
+        </KioskScreen>
+    ),
+};
+
+/** Pixel diff against the export, which is @2x (1500x800) of this canvas. */
+export const WelcomeScreenReferenceOverlay: Story = {
+    args: {},
+    decorators: [withKioskSession(), withKioskFrame({ overlaySrc: assetUrl("screen-assets/global-nav/reference-welcome.png") })],
+    render: () => (
+        <KioskScreen footer={<WelcomeNav onStartOrder={() => {}} onJoinWaitlist={() => {}} />}>
+            <div className="h-full" />
+        </KioskScreen>
+    ),
 };
