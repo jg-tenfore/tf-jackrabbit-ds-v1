@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
+import { OrderSummaryNav } from "@/components/kiosk/app-chrome/order-summary-nav";
 import { WelcomeNav } from "@/components/kiosk/app-chrome/welcome-nav";
 import { MEMBERS } from "@/data/members";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
@@ -135,5 +136,35 @@ export const WelcomeScreen: Story = {
         <KioskScreen className="bg-black" footer={<WelcomeNav onStartOrder={() => {}} onJoinWaitlist={() => {}} />}>
             <div className="flex h-full items-center justify-center p-16 text-center text-[16px] text-white/40">Hero area</div>
         </KioskScreen>
+    ),
+};
+
+/**
+ * The order-review rail, at 750x420.
+ *
+ * Its own component again, for the same reason as the welcome nav: the only
+ * thing it shares with the rail is Start Over. There is no wallet drawer, no
+ * bag and no View My Order — you are already looking at the order, so a control
+ * that takes you to it would point at the screen you are standing on. Totals
+ * and a commit button replace them, which is a different job from the rail's
+ * "abandon, review, identify".
+ *
+ * Totals and Complete Order sit **right-aligned** in a 421 column while Start
+ * Over stays left at 64: the thing to press and the thing to miss end up at
+ * opposite corners, and Start Over never moves from where it lives on every
+ * other rail.
+ *
+ * The total is derived from subtotal + tax rather than passed in. The reference
+ * has $20.74 and $1.71 adding to $34.45 — drift that is only possible when the
+ * three can be set independently, so here they cannot be.
+ */
+export const OrderSummary: Story = {
+    args: {},
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: () => (
+        <NavHarness
+            label="Order review area"
+            footer={<OrderSummaryNav subtotalCents={2074} taxCents={171} onCompleteOrder={() => {}} onStartOver={() => {}} />}
+        />
     ),
 };
