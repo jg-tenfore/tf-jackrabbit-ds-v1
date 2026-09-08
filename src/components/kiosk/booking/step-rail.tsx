@@ -178,7 +178,7 @@ export const CategoryRail = ({
     <nav aria-label="Menu categories" className={cx("absolute top-0 -left-16 z-10 flex w-[272px] flex-col gap-5", className)}>
         {logoSrc && (
             <div className="flex h-[152px] items-center justify-start rounded-r-2xl bg-primary pl-16 shadow-sm ring-1 ring-border-secondary">
-                <img src={logoSrc} alt="" aria-hidden="true" className="size-24" />
+                <img src={logoSrc} alt="" aria-hidden="true" className="size-28" />
             </div>
         )}
 

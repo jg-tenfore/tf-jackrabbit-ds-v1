@@ -60,3 +60,4 @@ screenshots/
 # Same policy: a large raw capture that build-menu-images.mjs curates into
 # public/menu-images. 571 files and growing, mostly duplicates and hash names.
 /references/food-imagery
+/references/cocktails
