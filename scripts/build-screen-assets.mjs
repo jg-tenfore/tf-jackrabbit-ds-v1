@@ -18,7 +18,7 @@
  *
  *   node scripts/build-screen-assets.mjs
  */
-import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
@@ -64,6 +64,12 @@ const ASSETS = [
     // label rather than being cropped out here.
     { from: "takeoutChoice/forHere.svg", to: "takeout/for-here.svg" },
     { from: "takeoutChoice/togoOutside.svg", to: "takeout/to-go.svg" },
+
+    // Attract screen. The photo is 1500x1796 for a 750 render — 2x exactly — and
+    // the logo is the light-on-dark lockup, which is a different drawing from
+    // the brand mark rather than a recolour of it.
+    { from: "windowScreen/background-img.png", to: "window/background.png", renderWidth: 750 },
+    { from: "windowScreen/tf-logo-darkBG.svg", to: "window/tf-logo-dark-bg.svg" },
 
     // Checkout payment methods. No ground strip: these sit on a white card and
     // their baked white rect is the card colour, not a stray backdrop.
@@ -139,7 +145,30 @@ for (const asset of ASSETS) {
     }
 }
 
-console.log(`\n${ASSETS.length} assets written to public/screen-assets/`);
+/**
+ * Whole folders, for sets too large to enumerate.
+ *
+ * The weather icons are forty files that only ever arrive and leave together;
+ * listing them individually would be forty lines that say nothing, and would
+ * silently skip any the designer adds later.
+ */
+const DIRECTORIES = [{ from: "windowScreen/weatherIcons", to: "weather" }];
+
+let copied = 0;
+for (const dir of DIRECTORIES) {
+    const srcDir = path.join(ROOT, "references/build", dir.from);
+    const destDir = path.join(ROOT, "public/screen-assets", dir.to);
+    await mkdir(destDir, { recursive: true });
+
+    const files = (await readdir(srcDir)).filter((file) => !file.startsWith("."));
+    for (const file of files) {
+        await copyFile(path.join(srcDir, file), path.join(destDir, file));
+    }
+    copied += files.length;
+    console.log(`  ${dir.to}/  (${files.length} files)`);
+}
+
+console.log(`\n${ASSETS.length + copied} assets written to public/screen-assets/`);
 
 /**
  * Pixel-density audit.

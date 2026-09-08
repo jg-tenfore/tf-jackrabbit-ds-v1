@@ -1,19 +1,8 @@
 "use client";
 
-import { ArrowRight } from "@untitledui/icons";
 import { BrandMark } from "@/components/kiosk/brand-mark";
-import { assetUrl } from "@/utils/asset-url";
+import { ChoiceCard, type ChoiceOption } from "@/components/kiosk/choice-card";
 import { cx } from "@/utils/cx";
-
-export interface GetStartedOption {
-    id: string;
-    /** The quiet line above the label — what kind of thing this is. */
-    eyebrow: string;
-    /** The label, phrased as the thing the user is about to do. */
-    title: string;
-    /** Path under `screen-assets/get-started/`. */
-    image: string;
-}
 
 /**
  * The four ways into the kiosk, in the order the references draw them:
@@ -21,9 +10,10 @@ export interface GetStartedOption {
  *
  * Data rather than markup because the set is course-specific — a venue with no
  * pro shop should drop that card, not hide it — and because four hand-written
- * cards would drift apart the moment one of them gained a state.
+ * cards would drift apart the moment one of them gained a state. The attract
+ * screen renders the same four at a smaller size.
  */
-export const GET_STARTED_OPTIONS: GetStartedOption[] = [
+export const GET_STARTED_OPTIONS: ChoiceOption[] = [
     { id: "first-time", eyebrow: "Create account", title: "First time here", image: "first-time.png" },
     { id: "check-in", eyebrow: "Welcome!", title: "Check-in to course", image: "check-in.png" },
     { id: "tee-time", eyebrow: "Book a tee time", title: "Plan your next round", image: "tee-time.png" },
@@ -54,7 +44,7 @@ export const GetStartedScreen = ({
     className,
 }: {
     courseName?: string;
-    options?: GetStartedOption[];
+    options?: ChoiceOption[];
     onSelect?: (id: string) => void;
     onBack?: () => void;
     className?: string;
@@ -68,7 +58,7 @@ export const GetStartedScreen = ({
 
         <div className="mt-[147px] grid w-full grid-cols-2 gap-[18px] px-16">
             {options.map((option) => (
-                <OptionCard key={option.id} option={option} onPress={() => onSelect?.(option.id)} />
+                <ChoiceCard key={option.id} option={option} size="lg" className="w-full" onPress={() => onSelect?.(option.id)} />
             ))}
         </div>
 
@@ -80,38 +70,4 @@ export const GetStartedScreen = ({
             Go Back
         </button>
     </div>
-);
-
-/**
- * Fixed 248 tall so the two rows line up whether or not a title wraps.
- *
- * The text block is bottom-anchored under the photo rather than following it
- * directly: a one-line and a two-line title then still sit their labels on the
- * same baseline across the row, which is what stops the grid looking ragged.
- */
-const OptionCard = ({ option, onPress }: { option: GetStartedOption; onPress?: () => void }) => (
-    <button
-        type="button"
-        onClick={onPress}
-        className="flex h-[248px] flex-col rounded-2xl bg-secondary px-6 pt-5 pb-6 text-left ring-1 ring-border-secondary ring-inset transition duration-75 ease-linear active:scale-[0.98] active:bg-tertiary"
-    >
-        <img
-            src={assetUrl(`screen-assets/get-started/${option.image}`)}
-            alt=""
-            aria-hidden="true"
-            className="h-[154px] w-full shrink-0 rounded-xl object-cover"
-        />
-
-        <div className="mt-auto w-full">
-            <p className="text-[16px] leading-none text-tertiary">{option.eyebrow}</p>
-            <div className="mt-2 flex items-center justify-between gap-3">
-                {/* 19px is what keeps the longest label ("Plan your next round")
-                    on one line beside the arrow inside a 302 card. A wrapped title
-                    would grow the text block upward into the photo, since the
-                    card height is fixed to keep the two rows aligned. */}
-                <span className="text-[19px] leading-tight font-bold text-primary">{option.title}</span>
-                <ArrowRight className="size-7 shrink-0 text-fg-primary" aria-hidden="true" />
-            </div>
-        </div>
-    </button>
 );
