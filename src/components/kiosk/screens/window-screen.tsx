@@ -22,7 +22,9 @@ export const DEFAULT_MARQUEE = ["Trusted by over thousands of golfers nationwide
  * largest type in the product, and the four ways in are shown as a row that
  * runs off the right edge rather than a tidy grid. The overflow is deliberate —
  * a row that visibly continues past the bezel says "there is more here" to
- * someone walking past, which a complete 2x2 does not.
+ * someone walking past, which a complete 2x2 does not. It **scrolls**, so that
+ * promise is real: a half-visible card that cannot be reached is worse than no
+ * card at all.
  *
  * The marquee is the only moving thing on the screen. Motion is what makes a
  * dark panel read as live rather than switched off, and one slow line does that
@@ -80,9 +82,13 @@ export const WindowScreen = ({
                 <p className="mt-2 text-[32px] leading-tight text-white/90">{tagline}</p>
             </div>
 
-            {/* Runs past the right edge on purpose; the frame clips it. Only the
-                left inset is padded, so the row starts flush with the heading. */}
-            <div className="mt-[74px] flex gap-3 overflow-hidden pl-16">
+            {/* Runs past the right edge on purpose and scrolls to reach the rest.
+                overflow-y is explicitly hidden rather than left to default: with
+                one axis scrollable CSS promotes the other to auto, which would
+                let a stray pixel of card shadow make the row scroll vertically
+                too. `pr-16` gives the last card the same inset as the first once
+                the row is scrolled to its end. */}
+            <div className="mt-[74px] flex gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-16 scrollbar-hide">
                 {options.map((option) => (
                     <ChoiceCard key={option.id} option={option} size="sm" onPress={() => onSelect?.(option.id)} />
                 ))}
