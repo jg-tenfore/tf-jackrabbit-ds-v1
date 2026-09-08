@@ -45,6 +45,11 @@ const ASSETS = [
     // is the one dynamic thing on the screen.
     { from: "addedBag/golfBag-large.svg", to: "order/golf-bag-large.svg" },
 
+    // The same bag as an outline, for the empty order. A greyed-out version of
+    // the full-colour illustration would read as "loading"; a line drawing reads
+    // as "nothing here yet", which is what an empty bag actually is.
+    { from: "addedBag/Group 26.svg", to: "order/empty-bag.svg" },
+
     // The cancel-order warning. Replaces the icon-set AlertTriangle: the export
     // is a filled mark with its own cast shadow, drawn at 160x180 — a different
     // object from a 112px stroked glyph, not a resize of one.

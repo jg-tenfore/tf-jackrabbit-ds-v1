@@ -29,7 +29,7 @@ const styles = sortCx({
         image: "h-[154px]",
         eyebrow: "text-[16px]",
         title: "text-[19px]",
-        titleRow: "mt-2 gap-3",
+        titleRow: "mt-1 gap-3",
         arrow: "size-7",
     },
     sm: {
@@ -37,7 +37,7 @@ const styles = sortCx({
         image: "h-[130px]",
         eyebrow: "text-[15px]",
         title: "text-[17px]",
-        titleRow: "mt-1.5 gap-2",
+        titleRow: "mt-1 gap-2",
         arrow: "size-6",
     },
 });
@@ -47,6 +47,11 @@ const styles = sortCx({
  * one-line and a two-line title still sit their labels on the same baseline
  * across a row. Titles are sized to keep the longest label on one line beside
  * its arrow — a wrap grows the block upward into the photo.
+ *
+ * Both lines set `leading-none` and sit 4px apart. Because the block is
+ * bottom-anchored, tightening the pair does two things at once: the eyebrow and
+ * title read as one unit, and the whole block drops away from the photograph
+ * instead of crowding it.
  */
 export const ChoiceCard = ({
     option,
@@ -81,7 +86,7 @@ export const ChoiceCard = ({
             <div className="mt-auto w-full">
                 <p className={cx("leading-none text-tertiary", style.eyebrow)}>{option.eyebrow}</p>
                 <div className={cx("flex items-center justify-between", style.titleRow)}>
-                    <span className={cx("leading-tight font-bold text-primary", style.title)}>{option.title}</span>
+                    <span className={cx("leading-none font-bold text-primary", style.title)}>{option.title}</span>
                     <ArrowRight className={cx("shrink-0 text-fg-primary", style.arrow)} aria-hidden="true" />
                 </div>
             </div>

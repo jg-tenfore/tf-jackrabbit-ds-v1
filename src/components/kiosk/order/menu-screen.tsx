@@ -21,7 +21,7 @@ import { cx } from "@/utils/cx";
  */
 export const MenuScreen = ({
     items = MENU_ITEMS,
-    initialCategoryId = "sandwiches",
+    initialCategoryId = "food",
     onSelectItem,
     soldOutIds = [],
     className,

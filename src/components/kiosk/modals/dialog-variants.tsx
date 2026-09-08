@@ -117,6 +117,10 @@ export const ProductDetailDialog = ({
             isOpen={isOpen}
             onOpenChange={onOpenChange}
             onClose={() => onOpenChange(false)}
+            // Scrimmed, unlike most card overlays here. This one opens over the
+            // menu grid — a wall of bright product photography that otherwise
+            // competes with the single product being decided on.
+            scrim
             footerLayout="split"
             footer={<DialogSplitFooter onCancel={() => onOpenChange(false)} onConfirm={() => onConfirm?.(quantity)} />}
         >

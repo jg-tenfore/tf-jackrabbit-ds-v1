@@ -69,7 +69,7 @@ export const MenuWithSoldOut: Story = {
     decorators: [withKioskSession(), withKioskFrame()],
     render: () => (
         <KioskScreen scroll={false} footer={<GlobalNav />}>
-            <MenuScreen soldOutIds={["turkey-club-sandwich", "grilled-cheese"]} />
+            <MenuScreen soldOutIds={["soft-pretzel", "hot-dog"]} />
         </KioskScreen>
     ),
 };
@@ -83,9 +83,9 @@ export const ItemDetail: Story = {
             <ProductDetailDialog
                 isOpen
                 onOpenChange={() => {}}
-                name="Fried Chicken Sandwich"
-                priceCents={1499}
-                imageSlot={<ProductImage src={MENU_ITEMS[0].image} alt="Fried Chicken Sandwich" className="size-48" />}
+                name={MENU_ITEMS[0].name}
+                priceCents={MENU_ITEMS[0].priceCents}
+                imageSlot={<ProductImage src={MENU_ITEMS[0].image} alt={MENU_ITEMS[0].name} className="size-48" />}
                 onCustomize={() => {}}
             />
         </KioskScreen>
@@ -107,9 +107,9 @@ export const YourOrder: Story = {
     decorators: [withKioskSession(), withKioskFrame()],
     render: function Cart() {
         const [lines, setLines] = useState<OrderLine[]>([
-            line("fried-chicken-sandwich", 1, ["No Pickles", "Extra Mayo"]),
+            line("cheeseburger", 1, ["No Pickles", "Extra Mayo"]),
             line("bottle-of-water", 1),
-            line("mms", 1),
+            line("snickers", 1),
         ]);
         const total = lines.reduce((t, l) => t + l.item.priceCents * l.quantity, 0);
         return (
@@ -141,7 +141,7 @@ export const Checkout: Story = {
     decorators: [withKioskSession(), withKioskFrame()],
     render: () => (
         <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={3} cartTotal={22.45} />}>
-            <OrderReviewScreen lines={[line("fried-chicken-sandwich", 1), line("bottle-of-water", 1), line("mms", 1)]} />
+            <OrderReviewScreen lines={[line("cheeseburger", 1), line("bottle-of-water", 1), line("snickers", 1)]} />
             <CheckoutMethodFullScreen isOpen onOpenChange={() => {}} onBack={() => {}} onStartOver={() => {}} />
         </KioskScreen>
     ),
@@ -163,7 +163,7 @@ export const CancelOrder: Story = {
     decorators: [withKioskSession(), withKioskFrame()],
     render: () => (
         <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={3} cartTotal={22.45} />}>
-            <OrderReviewScreen lines={[line("fried-chicken-sandwich", 1), line("bottle-of-water", 1), line("mms", 1)]} />
+            <OrderReviewScreen lines={[line("cheeseburger", 1), line("bottle-of-water", 1), line("snickers", 1)]} />
             <DestructiveConfirmFullScreen
                 isOpen
                 onOpenChange={() => {}}

@@ -66,7 +66,15 @@ export const OrderReviewScreen = ({
 
             <div className="mt-6 min-h-0 flex-1 overflow-y-auto px-16 scrollbar-hide">
                 {lines.length === 0 ? (
-                    <p className="py-20 text-center text-[19px] text-tertiary">Your bag is empty.</p>
+                    <div className="flex flex-col items-center py-20 text-center">
+                        <img
+                            src={assetUrl("screen-assets/order/empty-bag.svg")}
+                            alt=""
+                            aria-hidden="true"
+                            className="h-[120px] w-[60px] object-contain"
+                        />
+                        <p className="mt-6 text-[19px] text-tertiary">Your bag is empty.</p>
+                    </div>
                 ) : (
                     lines.map((line) => (
                         <OrderLineRow
