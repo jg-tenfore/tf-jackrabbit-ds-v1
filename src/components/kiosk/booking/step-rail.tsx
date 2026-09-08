@@ -197,7 +197,7 @@ const RailRow = ({ entry, isActive = false, onPress }: { entry: RailEntry; isAct
         className="flex h-16 items-center gap-3 rounded-r-2xl bg-primary pr-6 pl-20 text-left shadow-sm ring-1 ring-border-secondary transition duration-100 ease-linear active:bg-secondary"
     >
         {entry.iconSrc ? (
-            <img src={entry.iconSrc} alt="" aria-hidden="true" className="size-7 shrink-0 object-contain" />
+            <img src={entry.iconSrc} alt="" aria-hidden="true" className="size-8 shrink-0 object-contain" />
         ) : (
             <span data-placeholder-asset="category-icon" className="size-7 shrink-0 rounded bg-secondary" aria-hidden="true" />
         )}

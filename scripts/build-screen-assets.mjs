@@ -76,6 +76,22 @@ const ASSETS = [
     { from: "windowScreen/background-img.png", to: "window/background.png", renderWidth: 750 },
     { from: "windowScreen/tf-logo-darkBG.svg", to: "window/tf-logo-dark-bg.svg" },
 
+    // Store rail. Ten 128x128 icons for a 28px render — comfortably past 2x —
+    // plus the square mark for the rail's logo tile. Renamed on the way in: the
+    // exports mix numbering, casing and spelling conventions, and the rail asks
+    // for them by category id.
+    { from: "store/tf-logo-square.svg", to: "store/logo-tile.svg" },
+    { from: "store/01-Home.png", to: "store/home.png" },
+    { from: "store/02-deals.png", to: "store/deals.png" },
+    { from: "store/Members.png", to: "store/members.png" },
+    { from: "store/RecentsFavs.png", to: "store/recent.png" },
+    { from: "store/Sandwiches.png", to: "store/sandwiches.png" },
+    { from: "store/Beer.png", to: "store/beer.png" },
+    { from: "store/Beverages.png", to: "store/beverages.png" },
+    { from: "store/GolfBalls.png", to: "store/golf-balls.png" },
+    { from: "store/Memberships.png", to: "store/memberships.png" },
+    { from: "store/Clothes.png", to: "store/clothes.png" },
+
     // Checkout payment methods. No ground strip: these sit on a white card and
     // their baked white rect is the card colour, not a stray backdrop.
     { from: "checkoutPayment/checkout-creditCards.svg", to: "checkout/card.svg" },

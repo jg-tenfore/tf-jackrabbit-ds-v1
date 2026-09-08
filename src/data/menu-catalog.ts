@@ -1,6 +1,15 @@
 import type { ProShopProduct } from "@/data/pro-shop-types";
 
 /**
+ * Rail icon path for a category or destination.
+ *
+ * Base-relative, like every other catalogue path — `ProductImage` and the rail
+ * both resolve it through `assetUrl`, which is what makes these survive being
+ * served from a Pages subpath.
+ */
+const icon = (name: string) => `screen-assets/store/${name}.png`;
+
+/**
  * Food & beverage catalogue.
  *
  * Every item here has a real photograph, built from the food shots in
@@ -51,9 +60,9 @@ const item = (
 });
 
 export const MENU_ITEMS: MenuItem[] = [
-    item("cheeseburger", "Cheeseburger", "food", 1499, 1000),
-    item("hot-dog", "Hot Dog", "food", 899, 380),
-    item("soft-pretzel", "Soft Pretzel", "food", 699, 480),
+    item("cheeseburger", "Cheeseburger", "sandwiches", 1499, 1000),
+    item("hot-dog", "Hot Dog", "sandwiches", 899, 380),
+    item("soft-pretzel", "Soft Pretzel", "sandwiches", 699, 480),
 
     item("potato-chips", "Potato Chips", "snacks", 299, 240),
     item("snickers", "Snickers", "snacks", 325, 250),
@@ -68,6 +77,7 @@ export const MENU_ITEMS: MenuItem[] = [
     item("coffee", "Coffee", "beverages", 325, 5),
     item("energy-drink", "Energy Drink", "beverages", 550, 210),
     item("orange-juice", "Orange Juice", "beverages", 475, 160),
+    item("transfusion", "Transfusion", "beverages", 1200, 220),
 
     item("domestic-beer", "Domestic Beer", "beer", 700, 150),
     item("craft-beer", "Craft Beer", "beer", 900, 210),
@@ -86,27 +96,27 @@ export const MENU_ITEMS: MenuItem[] = [
  * guest buying a sandwich and a sleeve of balls is doing one shop, not two.
  */
 export const MENU_CATEGORIES = [
-    { id: "food", label: "Food" },
-    { id: "beer", label: "Beer" },
-    { id: "cocktails", label: "Cocktails" },
-    { id: "beverages", label: "Beverages" },
-    { id: "snacks", label: "Snacks" },
-    { id: "golf-balls", label: "Golf Balls" },
-    { id: "memberships", label: "Memberships" },
-    { id: "clothes", label: "Clothes" },
+    { id: "sandwiches", label: "Sandwiches", iconSrc: icon("sandwiches") },
+    { id: "beer", label: "Beer", iconSrc: icon("beer") },
+    { id: "cocktails", label: "Cocktails", iconSrc: icon("beer") },
+    { id: "beverages", label: "Beverages", iconSrc: icon("beverages") },
+    { id: "snacks", label: "Snacks", iconSrc: icon("sandwiches") },
+    { id: "golf-balls", label: "Golf Balls", iconSrc: icon("golf-balls") },
+    { id: "memberships", label: "Memberships", iconSrc: icon("memberships") },
+    { id: "clothes", label: "Clothes", iconSrc: icon("clothes") },
 ] as const;
 
 /** The rail's upper group — destinations rather than categories. */
 export const MENU_DESTINATIONS = [
-    { id: "home", label: "Home" },
-    { id: "deals", label: "Deals" },
-    { id: "members", label: "Members" },
-    { id: "recent", label: "Recent & Favs" },
+    { id: "home", label: "Home", iconSrc: icon("home") },
+    { id: "deals", label: "Deals", iconSrc: icon("deals") },
+    { id: "members", label: "Members", iconSrc: icon("members") },
+    { id: "recent", label: "Recent & Favs", iconSrc: icon("recent") },
 ] as const;
 
 /** Sub-filters offered above the grid, per category. */
 export const MENU_SUBFILTERS: Record<string, string[]> = {
-    food: ["All", "Hot", "Cold", "Vegetarian"],
+    sandwiches: ["All", "Hot", "Cold", "Vegetarian"],
     beverages: ["All", "Water", "Soft Drinks", "Juices", "Energy Drinks"],
     beer: ["All", "Domestic", "Craft", "Seltzer"],
     cocktails: ["All", "Wine", "Mixed"],

@@ -60,6 +60,12 @@ const SHOTS = {
     "1.32.25": "bloody-mary",
 };
 
+/**
+ * Food shots that arrived with the screen exports rather than the POS capture.
+ * Same treatment, different source folder.
+ */
+const EXTRA = [{ from: "references/build/store/transfusion.png", id: "transfusion" }];
+
 await mkdir(OUT, { recursive: true });
 
 const files = (await readdir(RAW)).filter((file) => file.toLowerCase().endsWith(".png"));
@@ -94,6 +100,20 @@ for (const [key, id] of Object.entries(SHOTS)) {
     bytes += size;
     written++;
     console.log(`  ${id.padEnd(18)} ${(size / 1024).toFixed(0)}KB`);
+}
+
+for (const extra of EXTRA) {
+    const dest = path.join(OUT, `${extra.id}.webp`);
+    await sharp(path.join(ROOT, extra.from))
+        .flatten({ background: "#ffffff" })
+        .trim({ background: "#ffffff", threshold: 12 })
+        .resize({ width: MAX_EDGE, height: MAX_EDGE, fit: "inside", withoutEnlargement: true })
+        .webp({ quality: WEBP_QUALITY })
+        .toFile(dest);
+    const { size } = await stat(dest);
+    bytes += size;
+    written++;
+    console.log(`  ${extra.id.padEnd(18)} ${(size / 1024).toFixed(0)}KB`);
 }
 
 console.log(`\n${written} images written to public/menu-images/ (${(bytes / 1024 / 1024).toFixed(1)}MB total)`);
