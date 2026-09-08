@@ -71,7 +71,7 @@ export const OrderReviewScreen = ({
                             src={assetUrl("screen-assets/order/empty-bag.svg")}
                             alt=""
                             aria-hidden="true"
-                            className="h-[120px] w-[60px] object-contain"
+                            className="h-[240px] w-[120px] object-contain"
                         />
                         <p className="mt-6 text-[19px] text-tertiary">Your bag is empty.</p>
                     </div>
