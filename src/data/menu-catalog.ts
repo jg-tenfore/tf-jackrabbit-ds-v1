@@ -94,7 +94,9 @@ export const MENU_ITEMS: MenuItem[] = [
     item("energy-drink", "Energy Drink", "beverages", 550, 210),
     item("orange-juice", "Orange Juice", "beverages", 475, 160),
     item("milkshake", "Milkshake", "beverages", 699, 550),
-    item("transfusion", "Transfusion", "beverages", 1200, 220),
+    item("transfusion-classic", "Classic Transfusion", "beverages", 1200, 220),
+    item("transfusion-back-nine", "Back Nine Transfusion", "beverages", 1200, 220),
+    item("transfusion-front-nine", "Front Nine Transfusion", "beverages", 1200, 220),
 
     // Beer, wine and cocktails share a rail row; the sub-filters separate them
     item("domestic-beer", "Domestic Beer", "beer", 700, 150),

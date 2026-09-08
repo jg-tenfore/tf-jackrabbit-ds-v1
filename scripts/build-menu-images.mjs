@@ -107,11 +107,13 @@ const FOOD = {
 };
 
 const COCKTAILS = {
-    // A Transfusion is vodka, ginger ale and Concord grape over ice with lime,
-    // so it needs a red drink in a rocks glass. The closest shots in the folder
-    // sit on a soft grey reflection and the white-ground check rejects them;
-    // this one has the same serve on a clean ground.
-    "cranberry-orange-whiskey-sour": "transfusion",
+    // The three Links Drinks Transfusion cans, which are a stocked product
+    // rather than a mixed drink — so they get pack shots, and one item each,
+    // because the three differ by juice and a guest picking one is choosing
+    // between cranberry, orange and grape.
+    "transfusion-2dd4bb_3b69255d13b040a4a2429d3d02784fa0": "transfusion-back-nine",
+    "transfusion-2dd4bb_5751fb1856e447acb64055d9c381949a": "transfusion-front-nine",
+    "transfusion-MOCKUP_GRAPE": "transfusion-classic",
     "cape-codder": "cape-codder",
     "whiskey-sour-isolated": "whiskey-sour",
     "classic-gin-tonic": "gin-and-tonic",
