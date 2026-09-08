@@ -18,7 +18,9 @@ const meta = {
 
 The field is a **slot**, not a \`type\` prop. The three fields have genuinely different shapes — six segmented cells, a wide pill, a free-text line — and expressing them through one union would push the differences *into* the template instead of removing them.
 
-\`showSignInPanel\` follows the references: code and email keep the green scan panel because the user is mid-authentication and scanning is still a faster way out; **name entry drops it**, because by then they have chosen to continue as a guest and re-offering the scan reopens a settled decision.
+The green scan band belongs to **\`GlobalNav\`**, not to this template: \`<GlobalNav isPromptExpanded />\` draws the band and the matching short wallet drawer from one flag. The screens used to render the band themselves, which left the band open above a drawer still drawing its *collapsed* 214px card — two halves of one control in different states.
+
+Code and email pass \`isPromptExpanded\` because the user is mid-authentication and scanning is still a faster way out; **name entry does not**, because by then they have chosen to continue as a guest and re-offering the scan reopens a settled decision.
 
 Fields are display-only, like everywhere else in this kiosk — characters arrive from the on-screen keyboard, so a focused \`<input>\` would fight it for focus and risk the OS keyboard covering the UI.`,
             },
@@ -37,7 +39,7 @@ export const EnterYourCode: Story = {
         const [value, setValue] = useState("");
         const [isInvalid, setIsInvalid] = useState(false);
         return (
-            <KioskScreen scroll={false} footer={<GlobalNav />}>
+            <KioskScreen scroll={false} footer={<GlobalNav isPromptExpanded onHowToLogIn={() => {}} />}>
                 <EntryScreen
                     title="Enter your code"
                     subtitle="Enter your 6-digit code using the TenFore Golf app and earn points for your next tee time."
@@ -51,8 +53,6 @@ export const EnterYourCode: Story = {
                     isContinueDisabled={value.length < 6}
                     onContinue={() => setIsInvalid(!MANUAL_ENTRY_CODES[value])}
                     onBack={() => {}}
-                    showSignInPanel
-                    onHowToLogIn={() => {}}
                 />
             </KioskScreen>
         );
@@ -66,7 +66,7 @@ export const EnterYourEmail: Story = {
     render: function Email() {
         const [value, setValue] = useState("");
         return (
-            <KioskScreen scroll={false} footer={<GlobalNav />}>
+            <KioskScreen scroll={false} footer={<GlobalNav isPromptExpanded onHowToLogIn={() => {}} />}>
                 <EntryScreen
                     title="Enter your email"
                     subtitle="Enter your email address to get started."
@@ -76,8 +76,6 @@ export const EnterYourEmail: Story = {
                     layout="email"
                     onContinue={() => {}}
                     onBack={() => {}}
-                    showSignInPanel
-                    onHowToLogIn={() => {}}
                 />
             </KioskScreen>
         );
@@ -111,7 +109,7 @@ export const InvalidCode: Story = {
     args: { title: "", field: null, value: "", onChange: () => {} },
     decorators: [withKioskSession(), withKioskFrame()],
     render: () => (
-        <KioskScreen scroll={false} footer={<GlobalNav />}>
+        <KioskScreen scroll={false} footer={<GlobalNav isPromptExpanded onHowToLogIn={() => {}} />}>
             <EntryScreen
                 title="Enter your code"
                 subtitle="That code wasn't recognised. Check the app and try again."
@@ -121,7 +119,6 @@ export const InvalidCode: Story = {
                 maxLength={6}
                 onContinue={() => {}}
                 onBack={() => {}}
-                showSignInPanel
             />
         </KioskScreen>
     ),

@@ -33,6 +33,17 @@ const GROUND = "#079455";
  * strip — remove a full-bleed background rect of GROUND
  */
 const ASSETS = [
+    // The brand mark, shared by every screen that opens with it. Copied to its
+    // own folder rather than referenced out of how-to-login/, because three
+    // unrelated screens reaching into a fourth screen's assets is how a shared
+    // thing quietly becomes that screen's private property.
+    { from: "how-to-login/hero-logo.svg", to: "brand/hero-logo.svg" },
+
+    // Checkout payment methods. No ground strip: these sit on a white card and
+    // their baked white rect is the card colour, not a stray backdrop.
+    { from: "checkoutPayment/checkout-creditCards.svg", to: "checkout/card.svg" },
+    { from: "checkoutPayment/checkout-mobilePay.svg", to: "checkout/mobile-pay.svg" },
+
     // Global nav
     { from: "globalNav/wallet-normal.svg", to: "global-nav/wallet-small.svg", strip: true },
     { from: "globalNav/waller-big.svg", to: "global-nav/wallet-large.svg", strip: true },

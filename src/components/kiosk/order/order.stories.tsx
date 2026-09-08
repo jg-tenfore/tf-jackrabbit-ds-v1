@@ -140,7 +140,7 @@ export const Checkout: Story = {
     render: () => (
         <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={3} cartTotal={22.45} />}>
             <OrderReviewScreen lines={[line("fried-chicken-sandwich", 1), line("bottle-of-water", 1), line("mms", 1)]} />
-            <CheckoutMethodFullScreen isOpen onOpenChange={() => {}} onBack={() => {}} />
+            <CheckoutMethodFullScreen isOpen onOpenChange={() => {}} onBack={() => {}} onStartOver={() => {}} />
         </KioskScreen>
     ),
 };
