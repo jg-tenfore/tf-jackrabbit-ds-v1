@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { ProductDetailDialog } from "@/components/kiosk/modals/dialog-variants";
-import { CheckoutMethodFullScreen } from "@/components/kiosk/modals/full-screen-variants";
+import { CheckoutMethodFullScreen, DestructiveConfirmFullScreen } from "@/components/kiosk/modals/full-screen-variants";
 import { AddedToBagScreen } from "@/components/kiosk/order/added-to-bag-screen";
 import { MenuScreen } from "@/components/kiosk/order/menu-screen";
 import { OrderReviewScreen, type OrderLine } from "@/components/kiosk/order/order-review-screen";
@@ -141,6 +141,35 @@ export const Checkout: Story = {
         <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={3} cartTotal={22.45} />}>
             <OrderReviewScreen lines={[line("fried-chicken-sandwich", 1), line("bottle-of-water", 1), line("mms", 1)]} />
             <CheckoutMethodFullScreen isOpen onOpenChange={() => {}} onBack={() => {}} onStartOver={() => {}} />
+        </KioskScreen>
+    ),
+};
+
+/**
+ * Cancelling the order — the one hard stop in the ordering flow.
+ *
+ * Shown over the order it would destroy rather than on its own, because that is
+ * where a user meets it: the screen behind is the thing being described by "the
+ * selections you have chosen". Full screen rather than a dialog, since leaving
+ * the order half-visible behind a scrim invites poking at what is about to be
+ * thrown away.
+ *
+ * Cancel comes first and Remove is the red one — the destructive option should
+ * never be the one a hurried thumb finds by default.
+ */
+export const CancelOrder: Story = {
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: () => (
+        <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={3} cartTotal={22.45} />}>
+            <OrderReviewScreen lines={[line("fried-chicken-sandwich", 1), line("bottle-of-water", 1), line("mms", 1)]} />
+            <DestructiveConfirmFullScreen
+                isOpen
+                onOpenChange={() => {}}
+                title="Are you sure you want to cancel this order?"
+                body="The selections you have chosen will be removed."
+                confirmLabel="Remove"
+                onConfirm={() => {}}
+            />
         </KioskScreen>
     ),
 };

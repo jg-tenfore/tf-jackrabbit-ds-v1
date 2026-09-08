@@ -39,6 +39,17 @@ const ASSETS = [
     // thing quietly becomes that screen's private property.
     { from: "how-to-login/hero-logo.svg", to: "brand/hero-logo.svg" },
 
+    // The confirmation beat's golf bag. A larger, more detailed draw than the
+    // nav rail's 50x117 mark — the rail's is a glyph read at a glance, this one
+    // is the subject of the screen. The count badge is not baked in, because it
+    // is the one dynamic thing on the screen.
+    { from: "addedBag/golfBag-large.svg", to: "order/golf-bag-large.svg" },
+
+    // The cancel-order warning. Replaces the icon-set AlertTriangle: the export
+    // is a filled mark with its own cast shadow, drawn at 160x180 — a different
+    // object from a 112px stroked glyph, not a resize of one.
+    { from: "cancelOrder/cancel-icon.svg", to: "order/cancel-icon.svg" },
+
     // Checkout payment methods. No ground strip: these sit on a white card and
     // their baked white rect is the card colour, not a stray backdrop.
     { from: "checkoutPayment/checkout-creditCards.svg", to: "checkout/card.svg" },

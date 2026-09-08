@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { AlertTriangle, CheckCircle } from "@untitledui/icons";
+import { CheckCircle } from "@untitledui/icons";
 import { KioskKey } from "@/components/kiosk/keyboard/kiosk-key";
 import { FullScreenActions, KioskFullScreenModal } from "@/components/kiosk/modals/kiosk-full-screen-modal";
 import { assetUrl } from "@/utils/asset-url";
@@ -42,8 +42,14 @@ export const DestructiveConfirmFullScreen = ({
     <KioskFullScreenModal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        icon={AlertTriangle}
-        iconTone="error"
+        art={
+            <img
+                src={assetUrl("screen-assets/order/cancel-icon.svg")}
+                alt=""
+                aria-hidden="true"
+                className="h-[180px] w-[160px] object-contain"
+            />
+        }
         title={title}
         subtitle={body}
     >
@@ -121,7 +127,7 @@ export const CheckoutMethodFullScreen = ({
             card instead let the counter button overhang, and since the modal
             body scrolls, an overhang on one axis silently promotes the other to
             scrollable and drags the whole block off centre. */}
-        <div className="mx-auto mt-6 flex w-[531px] flex-col items-center gap-12">
+        <div className="mx-auto mt-2 flex w-[531px] flex-col items-center gap-12">
             {/* Narrower than the counter button below it: the card is a discrete
                 object being offered, not a section of the page. */}
             <div className="flex w-[435px] flex-col gap-14 rounded-2xl px-8 py-12 ring-1 ring-border-secondary">
