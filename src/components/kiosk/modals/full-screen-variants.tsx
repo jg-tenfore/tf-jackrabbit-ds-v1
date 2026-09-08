@@ -130,7 +130,7 @@ export const CheckoutMethodFullScreen = ({
         <div className="mx-auto mt-2 flex w-[531px] flex-col items-center gap-12">
             {/* Narrower than the counter button below it: the card is a discrete
                 object being offered, not a section of the page. */}
-            <div className="flex w-[435px] flex-col gap-14 rounded-2xl px-8 py-12 ring-1 ring-border-secondary">
+            <div className="flex w-[435px] flex-col gap-8 rounded-2xl px-8 py-10 ring-1 ring-border-secondary">
                 <h3 className="text-center text-2xl font-bold text-primary">Pay Right Here</h3>
 
                 {PAY_METHODS.map((method) => (
@@ -141,7 +141,7 @@ export const CheckoutMethodFullScreen = ({
                         className="flex items-center justify-between gap-4 rounded-xl px-2 transition duration-100 ease-linear active:bg-secondary"
                     >
                         <span className="text-2xl text-primary">{method.label}</span>
-                        <img src={assetUrl(`screen-assets/checkout/${method.art}`)} alt="" aria-hidden="true" className="size-[86px] shrink-0" />
+                        <img src={assetUrl(`screen-assets/checkout/${method.art}`)} alt="" aria-hidden="true" className="size-[140px] shrink-0" />
                     </button>
                 ))}
 
