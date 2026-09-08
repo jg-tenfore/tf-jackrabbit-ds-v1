@@ -58,6 +58,13 @@ const ASSETS = [
     { from: "getStarted/Buttons/shutterstock_1730517022 2-1.png", to: "get-started/tee-time.png", renderWidth: 250 },
     { from: "getStarted/Buttons/shutterstock_1730517022 2-2.png", to: "get-started/shop.png", renderWidth: 250 },
 
+    // Takeout choice. Both exports carry a large transparent headroom above the
+    // artwork — the drawing sits in the lower half of its box — so they are
+    // bottom-anchored in their cards and the empty top harmlessly overlaps the
+    // label rather than being cropped out here.
+    { from: "takeoutChoice/forHere.svg", to: "takeout/for-here.svg" },
+    { from: "takeoutChoice/togoOutside.svg", to: "takeout/to-go.svg" },
+
     // Checkout payment methods. No ground strip: these sit on a white card and
     // their baked white rect is the card colour, not a stray backdrop.
     { from: "checkoutPayment/checkout-creditCards.svg", to: "checkout/card.svg" },

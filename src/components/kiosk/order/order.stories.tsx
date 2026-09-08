@@ -6,8 +6,10 @@ import { CheckoutMethodFullScreen, DestructiveConfirmFullScreen } from "@/compon
 import { AddedToBagScreen } from "@/components/kiosk/order/added-to-bag-screen";
 import { MenuScreen } from "@/components/kiosk/order/menu-screen";
 import { OrderReviewScreen, type OrderLine } from "@/components/kiosk/order/order-review-screen";
+import { TakeoutChoiceScreen } from "@/components/kiosk/order/takeout-choice-screen";
 import { ProductImage } from "@/components/kiosk/store/product-image";
 import { MENU_ITEMS, type MenuItem } from "@/data/menu-catalog";
+import { MEMBERS } from "@/data/members";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
@@ -170,6 +172,27 @@ export const CancelOrder: Story = {
                 confirmLabel="Remove"
                 onConfirm={() => {}}
             />
+        </KioskScreen>
+    ),
+};
+
+/**
+ * The last question before checkout.
+ *
+ * Two equal cards, neither primary: either answer is normal at a golf course
+ * and the kiosk has no basis for a guess. The illustrations do the
+ * discriminating — "For Here" and "To Go" are four short words that look alike
+ * at a glance, while a table of beers and a loaded cart are told apart before
+ * either label is read.
+ *
+ * Shown logged in, as the reference draws it: by this point in the flow the
+ * rail is carrying the identity card rather than the wallet drawer.
+ */
+export const TakeoutChoice: Story = {
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
+    render: () => (
+        <KioskScreen scroll={false} footer={<GlobalNav />}>
+            <TakeoutChoiceScreen onChoose={() => {}} onBack={() => {}} />
         </KioskScreen>
     ),
 };
