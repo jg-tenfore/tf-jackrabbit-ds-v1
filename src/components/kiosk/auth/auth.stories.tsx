@@ -4,7 +4,7 @@ import { HowToLogIn } from "@/components/kiosk/auth/how-to-log-in";
 import { ScanPrompt } from "@/components/kiosk/auth/scan-prompt";
 import { CodeInput } from "@/components/kiosk/keyboard/code-input";
 import { OnScreenKeyboard } from "@/components/kiosk/keyboard/on-screen-keyboard";
-import { KioskFooterBar } from "@/components/kiosk/nav/kiosk-footer-bar";
+import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { EXPIRED_WALLET_CODE } from "@/data/members";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
@@ -35,7 +35,7 @@ export const Default: Story = {
     args: {},
     decorators: [withKioskSession(), withKioskFrame()],
     render: (args) => (
-        <KioskScreen footer={<KioskFooterBar />}>
+        <KioskScreen footer={<GlobalNav />}>
             <ScanPrompt {...args} onHowToLogIn={() => {}} onEnterCode={() => {}} onDecline={() => {}} />
         </KioskScreen>
     ),
@@ -46,7 +46,7 @@ export const ExpiredPass: Story = {
     args: {},
     decorators: [withKioskSession({ defaultWalletCode: EXPIRED_WALLET_CODE }), withKioskFrame()],
     render: (args) => (
-        <KioskScreen footer={<KioskFooterBar />}>
+        <KioskScreen footer={<GlobalNav />}>
             <ScanPrompt {...args} onHowToLogIn={() => {}} onEnterCode={() => {}} onDecline={() => {}} />
         </KioskScreen>
     ),
@@ -57,7 +57,7 @@ export const HowToLogInSheet: Story = {
     args: {},
     decorators: [withKioskSession(), withKioskFrame()],
     render: () => (
-        <KioskScreen footer={<KioskFooterBar />}>
+        <KioskScreen footer={<GlobalNav />}>
             <HowToLogIn onDismiss={() => {}} />
         </KioskScreen>
     ),
@@ -72,7 +72,7 @@ export const EnterCodeFallback: Story = {
     decorators: [withKioskSession(), withKioskFrame()],
     render: function CodeFallback() {
         return (
-            <KioskScreen footer={<KioskFooterBar />}>
+            <KioskScreen footer={<GlobalNav />}>
                 <CodeEntryBody />
             </KioskScreen>
         );

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { ProductDetailDialog } from "@/components/kiosk/modals/dialog-variants";
-import { KioskFooterBar } from "@/components/kiosk/nav/kiosk-footer-bar";
+import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { ProductCard } from "@/components/kiosk/store/product-card";
 import { ProductGrid } from "@/components/kiosk/store/product-grid";
 import { ProductImage } from "@/components/kiosk/store/product-image";
@@ -42,7 +42,7 @@ export const ProShop: Story = {
     render: function Shop() {
         const [selected, setSelected] = useState<ProShopProduct | null>(null);
         return (
-            <KioskScreen scroll={false} footer={<KioskFooterBar cartCount={2} cartTotal={109.98} />}>
+            <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={2} cartTotal={109.98} />}>
                 <div className="flex h-full flex-col gap-5 pt-12">
                     <h1 className="px-8 text-5xl font-bold text-primary">Pro Shop</h1>
                     <ProductGrid products={PRO_SHOP_PRODUCTS} categories={PRO_SHOP_CATEGORIES} onSelect={setSelected} />
@@ -68,7 +68,7 @@ export const WithOutOfStock: Story = {
     args: { products: PRO_SHOP_PRODUCTS },
     decorators: [withKioskSession(), withKioskFrame()],
     render: () => (
-        <KioskScreen scroll={false} footer={<KioskFooterBar />}>
+        <KioskScreen scroll={false} footer={<GlobalNav />}>
             <div className="flex h-full flex-col gap-5 pt-12">
                 <h1 className="px-8 text-5xl font-bold text-primary">Pro Shop</h1>
                 <ProductGrid

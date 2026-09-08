@@ -1,6 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
+import { UNSAFE_PortalProvider } from "react-aria";
 import { KIOSK_HEIGHT, KIOSK_TARGETS, KIOSK_WIDTH, type KioskTarget } from "@/kiosk/constants";
 import { cx } from "@/utils/cx";
 
@@ -31,9 +32,21 @@ interface KioskFrameProps {
  * pixel-specified, and a uniform scale preserves them exactly. 750x1298 and
  * 1080x1920 differ slightly in aspect (0.578 vs 0.563), so we scale by the
  * smaller axis ratio and letterbox the remainder rather than distorting.
+ *
+ * The frame is also the **portal container** for every React Aria overlay
+ * inside it. By default they portal to `document.body`, which for a full-screen
+ * modal means `absolute inset-0` resolves against the browser window instead of
+ * the canvas: on a 900x1400 Storybook viewport the modal laid itself out at
+ * 900x1400, pushing its footer 100px below the visible canvas and centring its
+ * content on the wrong axis. Anchoring the portal here keeps overlays inside the
+ * canvas they belong to, and inherits its scale transform on real panels.
  */
 export const KioskFrame = ({ children, target = "design", chrome = false, overlaySrc, className }: KioskFrameProps) => {
     const { width: targetWidth, height: targetHeight } = KIOSK_TARGETS[target];
+    // State rather than a ref: the container has to exist *before* an overlay
+    // that is open on first paint reads it, and a ref set during commit does not
+    // trigger the re-render that would let it.
+    const [canvas, setCanvas] = useState<HTMLDivElement | null>(null);
 
     // Uniform scale — never stretch. The tighter axis wins so the canvas always
     // fits fully inside the panel; leftover space letterboxes as background.
@@ -60,8 +73,9 @@ export const KioskFrame = ({ children, target = "design", chrome = false, overla
                     transformOrigin: "center center",
                 }}
                 data-kiosk-canvas
+                ref={setCanvas}
             >
-                {children}
+                <UNSAFE_PortalProvider getContainer={() => canvas}>{children}</UNSAFE_PortalProvider>
 
                 {overlaySrc && (
                     <img

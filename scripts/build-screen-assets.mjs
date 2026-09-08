@@ -18,7 +18,7 @@
  *
  *   node scripts/build-screen-assets.mjs
  */
-import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
@@ -33,6 +33,77 @@ const GROUND = "#079455";
  * strip — remove a full-bleed background rect of GROUND
  */
 const ASSETS = [
+    // The brand mark, shared by every screen that opens with it. Copied to its
+    // own folder rather than referenced out of how-to-login/, because three
+    // unrelated screens reaching into a fourth screen's assets is how a shared
+    // thing quietly becomes that screen's private property.
+    { from: "how-to-login/hero-logo.svg", to: "brand/hero-logo.svg" },
+
+    // The confirmation beat's golf bag. A larger, more detailed draw than the
+    // nav rail's 50x117 mark — the rail's is a glyph read at a glance, this one
+    // is the subject of the screen. The count badge is not baked in, because it
+    // is the one dynamic thing on the screen.
+    { from: "addedBag/golfBag-large.svg", to: "order/golf-bag-large.svg" },
+
+    // The same bag as an outline, for the empty order. A greyed-out version of
+    // the full-colour illustration would read as "loading"; a line drawing reads
+    // as "nothing here yet", which is what an empty bag actually is.
+    { from: "addedBag/Group 26.svg", to: "order/empty-bag.svg" },
+
+    // Order successful. The wordmark lockup is a different drawing from the
+    // circular brand mark, not a wide crop of it, and the tick is the session's
+    // sign-off rather than a status icon borrowed from the set.
+    { from: "orderSuccessful/Layer_1.svg", to: "order/golf-cart.svg" },
+    { from: "orderSuccessful/tf-logo.svg", to: "order/wordmark.svg" },
+    { from: "orderSuccessful/loggedOut.svg", to: "order/logged-out-tick.svg" },
+
+    // The cancel-order warning. Replaces the icon-set AlertTriangle: the export
+    // is a filled mark with its own cast shadow, drawn at 160x180 — a different
+    // object from a 112px stroked glyph, not a resize of one.
+    { from: "cancelOrder/cancel-icon.svg", to: "order/cancel-icon.svg" },
+
+    // Get Started card imagery. Exported at 500x298 for a 250px render — 2x
+    // exactly — and renamed on the way in, because the Shutterstock ids say
+    // nothing about which card each belongs to.
+    { from: "getStarted/Buttons/shutterstock_1730517022 1.png", to: "get-started/first-time.png", renderWidth: 250 },
+    { from: "getStarted/Buttons/shutterstock_1730517022 2.png", to: "get-started/check-in.png", renderWidth: 250 },
+    { from: "getStarted/Buttons/shutterstock_1730517022 2-1.png", to: "get-started/tee-time.png", renderWidth: 250 },
+    { from: "getStarted/Buttons/shutterstock_1730517022 2-2.png", to: "get-started/shop.png", renderWidth: 250 },
+
+    // Takeout choice. Both exports carry a large transparent headroom above the
+    // artwork — the drawing sits in the lower half of its box — so they are
+    // bottom-anchored in their cards and the empty top harmlessly overlaps the
+    // label rather than being cropped out here.
+    { from: "takeoutChoice/forHere.svg", to: "takeout/for-here.svg" },
+    { from: "takeoutChoice/togoOutside.svg", to: "takeout/to-go.svg" },
+
+    // Attract screen. The photo is 1500x1796 for a 750 render — 2x exactly — and
+    // the logo is the light-on-dark lockup, which is a different drawing from
+    // the brand mark rather than a recolour of it.
+    { from: "windowScreen/background-img.png", to: "window/background.png", renderWidth: 750 },
+    { from: "windowScreen/tf-logo-darkBG.svg", to: "window/tf-logo-dark-bg.svg" },
+
+    // Store rail. Ten 128x128 icons for a 28px render — comfortably past 2x —
+    // plus the square mark for the rail's logo tile. Renamed on the way in: the
+    // exports mix numbering, casing and spelling conventions, and the rail asks
+    // for them by category id.
+    { from: "store/tf-logo-square.svg", to: "store/logo-tile.svg" },
+    { from: "store/01-Home.png", to: "store/home.png" },
+    { from: "store/02-deals.png", to: "store/deals.png" },
+    { from: "store/Members.png", to: "store/members.png" },
+    { from: "store/RecentsFavs.png", to: "store/recent.png" },
+    { from: "store/Sandwiches.png", to: "store/sandwiches.png" },
+    { from: "store/Beer.png", to: "store/beer.png" },
+    { from: "store/Beverages.png", to: "store/beverages.png" },
+    { from: "store/GolfBalls.png", to: "store/golf-balls.png" },
+    { from: "store/Memberships.png", to: "store/memberships.png" },
+    { from: "store/Clothes.png", to: "store/clothes.png" },
+
+    // Checkout payment methods. No ground strip: these sit on a white card and
+    // their baked white rect is the card colour, not a stray backdrop.
+    { from: "checkoutPayment/checkout-creditCards.svg", to: "checkout/card.svg" },
+    { from: "checkoutPayment/checkout-mobilePay.svg", to: "checkout/mobile-pay.svg" },
+
     // Global nav
     { from: "globalNav/wallet-normal.svg", to: "global-nav/wallet-small.svg", strip: true },
     { from: "globalNav/waller-big.svg", to: "global-nav/wallet-large.svg", strip: true },
@@ -102,7 +173,30 @@ for (const asset of ASSETS) {
     }
 }
 
-console.log(`\n${ASSETS.length} assets written to public/screen-assets/`);
+/**
+ * Whole folders, for sets too large to enumerate.
+ *
+ * The weather icons are forty files that only ever arrive and leave together;
+ * listing them individually would be forty lines that say nothing, and would
+ * silently skip any the designer adds later.
+ */
+const DIRECTORIES = [{ from: "windowScreen/weatherIcons", to: "weather" }];
+
+let copied = 0;
+for (const dir of DIRECTORIES) {
+    const srcDir = path.join(ROOT, "references/build", dir.from);
+    const destDir = path.join(ROOT, "public/screen-assets", dir.to);
+    await mkdir(destDir, { recursive: true });
+
+    const files = (await readdir(srcDir)).filter((file) => !file.startsWith("."));
+    for (const file of files) {
+        await copyFile(path.join(srcDir, file), path.join(destDir, file));
+    }
+    copied += files.length;
+    console.log(`  ${dir.to}/  (${files.length} files)`);
+}
+
+console.log(`\n${ASSETS.length + copied} assets written to public/screen-assets/`);
 
 /**
  * Pixel-density audit.

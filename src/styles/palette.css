@@ -5,17 +5,27 @@
  * color-theory + colorway showcases via var(--color-<family>-<shade>).
  */
 :root {
-      --color-red-50: oklch(97.1% 0.013 17.38);
-      --color-red-100: oklch(93.6% 0.032 17.717);
-      --color-red-200: oklch(88.5% 0.062 18.334);
-      --color-red-300: oklch(80.8% 0.114 19.571);
-      --color-red-400: oklch(70.4% 0.191 22.216);
-      --color-red-500: oklch(63.7% 0.237 25.331);
-      --color-red-600: oklch(57.7% 0.245 27.325);
-      --color-red-700: oklch(50.5% 0.213 27.518);
-      --color-red-800: oklch(44.4% 0.177 26.899);
-      --color-red-900: oklch(39.6% 0.141 25.723);
-      --color-red-950: oklch(25.8% 0.092 26.042);
+      /* Red ramp anchored on the kiosk's destructive red, #D92D21 — the same
+         red the exported cancel artwork is drawn in, so the token and the
+         illustration finally agree.
+         The ramp keeps Tailwind's lightness steps and its chroma falloff, with
+         every step's chroma scaled by 0.209/0.245 and its hue shifted +1.975 to
+         re-anchor on the new 600. Rebuilding the whole ramp rather than
+         overriding 600 alone matters: a lone override leaves 600 lighter and
+         duller than the 500 and 700 either side of it, and any component that
+         steps through the scale — a hover, a ring, a chart series — reads that
+         as a dent in the middle of the family. */
+      --color-red-50: oklch(97.1% 0.011 19.355);   /* #FDF3F2 */
+      --color-red-100: oklch(93.6% 0.027 19.692);  /* #FCE3E2 */
+      --color-red-200: oklch(88.5% 0.053 20.309);  /* #FBCCCA */
+      --color-red-300: oklch(80.8% 0.097 21.546);  /* #F9A7A5 */
+      --color-red-400: oklch(70.4% 0.163 24.191);  /* #F4716C */
+      --color-red-500: oklch(63.7% 0.202 27.306);  /* #ED4941 */
+      --color-red-600: oklch(57.6% 0.209 29.3);    /* #D92D21 — base */
+      --color-red-700: oklch(50.5% 0.182 29.493);  /* #B6251A */
+      --color-red-800: oklch(44.4% 0.151 28.874);  /* #95241B */
+      --color-red-900: oklch(39.6% 0.12 27.698);   /* #7A251F */
+      --color-red-950: oklch(25.8% 0.078 28.017);  /* #42100C */
       --color-orange-50: oklch(98% 0.016 73.684);
       --color-orange-100: oklch(95.4% 0.038 75.164);
       --color-orange-200: oklch(90.1% 0.076 70.697);

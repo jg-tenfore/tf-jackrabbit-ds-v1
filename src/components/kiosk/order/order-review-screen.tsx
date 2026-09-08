@@ -37,6 +37,12 @@ export const OrderReviewScreen = ({
     onViewDetails,
     onOrderMore,
     onCompleteOrder,
+    /**
+     * Off when `OrderSummaryNav` is in the footer, which draws the same three
+     * numbers and the same commit button. Two totals blocks on one screen is
+     * not a redundancy a user forgives.
+     */
+    showTotals = true,
     className,
 }: {
     lines: OrderLine[];
@@ -46,6 +52,7 @@ export const OrderReviewScreen = ({
     onViewDetails?: (item: MenuItem) => void;
     onOrderMore?: () => void;
     onCompleteOrder?: () => void;
+    showTotals?: boolean;
     className?: string;
 }) => {
     const subtotalCents = lines.reduce((total, line) => total + line.item.priceCents * line.quantity, 0);
@@ -55,60 +62,48 @@ export const OrderReviewScreen = ({
     return (
         <div className={cx("flex h-full w-full flex-col", className)}>
             <header className="flex items-center gap-4 px-16 pt-12">
-                <img
-                    src={assetUrl("screen-assets/global-nav/golf-bag.svg")}
-                    alt=""
-                    aria-hidden="true"
-                    className="h-[70px] w-[31px] object-contain"
-                />
+                <img src={assetUrl("screen-assets/global-nav/golf-bag.svg")} alt="" aria-hidden="true" className="h-[70px] w-[31px] object-contain" />
                 <h1 className="text-[44px] leading-none font-bold text-primary">Your Order</h1>
             </header>
 
-            <div className="mt-6 min-h-0 flex-1 overflow-y-auto px-16 scrollbar-hide">
+            <div className="mt-6 scrollbar-hide min-h-0 flex-1 overflow-y-auto px-16">
                 {lines.length === 0 ? (
-                    <p className="py-20 text-center text-[19px] text-tertiary">Your bag is empty.</p>
+                    <div className="flex flex-col items-center py-20 text-center">
+                        <img src={assetUrl("screen-assets/order/empty-bag.svg")} alt="" aria-hidden="true" className="h-[240px] w-[120px] object-contain" />
+                        <p className="mt-6 text-[19px] text-tertiary">Your bag is empty.</p>
+                    </div>
                 ) : (
                     lines.map((line) => (
-                        <OrderLineRow
-                            key={line.item.id}
-                            line={line}
-                            onChangeQuantity={onChangeQuantity}
-                            onRemove={onRemove}
-                            onViewDetails={onViewDetails}
-                        />
+                        <OrderLineRow key={line.item.id} line={line} onChangeQuantity={onChangeQuantity} onRemove={onRemove} onViewDetails={onViewDetails} />
                     ))
                 )}
             </div>
 
-            <div className="shrink-0 border-t border-secondary px-16 pt-5 pb-6">
-                <div className="flex justify-between text-[17px] text-secondary">
-                    <span>Sub Total</span>
-                    <span className="tabular-nums">{centsToUsd(subtotalCents)}</span>
-                </div>
-                <div className="mt-1 flex justify-between text-[17px] text-secondary">
-                    <span>Tax</span>
-                    <span className="tabular-nums">{centsToUsd(tax)}</span>
-                </div>
-                <div className="mt-3 flex items-baseline justify-between">
-                    <span className="text-[30px] font-bold text-primary">Total</span>
-                    <span className="text-[30px] font-bold text-primary tabular-nums">{centsToUsd(subtotalCents + tax)}</span>
-                </div>
+            {showTotals && (
+                <div className="shrink-0 border-t border-secondary px-16 pt-5 pb-6">
+                    <div className="flex justify-between text-[17px] text-secondary">
+                        <span>Sub Total</span>
+                        <span className="tabular-nums">{centsToUsd(subtotalCents)}</span>
+                    </div>
+                    <div className="mt-1 flex justify-between text-[17px] text-secondary">
+                        <span>Tax</span>
+                        <span className="tabular-nums">{centsToUsd(tax)}</span>
+                    </div>
+                    <div className="mt-3 flex items-baseline justify-between">
+                        <span className="text-[30px] font-bold text-primary">Total</span>
+                        <span className="text-[30px] font-bold text-primary tabular-nums">{centsToUsd(subtotalCents + tax)}</span>
+                    </div>
 
-                <div className="mt-5 flex gap-4">
-                    <KioskKey size="lg" variant="action" onPress={onOrderMore} className="flex-1 text-[19px]">
-                        Order More
-                    </KioskKey>
-                    <KioskKey
-                        size="lg"
-                        variant="primary"
-                        onPress={onCompleteOrder}
-                        isDisabled={lines.length === 0}
-                        className="flex-[2] text-[19px]"
-                    >
-                        Complete Order
-                    </KioskKey>
+                    <div className="mt-5 flex gap-4">
+                        <KioskKey size="lg" variant="action" onPress={onOrderMore} className="flex-1 text-[19px]">
+                            Order More
+                        </KioskKey>
+                        <KioskKey size="lg" variant="primary" onPress={onCompleteOrder} isDisabled={lines.length === 0} className="flex-[2] text-[19px]">
+                            Complete Order
+                        </KioskKey>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
@@ -136,7 +131,7 @@ const OrderLineRow = ({
                 <button
                     type="button"
                     onClick={() => onViewDetails?.(item)}
-                    className="mt-2 h-11 w-[132px] rounded-lg text-[15px] text-tertiary ring-1 ring-border-primary ring-inset transition duration-100 ease-linear active:bg-secondary"
+                    className="mt-2 h-11 w-[132px] rounded-lg text-[15px] text-tertiary ring-1 ring-border-primary transition duration-100 ease-linear ring-inset active:bg-secondary"
                 >
                     View Details
                 </button>
@@ -151,15 +146,13 @@ const OrderLineRow = ({
                 <button
                     type="button"
                     onClick={() => onRemove?.(item.id)}
-                    className="h-11 w-[132px] rounded-lg text-[15px] text-tertiary ring-1 ring-border-primary ring-inset transition duration-100 ease-linear active:bg-secondary"
+                    className="h-11 w-[132px] rounded-lg text-[15px] text-tertiary ring-1 ring-border-primary transition duration-100 ease-linear ring-inset active:bg-secondary"
                 >
                     Remove
                 </button>
             </div>
 
-            <span className="shrink-0 self-start text-[19px] font-semibold text-primary tabular-nums">
-                {centsToUsd(item.priceCents * quantity)}
-            </span>
+            <span className="shrink-0 self-start text-[19px] font-semibold text-primary tabular-nums">{centsToUsd(item.priceCents * quantity)}</span>
         </div>
     );
 };

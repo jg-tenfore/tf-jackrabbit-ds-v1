@@ -4,7 +4,7 @@ import { DueBar, PriceBreakdown, VenueSummary } from "@/components/kiosk/booking
 import { GroupSizeSelector, SegmentedSelector, TransportSelector } from "@/components/kiosk/booking/segmented-selector";
 import { SlotCard, TimeSlotCard } from "@/components/kiosk/booking/slot-card";
 import { TeeTimeBooking } from "@/components/kiosk/booking/tee-time-booking";
-import { KioskFooterBar } from "@/components/kiosk/nav/kiosk-footer-bar";
+import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { TEE_TIMES, VENUE } from "@/data/booking";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
@@ -34,7 +34,7 @@ export const BookATime: Story = {
     args: { slots: TEE_TIMES },
     decorators: [withKioskSession(), withKioskFrame()],
     render: (args) => (
-        <KioskScreen scroll={false} footer={<KioskFooterBar />}>
+        <KioskScreen scroll={false} footer={<GlobalNav />}>
             <TeeTimeBooking {...args} />
         </KioskScreen>
     ),
@@ -85,7 +85,7 @@ export const ReviewSummary: Story = {
     args: { slots: [] },
     decorators: [withKioskSession(), withKioskFrame()],
     render: () => (
-        <KioskScreen footer={<><DueBar dueNow="$20.74" dueLater="$1.71" total="$55.22" /><KioskFooterBar /></>}>
+        <KioskScreen footer={<><DueBar dueNow="$20.74" dueLater="$1.71" total="$55.22" /><GlobalNav /></>}>
             <div className="flex flex-col gap-8 px-16 py-12">
                 <VenueSummary
                     venueName={VENUE.name}

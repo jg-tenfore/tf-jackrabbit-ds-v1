@@ -57,3 +57,7 @@ screenshots/
 # scripts/build-pos-images.mjs, and that output IS committed. Keeping the raw
 # capture out keeps clones and the Pages deploy small.
 /references/pos-item-imagery
+# Same policy: a large raw capture that build-menu-images.mjs curates into
+# public/menu-images. 571 files and growing, mostly duplicates and hash names.
+/references/food-imagery
+/references/cocktails

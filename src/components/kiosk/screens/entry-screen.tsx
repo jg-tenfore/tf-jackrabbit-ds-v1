@@ -1,11 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { SignInPrompt } from "@/components/kiosk/app-chrome/wallet-drawer";
+import { BrandMark } from "@/components/kiosk/brand-mark";
 import { KioskKey } from "@/components/kiosk/keyboard/kiosk-key";
 import { OnScreenKeyboard } from "@/components/kiosk/keyboard/on-screen-keyboard";
 import type { LayoutName } from "@/components/kiosk/keyboard/layouts";
-import { assetUrl } from "@/utils/asset-url";
 import { cx } from "@/utils/cx";
 
 /**
@@ -22,11 +21,14 @@ import { cx } from "@/utils/cx";
  * free-text line. Trying to express all of them through one `type` prop would
  * push the differences into this file instead of removing them.
  *
- * `showSignInPanel` reflects the references: code and email keep the green scan
- * panel because the user is mid-authentication and scanning is still a faster
- * way out; name entry drops it because by then they have already chosen to
- * continue as a guest, and offering the scan again would reopen a settled
- * decision.
+ * The green "Scan your code" band is **not** rendered here. It belongs to
+ * `GlobalNav`, which draws it and the wallet drawer together from one expanded
+ * flag. Rendering it inside the screen instead left the two halves of the same
+ * control disagreeing: the band said the drawer was open while the drawer below
+ * it still drew its collapsed 214px card and hand illustration, which is the
+ * state it takes when the band is *closed*. A screen that wants the band asks
+ * the nav for it — `<GlobalNav isPromptExpanded />` — so the pair cannot drift
+ * again.
  */
 export const EntryScreen = ({
     title,
@@ -40,8 +42,6 @@ export const EntryScreen = ({
     onContinue,
     continueLabel = "Continue",
     isContinueDisabled,
-    showSignInPanel = false,
-    onHowToLogIn,
     className,
 }: {
     title: string;
@@ -57,13 +57,11 @@ export const EntryScreen = ({
     continueLabel?: string;
     /** Defaults to "nothing typed yet" when omitted. */
     isContinueDisabled?: boolean;
-    showSignInPanel?: boolean;
-    onHowToLogIn?: () => void;
     className?: string;
 }) => (
     <div className={cx("flex h-full w-full flex-col", className)}>
         <div className="flex flex-1 flex-col items-center px-8 pt-12 text-center">
-            <img src={assetUrl("screen-assets/how-to-login/hero-logo.svg")} alt="" aria-hidden="true" className="size-12" />
+            <BrandMark />
             <h1 className="mt-5 text-[44px] leading-tight font-bold text-balance text-primary">{title}</h1>
             {subtitle && <p className="mt-3 max-w-[560px] text-[20px] text-tertiary">{subtitle}</p>}
 
@@ -88,8 +86,6 @@ export const EntryScreen = ({
                 </KioskKey>
             </div>
         </div>
-
-        {showSignInPanel && <SignInPrompt onHowToLogIn={onHowToLogIn} height={309} />}
     </div>
 );
 

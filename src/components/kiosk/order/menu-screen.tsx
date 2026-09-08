@@ -51,7 +51,7 @@ export const MenuScreen = ({
                         setSubFilter("All");
                     }
                 }}
-                logoSrc={assetUrl("screen-assets/how-to-login/hero-logo.svg")}
+                logoSrc={assetUrl("screen-assets/brand/hero-logo.svg")}
                 className="top-12"
             />
 

@@ -7,6 +7,7 @@ import {
     ModalOverlay as AriaModalOverlay,
     type ModalOverlayProps as AriaModalOverlayProps,
 } from "react-aria-components";
+import { BrandMark } from "@/components/kiosk/brand-mark";
 import { cx } from "@/utils/cx";
 
 /**
@@ -36,6 +37,22 @@ export interface KioskFullScreenModalProps extends Omit<AriaModalOverlayProps, "
     /** Large glyph above the title — carries the destructive and success tones. */
     icon?: FC<{ className?: string }>;
     iconTone?: "brand" | "error" | "warning" | "success";
+    /**
+     * Exported artwork above the title, for the screens that have a drawn mark
+     * rather than an icon. Takes the icon's place — a screen has one thing at
+     * the top, and letting both render would stack two competing symbols.
+     */
+    art?: ReactNode;
+    /**
+     * The TenFore mark above the title, as the checkout reference draws it.
+     *
+     * Separate from `icon` rather than passed through it, because the two say
+     * different things: an icon here is the *tone* of a hard stop — a red
+     * warning, a green tick — while the mark says "this is still the kiosk, you
+     * have not been thrown somewhere else". A full-screen modal that removes all
+     * surrounding context is exactly where that reassurance is worth its space.
+     */
+    showBrandMark?: boolean;
     /** Pinned actions at the bottom. Content scrolls above them. */
     footer?: ReactNode;
     /** Vertically centre the content block. Off for tall, scrolling content. */
@@ -56,6 +73,8 @@ export const KioskFullScreenModal = ({
     subtitle,
     icon: Icon,
     iconTone = "brand",
+    art,
+    showBrandMark = false,
     footer,
     isCentered = true,
     className,
@@ -85,12 +104,21 @@ export const KioskFullScreenModal = ({
                         max-content, so without it a long title lays out on one
                         line and overflows the canvas instead of wrapping. */}
                     <div className="flex w-full flex-col items-center text-center">
-                        {Icon && <Icon className={cx("mb-8 size-28", ICON_TONES[iconTone])} aria-hidden="true" />}
+                        {showBrandMark && <BrandMark className="mb-8" />}
+                        {/* Art wins over icon: one mark at the top, never two. */}
+                        {art ? (
+                            <div className="mb-10">{art}</div>
+                        ) : (
+                            Icon && <Icon className={cx("mb-10 size-28", ICON_TONES[iconTone])} aria-hidden="true" />
+                        )}
                         {title && <h1 className="w-full max-w-[600px] text-5xl font-bold text-balance text-primary">{title}</h1>}
-                        {subtitle && <p className="mt-5 max-w-[560px] text-xl text-tertiary">{subtitle}</p>}
+                        {subtitle && <p className="mt-7 max-w-[560px] text-2xl text-tertiary">{subtitle}</p>}
                     </div>
 
-                    {children && <div className="mt-10">{children}</div>}
+                    {/* 40 / 28 / 56 between mark, title, subtitle and content —
+                        measured off the cancel-order export, which is drawn at
+                        the canvas's own 750x1298 and so needs no conversion. */}
+                    {children && <div className="mt-14">{children}</div>}
                 </div>
 
                 {footer && <div className="shrink-0 px-16 pt-6 pb-14">{footer}</div>}
@@ -123,7 +151,7 @@ export const FullScreenActions = ({
         <button
             type="button"
             onClick={onCancel}
-            className="h-20 min-w-[240px] rounded-xl px-8 text-2xl font-medium text-tertiary ring-1 ring-border-primary ring-inset transition duration-100 ease-linear active:bg-secondary"
+            className="h-[74px] min-w-[246px] rounded-xl px-8 text-2xl font-medium text-tertiary ring-1 ring-border-primary ring-inset transition duration-100 ease-linear active:bg-secondary"
         >
             {cancelLabel}
         </button>
@@ -131,7 +159,7 @@ export const FullScreenActions = ({
             type="button"
             onClick={onConfirm}
             className={cx(
-                "h-20 min-w-[240px] rounded-xl px-8 text-2xl font-semibold text-white transition duration-100 ease-linear",
+                "h-[74px] min-w-[246px] rounded-xl px-8 text-2xl font-semibold text-white transition duration-100 ease-linear",
                 isDestructive ? "bg-error-solid active:bg-error-solid_hover" : "bg-brand-solid active:bg-brand-solid_hover",
             )}
         >
