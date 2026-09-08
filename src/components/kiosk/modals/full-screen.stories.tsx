@@ -10,7 +10,7 @@ import {
     InterstitialFullScreen,
 } from "@/components/kiosk/modals/full-screen-variants";
 import { KioskFullScreenModal } from "@/components/kiosk/modals/kiosk-full-screen-modal";
-import { KioskFooterBar } from "@/components/kiosk/nav/kiosk-footer-bar";
+import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { TEE_TIMES } from "@/data/booking";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
@@ -48,7 +48,7 @@ type Story = StoryObj<typeof meta>;
 const Stage = ({ children }: { children: (open: boolean, set: (v: boolean) => void) => React.ReactNode }) => {
     const [isOpen, setIsOpen] = useState(true);
     return (
-        <KioskScreen footer={<KioskFooterBar />}>
+        <KioskScreen footer={<GlobalNav />}>
             <div className="flex flex-col gap-4 p-8">
                 <h1 className="text-4xl font-bold text-primary">Your Order</h1>
                 <div className="grid grid-cols-2 gap-3">

@@ -23,10 +23,25 @@ const ASSET = (file: string) => assetUrl(`screen-assets/global-nav/${file}`);
 export const WalletDrawer = ({
     isExpanded,
     onExpandedChange,
+    /**
+     * The line above "Log In". Defaults to the rail's wording; checkout says
+     * "Scan or tap to" instead, because by then the wallet is a way to pay
+     * rather than a way to identify yourself.
+     */
+    caption = "Tap your wallet below",
+    /**
+     * The short standalone card used on the checkout rail: no illustration, and
+     * short enough to clear the commit button it sits beside. Distinct from
+     * `isExpanded`, which is the in-rail form that pairs with the green band
+     * above it and so takes no rounding of its own.
+     */
+    isCompact = false,
     className,
 }: {
     isExpanded: boolean;
     onExpandedChange: (next: boolean) => void;
+    caption?: string;
+    isCompact?: boolean;
     className?: string;
 }) => {
     const { scanStatus, beginScan } = useKioskSession();
@@ -48,12 +63,12 @@ export const WalletDrawer = ({
                 // illustration; repeating it in the drawer would say the same
                 // thing twice in the same glance. Collapsed, the illustration is
                 // the whole affordance, so the card grows to hold it.
-                isExpanded ? "h-[114px]" : "h-[214px] rounded-t-2xl",
+                isCompact ? "h-[90px] gap-1 rounded-t-2xl" : isExpanded ? "h-[114px]" : "h-[214px] rounded-t-2xl",
                 hasError ? "bg-error-solid" : "bg-brand-solid active:bg-brand-solid_hover",
                 className,
             )}
         >
-            {!isExpanded && (
+            {!isExpanded && !isCompact && (
                 <img
                     src={ASSET("wallet-small.svg")}
                     alt=""
@@ -62,7 +77,7 @@ export const WalletDrawer = ({
                 />
             )}
             <span className="text-[14px] leading-tight text-white/90">
-                {isScanning ? "Reading your wallet…" : hasError ? "Try again" : "Tap your wallet below"}
+                {isScanning ? "Reading your wallet…" : hasError ? "Try again" : caption}
             </span>
             <span className="text-[27px] leading-none font-bold">{hasError ? "Not recognized" : "Log In"}</span>
             {/* Always points down. It is not a disclosure triangle — it points at
@@ -96,6 +111,29 @@ export const SignedInCard = ({ firstName, onSignOut, className }: { firstName: s
             Log out
         </button>
         <span className="text-[19px] font-bold text-primary">{firstName}</span>
+    </div>
+);
+
+/**
+ * The end-of-session card: the drawer's third and last state.
+ *
+ * Replaces `SignedInCard` once the user has been signed out. There is no action
+ * on it, and that is the point — the rail spends the whole session offering a
+ * way to identify yourself or drop it, and this is the one moment where neither
+ * is on offer any more. A tick rather than a word like "Done": the green mark
+ * is the same one the wallet showed on a successful scan, closing the loop it
+ * opened.
+ */
+export const SignedOutCard = ({ label = "Logged out", className }: { label?: string; className?: string }) => (
+    <div
+        className={cx(
+            "flex h-[110px] w-[174px] flex-col items-center justify-center gap-3 rounded-t-2xl bg-primary ring-1 ring-border-secondary",
+            className,
+        )}
+        role="status"
+    >
+        <img src={assetUrl("screen-assets/order/logged-out-tick.svg")} alt="" aria-hidden="true" className="size-8" />
+        <span className="text-[17px] font-bold text-primary">{label}</span>
     </div>
 );
 

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { ActivityBooking } from "@/components/kiosk/booking/activity-booking";
 import { PICKLEBALL_CONFIG, SIMULATOR_CONFIG } from "@/components/kiosk/booking/activity-config";
-import { KioskFooterBar } from "@/components/kiosk/nav/kiosk-footer-bar";
+import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
@@ -27,7 +27,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const screen = (config: typeof SIMULATOR_CONFIG, initialStep: "duration" | "start-time" | "resource" | "review") => (
-    <KioskScreen scroll={false} footer={<KioskFooterBar />}>
+    <KioskScreen scroll={false} footer={<GlobalNav />}>
         <ActivityBooking config={config} initialStep={initialStep} />
     </KioskScreen>
 );

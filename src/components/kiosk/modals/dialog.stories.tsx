@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { KioskKey } from "@/components/kiosk/keyboard/kiosk-key";
 import { ChoiceDialog, ProductDetailDialog, QuantityStepper, RatePickerDialog } from "@/components/kiosk/modals/dialog-variants";
 import { KioskDialog } from "@/components/kiosk/modals/kiosk-dialog";
-import { KioskFooterBar } from "@/components/kiosk/nav/kiosk-footer-bar";
+import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { RATES_FOR_TIME, TEE_TIMES } from "@/data/booking";
 import { SlotCard } from "@/components/kiosk/booking/slot-card";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
@@ -38,7 +38,7 @@ type Story = StoryObj<typeof meta>;
 const Stage = ({ children }: { children: (open: boolean, set: (v: boolean) => void) => React.ReactNode }) => {
     const [isOpen, setIsOpen] = useState(true);
     return (
-        <KioskScreen footer={<KioskFooterBar />}>
+        <KioskScreen footer={<GlobalNav />}>
             <div className="flex flex-col gap-4 p-8">
                 <h1 className="text-4xl font-bold text-primary">Book a time</h1>
                 <div className="grid grid-cols-2 gap-3">

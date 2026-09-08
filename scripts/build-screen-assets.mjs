@@ -50,6 +50,13 @@ const ASSETS = [
     // as "nothing here yet", which is what an empty bag actually is.
     { from: "addedBag/Group 26.svg", to: "order/empty-bag.svg" },
 
+    // Order successful. The wordmark lockup is a different drawing from the
+    // circular brand mark, not a wide crop of it, and the tick is the session's
+    // sign-off rather than a status icon borrowed from the set.
+    { from: "orderSuccessful/Layer_1.svg", to: "order/golf-cart.svg" },
+    { from: "orderSuccessful/tf-logo.svg", to: "order/wordmark.svg" },
+    { from: "orderSuccessful/loggedOut.svg", to: "order/logged-out-tick.svg" },
+
     // The cancel-order warning. Replaces the icon-set AlertTriangle: the export
     // is a filled mark with its own cast shadow, drawn at 160x180 — a different
     // object from a 112px stroked glyph, not a resize of one.

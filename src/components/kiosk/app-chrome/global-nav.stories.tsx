@@ -168,3 +168,34 @@ export const OrderSummary: Story = {
         />
     ),
 };
+
+/**
+ * Guest checkout, from `references/flows/2-2/Kiosk-9.png`.
+ *
+ * Order More fills the left gutter the totals column leaves empty rather than
+ * splitting Complete Order's width, so the commit button is the same size and
+ * in the same place whether or not the secondary is there.
+ *
+ * The wallet drawer returns, reading **"Scan or tap to"** rather than "Tap your
+ * wallet below": by checkout the wallet is a way to pay, not a way to identify
+ * yourself, and a guest who scans here still gets their points.
+ */
+export const OrderSummaryGuest: Story = {
+    args: {},
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: () => (
+        <NavHarness
+            label="Order review area"
+            footer={
+                <OrderSummaryNav
+                    subtotalCents={1499}
+                    taxCents={124}
+                    onCompleteOrder={() => {}}
+                    onOrderMore={() => {}}
+                    onStartOver={() => {}}
+                    showWalletDrawer
+                />
+            }
+        />
+    ),
+};

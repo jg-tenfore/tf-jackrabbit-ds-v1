@@ -64,11 +64,11 @@ export const MENU_ITEMS: MenuItem[] = [
     item("hot-dog", "Hot Dog", "sandwiches", 899, 380),
     item("soft-pretzel", "Soft Pretzel", "sandwiches", 699, 480),
 
-    item("potato-chips", "Potato Chips", "snacks", 299, 240),
-    item("snickers", "Snickers", "snacks", 325, 250),
-    item("granola-bar", "Granola Bar", "snacks", 275, 100),
-    item("cookie", "Chocolate Chip Cookie", "snacks", 350, 300),
-    item("fruit-cup", "Fruit Cup", "snacks", 599, 90),
+    item("potato-chips", "Potato Chips", "sandwiches", 299, 240),
+    item("snickers", "Snickers", "sandwiches", 325, 250),
+    item("granola-bar", "Granola Bar", "sandwiches", 275, 100),
+    item("cookie", "Chocolate Chip Cookie", "sandwiches", 350, 300),
+    item("fruit-cup", "Fruit Cup", "sandwiches", 599, 90),
 
     item("bottle-of-water", "Bottle of Water", "beverages", 250, 0),
     item("sports-drink", "Sports Drink", "beverages", 450, 140),
@@ -83,13 +83,18 @@ export const MENU_ITEMS: MenuItem[] = [
     item("craft-beer", "Craft Beer", "beer", 900, 210),
     item("hard-seltzer", "Hard Seltzer", "beer", 800, 100),
 
-    item("wine", "Wine", "cocktails", 1100, 125),
-    item("cocktail", "Cocktail", "cocktails", 1300, 180),
-    item("bloody-mary", "Bloody Mary", "cocktails", 1200, 200),
+    item("wine", "Wine", "beer", 1100, 125),
+    item("cocktail", "Cocktail", "beer", 1300, 180),
+    item("bloody-mary", "Bloody Mary", "beer", 1200, 200),
 ];
 
 /**
- * Categories, in rail order.
+ * Categories, in rail order — the six the reference rail draws.
+ *
+ * Snacks and cocktails are folded into Sandwiches and Beer rather than given
+ * rows of their own. The rail is the one piece of chrome a standing user scans
+ * top to bottom before touching anything, so it is worth keeping short; the
+ * sub-filters above the grid are where those items get separated again.
  *
  * Golf Balls, Memberships and Clothes come from the pro-shop side of the same
  * kiosk — the references show food and merchandise in one rail, because a
@@ -98,9 +103,7 @@ export const MENU_ITEMS: MenuItem[] = [
 export const MENU_CATEGORIES = [
     { id: "sandwiches", label: "Sandwiches", iconSrc: icon("sandwiches") },
     { id: "beer", label: "Beer", iconSrc: icon("beer") },
-    { id: "cocktails", label: "Cocktails", iconSrc: icon("beer") },
     { id: "beverages", label: "Beverages", iconSrc: icon("beverages") },
-    { id: "snacks", label: "Snacks", iconSrc: icon("sandwiches") },
     { id: "golf-balls", label: "Golf Balls", iconSrc: icon("golf-balls") },
     { id: "memberships", label: "Memberships", iconSrc: icon("memberships") },
     { id: "clothes", label: "Clothes", iconSrc: icon("clothes") },
@@ -116,11 +119,9 @@ export const MENU_DESTINATIONS = [
 
 /** Sub-filters offered above the grid, per category. */
 export const MENU_SUBFILTERS: Record<string, string[]> = {
-    sandwiches: ["All", "Hot", "Cold", "Vegetarian"],
+    sandwiches: ["All", "Hot", "Cold", "Snacks"],
     beverages: ["All", "Water", "Soft Drinks", "Juices", "Energy Drinks"],
-    beer: ["All", "Domestic", "Craft", "Seltzer"],
-    cocktails: ["All", "Wine", "Mixed"],
-    snacks: ["All", "Sweet", "Savory"],
+    beer: ["All", "Domestic", "Craft", "Seltzer", "Wine & Cocktails"],
 };
 
 export const itemsInCategory = (categoryId: string) => MENU_ITEMS.filter((i) => i.category === categoryId);

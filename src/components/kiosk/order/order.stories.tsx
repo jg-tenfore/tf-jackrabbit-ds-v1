@@ -1,11 +1,14 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
+import { OrderSummaryNav } from "@/components/kiosk/app-chrome/order-summary-nav";
+import { SignedOutCard } from "@/components/kiosk/app-chrome/wallet-drawer";
 import { ProductDetailDialog } from "@/components/kiosk/modals/dialog-variants";
 import { CheckoutMethodFullScreen, DestructiveConfirmFullScreen } from "@/components/kiosk/modals/full-screen-variants";
 import { AddedToBagScreen } from "@/components/kiosk/order/added-to-bag-screen";
 import { MenuScreen } from "@/components/kiosk/order/menu-screen";
 import { OrderReviewScreen, type OrderLine } from "@/components/kiosk/order/order-review-screen";
+import { OrderSuccessfulScreen } from "@/components/kiosk/order/order-successful-screen";
 import { TakeoutChoiceScreen } from "@/components/kiosk/order/takeout-choice-screen";
 import { ProductImage } from "@/components/kiosk/store/product-image";
 import { MENU_ITEMS, type MenuItem } from "@/data/menu-catalog";
@@ -102,7 +105,13 @@ export const ItemAddedToBag: Story = {
     ),
 };
 
-/** The cart. Steppers and Remove live on each line, not behind the dialog. */
+/**
+ * The cart, with the totals rail beneath it.
+ *
+ * `OrderSummaryNav` carries Sub Total / Tax / Total and the commit button, so
+ * the screen's own totals block is switched off — two of them on one screen is
+ * not a redundancy a user forgives.
+ */
 export const YourOrder: Story = {
     decorators: [withKioskSession(), withKioskFrame()],
     render: function Cart() {
@@ -111,15 +120,27 @@ export const YourOrder: Story = {
             line("bottle-of-water", 1),
             line("snickers", 1),
         ]);
-        const total = lines.reduce((t, l) => t + l.item.priceCents * l.quantity, 0);
+        const subtotal = lines.reduce((t, l) => t + l.item.priceCents * l.quantity, 0);
+        const tax = Math.round(subtotal * 0.0825);
         return (
-            <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={lines.length} cartTotal={total / 100} />}>
+            <KioskScreen
+                scroll={false}
+                footer={
+                    <OrderSummaryNav
+                        subtotalCents={subtotal}
+                        taxCents={tax}
+                        onCompleteOrder={() => {}}
+                        onOrderMore={() => {}}
+                        onStartOver={() => {}}
+                    />
+                }
+            >
                 <OrderReviewScreen
                     lines={lines}
+                    showTotals={false}
                     onChangeQuantity={(id, q) => setLines((prev) => prev.map((l) => (l.item.id === id ? { ...l, quantity: q } : l)))}
                     onRemove={(id) => setLines((prev) => prev.filter((l) => l.item.id !== id))}
-                    onOrderMore={() => {}}
-                    onCompleteOrder={() => {}}
+                    onViewDetails={() => {}}
                 />
             </KioskScreen>
         );
@@ -193,6 +214,41 @@ export const TakeoutChoice: Story = {
     render: () => (
         <KioskScreen scroll={false} footer={<GlobalNav />}>
             <TakeoutChoiceScreen onChoose={() => {}} onBack={() => {}} />
+        </KioskScreen>
+    ),
+};
+
+/**
+ * The last screen of a session.
+ *
+ * The whole surface is the dismiss target — no button, because there is no
+ * decision left, and a user who walks away gets the same result when the
+ * session times out.
+ *
+ * The rail is at its **third and last state**: no Start Over, no drawer, no
+ * identity card, just the sign-off tick. Everything the rail spends a session
+ * offering is now moot, and leaving Start Over on a finished order would invite
+ * a tap that does nothing.
+ *
+ * **Copy note:** the subtitle reads "The selections you have chosen will be
+ * removed." because that is what the reference draws, but it is the cancel
+ * screen's line and on a successful order it reads as a warning. It is a prop,
+ * so swapping it is a one-line change.
+ */
+export const OrderSuccessful: Story = {
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: () => (
+        <KioskScreen
+            scroll={false}
+            footer={
+                <div className="relative h-[110px] w-full bg-primary">
+                    <div className="absolute right-16 bottom-0">
+                        <SignedOutCard />
+                    </div>
+                </div>
+            }
+        >
+            <OrderSuccessfulScreen onDismiss={() => {}} />
         </KioskScreen>
     ),
 };
