@@ -50,6 +50,14 @@ const ASSETS = [
     // object from a 112px stroked glyph, not a resize of one.
     { from: "cancelOrder/cancel-icon.svg", to: "order/cancel-icon.svg" },
 
+    // Get Started card imagery. Exported at 500x298 for a 250px render — 2x
+    // exactly — and renamed on the way in, because the Shutterstock ids say
+    // nothing about which card each belongs to.
+    { from: "getStarted/Buttons/shutterstock_1730517022 1.png", to: "get-started/first-time.png", renderWidth: 250 },
+    { from: "getStarted/Buttons/shutterstock_1730517022 2.png", to: "get-started/check-in.png", renderWidth: 250 },
+    { from: "getStarted/Buttons/shutterstock_1730517022 2-1.png", to: "get-started/tee-time.png", renderWidth: 250 },
+    { from: "getStarted/Buttons/shutterstock_1730517022 2-2.png", to: "get-started/shop.png", renderWidth: 250 },
+
     // Checkout payment methods. No ground strip: these sit on a white card and
     // their baked white rect is the card colour, not a stray backdrop.
     { from: "checkoutPayment/checkout-creditCards.svg", to: "checkout/card.svg" },
