@@ -177,8 +177,8 @@ export const CategoryRail = ({
 }) => (
     <nav aria-label="Menu categories" className={cx("absolute top-0 -left-16 z-10 flex w-[272px] flex-col gap-5", className)}>
         {logoSrc && (
-            <div className="flex h-[152px] items-center justify-center rounded-r-2xl bg-primary pl-16 shadow-sm ring-1 ring-border-secondary">
-                <img src={logoSrc} alt="" aria-hidden="true" className="size-20" />
+            <div className="flex h-[152px] items-center justify-start rounded-r-2xl bg-primary pl-16 shadow-sm ring-1 ring-border-secondary">
+                <img src={logoSrc} alt="" aria-hidden="true" className="size-24" />
             </div>
         )}
 
@@ -212,10 +212,16 @@ const RailRow = ({ entry, isActive = false, onPress }: { entry: RailEntry; isAct
         type="button"
         onClick={onPress}
         aria-current={isActive ? "true" : undefined}
-        className="flex h-16 items-center gap-3 pr-6 pl-20 text-left transition duration-100 ease-linear active:bg-secondary"
+        // pl-16 exactly cancels the rail's -left-16, so the icon starts on the
+        // canvas edge. The card itself still runs off-screen to the left, which
+        // is what gives the group its one-sided rounding.
+        className="flex h-16 items-center gap-3 pr-6 pl-16 text-left transition duration-100 ease-linear active:bg-secondary"
     >
         {entry.iconSrc ? (
-            <img src={entry.iconSrc} alt="" aria-hidden="true" className="size-8 shrink-0 object-contain" />
+            // Full row height. The exports are 128x128 with the artwork inset in
+            // its box, so a 32px slot was drawing a ~24px glyph — which is why
+            // these read as small next to their labels at any label size.
+            <img src={entry.iconSrc} alt="" aria-hidden="true" className="size-16 shrink-0 object-contain" />
         ) : (
             <span data-placeholder-asset="category-icon" className="size-7 shrink-0 rounded bg-secondary" aria-hidden="true" />
         )}
