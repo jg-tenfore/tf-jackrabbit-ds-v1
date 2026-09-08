@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Check } from "@untitledui/icons";
 import { cx } from "@/utils/cx";
 
@@ -103,7 +104,7 @@ export const FilterRail = ({
     onChange: (groupId: string, optionId: string) => void;
     className?: string;
 }) => (
-    <nav aria-label="Tee sheet filters" className={cx("absolute top-0 -left-16 z-10 flex w-[272px] flex-col gap-6", className)}>
+    <nav aria-label="Tee sheet filters" className={cx("absolute top-0 -left-16 z-10 flex w-[272px] flex-col gap-5", className)}>
         {groups.map((group) => (
             <div key={group.id} className="flex flex-col">
                 {group.options.map((option) => {
@@ -145,6 +146,12 @@ export const FilterRail = ({
  * Deals, Members); the bottom is the category the grid is currently showing.
  * They are separated by a gap rather than a divider, because a divider would
  * read as one list with a rule through it rather than two lists.
+ *
+ * Each group is **one card** with hairline rules between its rows, not a stack
+ * of separate cards. Per-row cards gave every entry its own shadow and rounded
+ * edge, which made ten peers read as ten objects; grouping them makes the two
+ * lists the objects and the rows their contents, which is what the sections are
+ * for in the first place.
  */
 export interface RailEntry {
     id: string;
@@ -168,25 +175,36 @@ export const CategoryRail = ({
     logoSrc?: string;
     className?: string;
 }) => (
-    <nav aria-label="Menu categories" className={cx("absolute top-0 -left-16 z-10 flex w-[272px] flex-col gap-6", className)}>
+    <nav aria-label="Menu categories" className={cx("absolute top-0 -left-16 z-10 flex w-[272px] flex-col gap-5", className)}>
         {logoSrc && (
-            <div className="flex h-[152px] items-center justify-end rounded-r-2xl bg-primary pr-8 shadow-sm ring-1 ring-border-secondary">
+            <div className="flex h-[152px] items-center justify-center rounded-r-2xl bg-primary pl-16 shadow-sm ring-1 ring-border-secondary">
                 <img src={logoSrc} alt="" aria-hidden="true" className="size-20" />
             </div>
         )}
 
-        <div className="flex flex-col">
+        <RailGroup>
             {destinations.map((entry) => (
                 <RailRow key={entry.id} entry={entry} onPress={() => onSelect?.(entry.id)} />
             ))}
-        </div>
+        </RailGroup>
 
-        <div className="flex flex-col">
+        <RailGroup>
             {categories.map((entry) => (
                 <RailRow key={entry.id} entry={entry} isActive={entry.id === activeCategoryId} onPress={() => onSelect?.(entry.id)} />
             ))}
-        </div>
+        </RailGroup>
     </nav>
+);
+
+/**
+ * One card per group. `divide-y` puts the rule *between* rows only, so the
+ * card's own top and bottom edges stay clean; `overflow-hidden` is what lets a
+ * pressed row's background stop at the rounded corner.
+ */
+const RailGroup = ({ children }: { children: ReactNode }) => (
+    <div className="flex flex-col divide-y divide-border-secondary overflow-hidden rounded-r-2xl bg-primary shadow-sm ring-1 ring-border-secondary">
+        {children}
+    </div>
 );
 
 const RailRow = ({ entry, isActive = false, onPress }: { entry: RailEntry; isActive?: boolean; onPress?: () => void }) => (
@@ -194,7 +212,7 @@ const RailRow = ({ entry, isActive = false, onPress }: { entry: RailEntry; isAct
         type="button"
         onClick={onPress}
         aria-current={isActive ? "true" : undefined}
-        className="flex h-16 items-center gap-3 rounded-r-2xl bg-primary pr-6 pl-20 text-left shadow-sm ring-1 ring-border-secondary transition duration-100 ease-linear active:bg-secondary"
+        className="flex h-16 items-center gap-3 pr-6 pl-20 text-left transition duration-100 ease-linear active:bg-secondary"
     >
         {entry.iconSrc ? (
             <img src={entry.iconSrc} alt="" aria-hidden="true" className="size-8 shrink-0 object-contain" />
@@ -204,7 +222,10 @@ const RailRow = ({ entry, isActive = false, onPress }: { entry: RailEntry; isAct
         <span
             className={cx(
                 "text-[17px] whitespace-nowrap",
-                isActive ? "font-semibold text-brand-secondary underline decoration-2 underline-offset-8" : "text-primary",
+                // A thicker rule further from the baseline than the default: at
+                // arm's length a 2px underline sitting tight under the text
+                // reads as part of the letterforms rather than as a marker.
+                isActive ? "font-semibold text-brand-secondary underline decoration-[3px] underline-offset-[10px]" : "text-primary",
             )}
         >
             {entry.label}

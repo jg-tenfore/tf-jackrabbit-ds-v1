@@ -26,10 +26,10 @@ export interface ChoiceOption {
 const styles = sortCx({
     lg: {
         card: "h-[248px] bg-secondary px-6 pt-5 pb-6",
-        image: "h-[154px]",
+        image: "h-[140px]",
         eyebrow: "text-[16px]",
         title: "text-[19px]",
-        titleRow: "mt-1 gap-3",
+        titleRow: "mt-0.5 gap-3",
         arrow: "size-7",
     },
     sm: {
@@ -37,7 +37,7 @@ const styles = sortCx({
         image: "h-[130px]",
         eyebrow: "text-[15px]",
         title: "text-[17px]",
-        titleRow: "mt-1 gap-2",
+        titleRow: "mt-0.5 gap-2",
         arrow: "size-6",
     },
 });
@@ -48,10 +48,14 @@ const styles = sortCx({
  * across a row. Titles are sized to keep the longest label on one line beside
  * its arrow — a wrap grows the block upward into the photo.
  *
- * Both lines set `leading-none` and sit 4px apart. Because the block is
- * bottom-anchored, tightening the pair does two things at once: the eyebrow and
- * title read as one unit, and the whole block drops away from the photograph
- * instead of crowding it.
+ * Both lines set `leading-none` and sit 2px apart, so eyebrow and title read as
+ * a single unit rather than two stacked labels.
+ *
+ * Separating that unit from the photograph is a *second* adjustment, and it
+ * comes from the photo being shorter than the space it sits in — not from
+ * padding under it. Because the text block is bottom-anchored, only shrinking
+ * the image opens real air between the two; tightening the type alone just
+ * shuffles the lines within the same gap.
  */
 export const ChoiceCard = ({
     option,
