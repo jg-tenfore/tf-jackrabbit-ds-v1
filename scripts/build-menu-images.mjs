@@ -60,12 +60,6 @@ const SHOTS = {
 };
 
 /**
- * Food shots that arrived with the screen exports rather than the POS capture.
- * Same treatment, different source folder.
- */
-const EXTRA = [{ from: "references/build/store/transfusion.png", id: "transfusion" }];
-
-/**
  * Food and drink, from `references/food-imagery`.
  *
  * That folder is a scrape: 500+ files, every product duplicated at two sizes,
@@ -110,10 +104,14 @@ const FOOD = {
     "quesadilla": "c67fc65e9b4e16a553eb7574fba090f1 (14).jpeg",
     "snickers": "large_0e15ff38-a081-4deb-be49-b773badaa93c (2).webp",
     "takis": "large_21e102ac-f17b-4096-a876-65452ddd0098 (2).webp",
-    "transfusion": "2dd4bb_3b69255d13b040a4a2429d3d02784fa0~mv2.png",
 };
 
 const COCKTAILS = {
+    // A Transfusion is vodka, ginger ale and Concord grape over ice with lime,
+    // so it needs a red drink in a rocks glass. The closest shots in the folder
+    // sit on a soft grey reflection and the white-ground check rejects them;
+    // this one has the same serve on a clean ground.
+    "cranberry-orange-whiskey-sour": "transfusion",
     "cape-codder": "cape-codder",
     "whiskey-sour-isolated": "whiskey-sour",
     "classic-gin-tonic": "gin-and-tonic",
@@ -209,19 +207,6 @@ for (const [key, id] of Object.entries(SHOTS)) {
     console.log(`  ${id.padEnd(18)} ${(size / 1024).toFixed(0)}KB`);
 }
 
-for (const extra of EXTRA) {
-    const dest = path.join(OUT, `${extra.id}.webp`);
-    await sharp(path.join(ROOT, extra.from))
-        .flatten({ background: "#ffffff" })
-        .trim({ background: "#ffffff", threshold: 12 })
-        .resize({ width: MAX_EDGE, height: MAX_EDGE, fit: "inside", withoutEnlargement: true })
-        .webp({ quality: WEBP_QUALITY })
-        .toFile(dest);
-    const { size } = await stat(dest);
-    bytes += size;
-    written++;
-    console.log(`  ${extra.id.padEnd(18)} ${(size / 1024).toFixed(0)}KB`);
-}
 
 const foodDir = path.join(ROOT, "references/food-imagery");
 for (const [id, file] of Object.entries(FOOD)) {
