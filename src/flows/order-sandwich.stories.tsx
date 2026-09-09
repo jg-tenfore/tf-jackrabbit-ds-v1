@@ -7,6 +7,7 @@ import { ProductDetailDialog } from "@/components/kiosk/modals/dialog-variants";
 import { CheckoutMethodFullScreen, DestructiveConfirmFullScreen } from "@/components/kiosk/modals/full-screen-variants";
 import { AddedToBagScreen } from "@/components/kiosk/order/added-to-bag-screen";
 import { MenuScreen } from "@/components/kiosk/order/menu-screen";
+import { HomeScreen } from "@/components/kiosk/screens/home-screen";
 import { OrderReviewScreen, type OrderLine } from "@/components/kiosk/order/order-review-screen";
 import { CustomizeItemScreen } from "@/components/kiosk/order/customize-item-screen";
 import { FollowInstructionsScreen } from "@/components/kiosk/order/follow-instructions-screen";
@@ -15,6 +16,7 @@ import { TakeoutChoiceScreen } from "@/components/kiosk/order/takeout-choice-scr
 import { ProductImage } from "@/components/kiosk/store/product-image";
 import { MENU_ITEMS, type MenuItem } from "@/data/menu-catalog";
 import { MEMBERS } from "@/data/members";
+import { PRO_SHOP_PRODUCTS } from "@/data/pro-shop-catalog";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
@@ -24,13 +26,15 @@ const meta = {
         layout: "fullscreen",
         docs: {
             description: {
-                component: `The chicken-sandwich path end to end: browse → item detail → added to bag → review → checkout.
+                component: `The chicken-sandwich path end to end, **signed in throughout**: store home → browse → item detail → customize → added to bag → review → takeout → checkout → receipt.
+
+Every story here runs with a member in the session, because that is what this reference folder documents. The rail therefore carries the identity card rather than the wallet drawer on every screen — a difference that is not cosmetic: a signed-in user shown a "log in" prompt at checkout is a bug, so the drawer is driven off the session rather than a prop.
 
 The **category rail** is a third mode of the same geometry the booking rails use (\`step-rail.tsx\`), so the clip offset, width and radius stay one set of numbers rather than three copies that drift.
 
 **Sub-filters are per category.** The reference shows beverage filters (Water, Soft Drinks, Juices) sitting under a Sandwiches heading, which only makes sense as a mock artefact — they are keyed by category here.
 
-**Food imagery is not exported yet.** The catalogue points at \`menu-images/\`, and \`ProductImage\` renders a deliberate empty state rather than a broken-image glyph, so these screens are reviewable now and the swap is a drop-in later. The catalogue uses the same shape as the pro-shop one so both feed the same cards.`,
+**Food and merchandise share one catalogue shape.** \`MenuItem\` is \`ProShopProduct\` plus calories, so a sleeve of golf balls and a chicken sandwich feed the same card — which is what lets the store home screen put both in one grid. Anything without a shot yet renders \`ProductImage\`'s deliberate empty state rather than a broken-image glyph.`,
             },
         },
     },
@@ -45,9 +49,39 @@ const line = (id: string, quantity: number, modifiers?: string[]): OrderLine => 
     modifiers,
 });
 
+/** Merchandise with real pack shots, so the featured row is reviewable today. */
+const FEATURED = ["titleist-pro-v1-sleeve", "taylormade-tp5-sleeve", "titleist-avx-sleeve"]
+    .map((id) => PRO_SHOP_PRODUCTS.find((p) => p.id === id))
+    .filter((p): p is (typeof PRO_SHOP_PRODUCTS)[number] => Boolean(p));
+
+/**
+ * The store landing — where "Shop Food & Gear" arrives.
+ *
+ * A merchandising screen, not a browse one: the rail already answers "where do
+ * I go", so this answers "what is worth buying today" with a promo, four
+ * shortcuts and one featured row, then gets out of the way.
+ *
+ * The greeting is a **prop, not the clock**. Deriving it from `Date` would make
+ * this story render differently depending on when a screenshot was taken, which
+ * turns a pixel diff into a coin flip.
+ *
+ * The reference draws the featured row as "New Hats". There is no hat
+ * photography in the catalogue yet, and three empty states would say nothing
+ * about the layout, so it is fed the sleeves that do have shots — the row is
+ * data, and swapping it is a one-line change once the hats land.
+ */
+export const StoreHome: Story = {
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
+    render: () => (
+        <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={0} cartTotal={0} />}>
+            <HomeScreen featuredTitle="New Arrivals" featuredItems={FEATURED} />
+        </KioskScreen>
+    ),
+};
+
 /** Browse. Tap a tile to open the item dialog. */
 export const Menu: Story = {
-    decorators: [withKioskSession(), withKioskFrame()],
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
     render: function Browse() {
         const [selected, setSelected] = useState<MenuItem | null>(null);
         return (
@@ -71,9 +105,9 @@ export const Menu: Story = {
 
 /** Sold-out handling — the state a live menu hits every day. */
 export const MenuWithSoldOut: Story = {
-    decorators: [withKioskSession(), withKioskFrame()],
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
     render: () => (
-        <KioskScreen scroll={false} footer={<GlobalNav />}>
+        <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={0} cartTotal={0} />}>
             <MenuScreen soldOutIds={["soft-pretzel", "hot-dog"]} />
         </KioskScreen>
     ),
@@ -81,9 +115,9 @@ export const MenuWithSoldOut: Story = {
 
 /** The item dialog, opened over the menu it came from. */
 export const ItemDetail: Story = {
-    decorators: [withKioskSession(), withKioskFrame()],
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
     render: () => (
-        <KioskScreen scroll={false} footer={<GlobalNav />}>
+        <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={0} cartTotal={0} />}>
             <MenuScreen />
             <ProductDetailDialog
                 isOpen
@@ -97,9 +131,53 @@ export const ItemDetail: Story = {
     ),
 };
 
+/**
+ * A second category, reached from the rail.
+ *
+ * Worth its own story rather than being read as "Menu with a different prop":
+ * Beverages is the category that actually exercises the sub-filter row (Water,
+ * Soft Drinks, Juices, Energy Drinks), and it is the one where the grid runs
+ * past the fold — both of which Sandwiches leaves untested.
+ */
+export const MenuBeverages: Story = {
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
+    render: () => (
+        <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={0} cartTotal={0} />}>
+            <MenuScreen initialCategoryId="beverages" />
+        </KioskScreen>
+    ),
+};
+
+/**
+ * The same dialog for something with nothing to customize.
+ *
+ * `Customize Ingredients` is absent rather than disabled. A greyed control
+ * invites a tap and then explains nothing; a bottle of water has no
+ * ingredients to argue about, so the row simply is not there and the quantity
+ * stepper takes the space.
+ */
+export const ItemDetailNoCustomize: Story = {
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
+    render: () => {
+        const water = MENU_ITEMS.find((i) => i.id === "bottle-of-water")!;
+        return (
+            <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={1} cartTotal={14.99} />}>
+                <MenuScreen initialCategoryId="beverages" />
+                <ProductDetailDialog
+                    isOpen
+                    onOpenChange={() => {}}
+                    name={water.name}
+                    priceCents={water.priceCents}
+                    imageSlot={<ProductImage src={water.image} alt={water.name} className="size-48" />}
+                />
+            </KioskScreen>
+        );
+    },
+};
+
 /** The confirmation beat. No actions — it confirms and gets out of the way. */
 export const ItemAddedToBag: Story = {
-    decorators: [withKioskSession(), withKioskFrame()],
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
     render: () => (
         <KioskScreen scroll={false}>
             <AddedToBagScreen itemCount={1} totalCents={1499} />
@@ -115,7 +193,7 @@ export const ItemAddedToBag: Story = {
  * not a redundancy a user forgives.
  */
 export const YourOrder: Story = {
-    decorators: [withKioskSession(), withKioskFrame()],
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
     render: function Cart() {
         const [lines, setLines] = useState<OrderLine[]>([
             line("cheeseburger", 1, ["No Pickles", "Extra Mayo"]),
@@ -149,19 +227,85 @@ export const YourOrder: Story = {
     },
 };
 
-/** Empty cart — Complete Order disables rather than failing on tap. */
-export const EmptyOrder: Story = {
-    decorators: [withKioskSession(), withKioskFrame()],
+/**
+ * The order **as it is first opened** — one line, and the tax on it.
+ *
+ * Kept separate from the three-line cart because the single-line case is where
+ * the layout is least forgiving: nothing below the row holds the totals block
+ * down, so any drift in the review screen's flex behaviour shows here first and
+ * nowhere else.
+ */
+export const SingleItemOrder: Story = {
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
+    render: () => {
+        const lines = [line("chicken-sandwich", 1, ["No Pickles", "Extra Mayo"])];
+        const subtotal = lines.reduce((t, l) => t + l.item.priceCents * l.quantity, 0);
+        return (
+            <KioskScreen
+                scroll={false}
+                footer={
+                    <OrderSummaryNav
+                        subtotalCents={subtotal}
+                        taxCents={Math.round(subtotal * 0.0825)}
+                        onCompleteOrder={() => {}}
+                        onOrderMore={() => {}}
+                        onStartOver={() => {}}
+                    />
+                }
+            >
+                <OrderReviewScreen lines={lines} showTotals={false} onViewDetails={() => {}} />
+            </KioskScreen>
+        );
+    },
+};
+
+/**
+ * Removing one line — a card-weight decision, not an order-weight one.
+ *
+ * It borrows the destructive full screen the cancel path uses, but the copy is
+ * scoped to the item: "this item from your cart", not "the selections you have
+ * chosen". One line is a tap away from being re-added, so the wording should
+ * not imply the session is at stake.
+ */
+export const RemoveItemConfirm: Story = {
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
     render: () => (
-        <KioskScreen scroll={false} footer={<GlobalNav />}>
-            <OrderReviewScreen lines={[]} onOrderMore={() => {}} />
+        <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={3} cartTotal={22.45} />}>
+            <OrderReviewScreen lines={[line("chicken-sandwich", 1, ["No Pickles", "Extra Mayo"]), line("bottle-of-water", 1), line("mms", 1)]} />
+            <DestructiveConfirmFullScreen
+                isOpen
+                onOpenChange={() => {}}
+                title="Remove item?"
+                body="Are you sure you want to remove this item from your cart?"
+                confirmLabel="Remove"
+                onConfirm={() => {}}
+            />
+        </KioskScreen>
+    ),
+};
+
+/**
+ * Empty cart — Complete Order disables rather than failing on tap.
+ *
+ * The totals rail stays, showing $0.00 across all three rows. Hiding it would
+ * make the screen change shape as the last item is removed, and the numbers
+ * going to zero is the clearest possible confirmation that the removal worked.
+ */
+export const EmptyOrder: Story = {
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
+    render: () => (
+        <KioskScreen
+            scroll={false}
+            footer={<OrderSummaryNav subtotalCents={0} taxCents={0} isCompleteDisabled onOrderMore={() => {}} onStartOver={() => {}} />}
+        >
+            <OrderReviewScreen lines={[]} showTotals={false} />
         </KioskScreen>
     ),
 };
 
 /** Checkout, reusing the full-screen modal already built for booking. */
 export const Checkout: Story = {
-    decorators: [withKioskSession(), withKioskFrame()],
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
     render: () => (
         <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={3} cartTotal={22.45} />}>
             <OrderReviewScreen lines={[line("cheeseburger", 1), line("bottle-of-water", 1), line("snickers", 1)]} />
@@ -183,7 +327,7 @@ export const Checkout: Story = {
  * never be the one a hurried thumb finds by default.
  */
 export const CancelOrder: Story = {
-    decorators: [withKioskSession(), withKioskFrame()],
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
     render: () => (
         <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={3} cartTotal={22.45} />}>
             <OrderReviewScreen lines={[line("cheeseburger", 1), line("bottle-of-water", 1), line("snickers", 1)]} />
@@ -238,7 +382,7 @@ export const TakeoutChoice: Story = {
  * so swapping it is a one-line change.
  */
 export const OrderSuccessful: Story = {
-    decorators: [withKioskSession(), withKioskFrame()],
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
     render: () => (
         <KioskScreen
             scroll={false}
