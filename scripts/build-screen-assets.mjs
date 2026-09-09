@@ -70,6 +70,10 @@ const ASSETS = [
     { from: "getStarted/Buttons/shutterstock_1730517022 2-1.png", to: "get-started/tee-time.png", renderWidth: 250 },
     { from: "getStarted/Buttons/shutterstock_1730517022 2-2.png", to: "get-started/shop.png", renderWidth: 250 },
 
+    // The two activities the v2 layout adds. Same export batch, same 2x.
+    { from: "getStarted-v2/shutterstock_1730517022 2-3.png", to: "get-started/pickleball.png", renderWidth: 250 },
+    { from: "getStarted-v2/shutterstock_1730517022 2-4.png", to: "get-started/simulator.png", renderWidth: 250 },
+
     // Takeout choice. Both exports carry a large transparent headroom above the
     // artwork — the drawing sits in the lower half of its box — so they are
     // bottom-anchored in their cards and the empty top harmlessly overlaps the

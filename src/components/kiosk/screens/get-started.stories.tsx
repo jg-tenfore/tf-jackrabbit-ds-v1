@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { GET_STARTED_OPTIONS, GetStartedScreen } from "@/components/kiosk/screens/get-started-screen";
+import { GET_STARTED_OPTIONS, GET_STARTED_OPTIONS_WITH_ACTIVITIES, GetStartedScreen } from "@/components/kiosk/screens/get-started-screen";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
@@ -26,6 +26,24 @@ No global nav. Go Back is the only control, because there is nowhere to return t
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+/**
+ * With the bookable activities — pickleball courts and simulator bays.
+ *
+ * The same screen with two more options, not a second layout: the grid takes
+ * whatever it is given and lays it out two across, and the space above and
+ * below distributes itself, so three rows fit without a fixed gap having to be
+ * retuned. A venue with no courts and no bays simply passes the shorter set.
+ */
+export const WithActivities: Story = {
+    args: { options: GET_STARTED_OPTIONS_WITH_ACTIVITIES },
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: (args) => (
+        <KioskScreen scroll={false}>
+            <GetStartedScreen {...args} onSelect={() => {}} onBack={() => {}} />
+        </KioskScreen>
+    ),
+};
 
 /** All four ways in, as the reference draws them. */
 export const Default: Story = {
