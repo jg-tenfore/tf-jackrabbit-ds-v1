@@ -28,12 +28,6 @@ const preview: Preview = {
                         "Kiosk Booking",
                         "Kiosk Store",
                         "Marquee",
-                        "Actions",
-                        "Forms",
-                        "Feedback & Status",
-                        "Layout & Structure",
-                        "Media & Visuals",
-                        "Navigation",
                     ],
                     // Persistent chrome that frames every screen.
                     "App Chrome",
@@ -55,6 +49,13 @@ const preview: Preview = {
                         "Waitlist Reg",
                         "Standby",
                     ],
+                    // The ported Untitled UI library. Nothing in any flow imports
+                    // it — a dependency trace from every flow story reaches zero
+                    // of its 221 files — so it sits last and says so in its name.
+                    // Kept as source material to pull from, not as part of the
+                    // kiosk system.
+                    "Library (unused)",
+                    ["Actions", "Forms", "Feedback & Status", "Layout & Structure", "Media & Visuals", "Navigation"],
                 ],
             },
         },

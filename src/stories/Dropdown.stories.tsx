@@ -23,7 +23,7 @@ import { DropdownSearchSimple } from "@/components/base/dropdown/dropdown-search
  * `MenuTrigger`; compose with `Dropdown.Root / Popover / Menu / Item`.
  */
 const meta = {
-    title: "Components/Actions/Dropdown",
+    title: "Library (unused)/Actions/Dropdown",
     component: Dropdown.Item,
     parameters: { layout: "centered" },
 } satisfies Meta<typeof Dropdown.Item>;

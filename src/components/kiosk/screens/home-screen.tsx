@@ -122,9 +122,10 @@ export const HomeScreen = ({
                     onClick={() => onSelectCategory?.(promo.categoryId ?? "deals")}
                     className="block w-full overflow-hidden rounded-2xl ring-1 ring-border-secondary transition duration-100 ease-linear active:scale-[0.99]"
                 >
-                    {/* Its own aspect, not a fixed height: the banner is one
-                        composition and cropping it to a band is what cut the can
-                        off in the first place. */}
+                    {/* Native aspect, so nothing is cut. Cropping it to the
+                        150 of a tile row loses the logo off the top and the
+                        can's base off the bottom — the artwork has no dead
+                        margin to give. */}
                     <img src={assetUrl(promo.banner)} alt={promo.alt} className="block w-full" />
                 </button>
             )}

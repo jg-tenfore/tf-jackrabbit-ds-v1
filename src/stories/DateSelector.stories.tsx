@@ -9,7 +9,7 @@ import { DateSelector } from "@/components/booking/date-selector";
  * Works controlled (`value` + `onChange`) or uncontrolled (`defaultValue`).
  */
 const meta = {
-    title: "Components/Forms/Date Selector",
+    title: "Library (unused)/Forms/Date Selector",
     component: DateSelector,
     parameters: { layout: "padded" },
     argTypes: {

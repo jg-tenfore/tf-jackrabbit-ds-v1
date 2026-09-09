@@ -17,7 +17,7 @@ import { COURSES, GOLFERS, RATE_LABELS, STATUS_LABELS, TEE_TIMES } from "@/data/
  * state.
  */
 const meta = {
-    title: "Components/Forms/Select",
+    title: "Library (unused)/Forms/Select",
     component: Select,
     parameters: { layout: "centered" },
     argTypes: {

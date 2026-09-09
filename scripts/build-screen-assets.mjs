@@ -125,6 +125,20 @@ const ASSETS = [
     { from: "customizeItem/cheeseBlue.svg", to: "modifiers/blue-cheese.svg" },
     { from: "customizeItem/mozarella.svg", to: "modifiers/mozzarella.svg" },
 
+    // Standby board. Two status marks and the light-on-dark wordmark; the photo
+    // is the same course shot the attract screen uses, so it is not copied again.
+    { from: "waitlistNames/Frame 16622.svg", to: "standby/status-received.svg" },
+    { from: "waitlistNames/Frame 16622-1.svg", to: "standby/status-ready.svg" },
+    { from: "waitlistNames/Group 1.svg", to: "standby/wordmark-dark-bg.svg" },
+
+    // Waitlist registration. The avatar sits between subtitle and field on all
+    // four participant-detail screens; the rest belong to the notify step and
+    // the confirmation, which are not built yet.
+    { from: "standbyWait/Group 31.svg", to: "waitlist/participant-avatar.svg" },
+    { from: "standbyWait/Button.svg", to: "waitlist/notify-sms.svg" },
+    { from: "standbyWait/Button-1.svg", to: "waitlist/notify-email.svg" },
+    { from: "standbyWait/waitlistConfirm-img.svg", to: "waitlist/confirmation.svg" },
+
     // Checkout payment methods. No ground strip: these sit on a white card and
     // their baked white rect is the card colour, not a stray backdrop.
     { from: "checkoutPayment/checkout-creditCards.svg", to: "checkout/card.svg" },

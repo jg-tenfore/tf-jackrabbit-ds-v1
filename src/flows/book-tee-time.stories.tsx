@@ -227,13 +227,21 @@ export const AvailableRates: Story = {
  * commit pair. "Due Now" and "Due at Tee Time" are split because a golfer
  * paying a deposit needs to know what hits the card in front of them versus
  * what they will owe at the counter later.
+ *
+ * One screen, scrolling, rather than a pair split at the fold. The reference
+ * photographs it twice because a static export cannot scroll; a story can, and
+ * two stories of one screen means two places to update when a band changes.
+ * Every section is here: summary, group size, price, policy, the text-updates
+ * opt-in and the optional occasion.
  */
 export const ReviewBooking: Story = {
     decorators: [withKioskSession(), withKioskFrame()],
     render: function Review() {
         const [groupSize, setGroupSize] = useState<number>(2);
+        const [wantsUpdates, setWantsUpdates] = useState(true);
+        const [occasion, setOccasion] = useState<string | null>(null);
         return (
-            <KioskScreen scroll={false} footer={reviewFooter}>
+            <KioskScreen footer={reviewFooter}>
                 <div className="flex flex-col">
                     <BookingReviewSection className="border-t-0 pt-10">
                         <VenueSummary
@@ -251,43 +259,6 @@ export const ReviewBooking: Story = {
 
                     <BookingReviewSection>
                         <PriceBreakdown lines={PRICE_LINES} footnote={PRICE_FOOTNOTE} />
-                    </BookingReviewSection>
-
-                    {/* Runs past the fold on purpose. The next section starting
-                        rather than the page ending in whitespace is what tells a
-                        standing user there is more below — and it is the seam
-                        `ReviewBookingScrolled` picks up from. */}
-                    <BookingReviewSection>
-                        <BookingVenuePolicy paragraphs={POLICY} />
-                    </BookingReviewSection>
-                </div>
-            </KioskScreen>
-        );
-    },
-};
-
-/**
- * 8 — The same review, scrolled past the fold.
- *
- * A second story rather than a scroll position, because the sections below the
- * fold are where this screen's geometry actually gets tested: prose at full
- * measure, a switch that has to stay a kiosk target next to a 36px heading, and
- * chips that wrap. The tail of the price breakdown is repeated at the top so
- * the seam between the two stories is visible.
- *
- * The occasion question is optional and single-select — pressing the chosen
- * chip clears it, because an optional question needs a way back to no answer.
- */
-export const ReviewBookingScrolled: Story = {
-    decorators: [withKioskSession(), withKioskFrame()],
-    render: function ReviewTail() {
-        const [wantsUpdates, setWantsUpdates] = useState(true);
-        const [occasion, setOccasion] = useState<string | null>(null);
-        return (
-            <KioskScreen scroll={false} footer={reviewFooter}>
-                <div className="flex flex-col">
-                    <BookingReviewSection className="border-t-0 pt-4">
-                        <PriceBreakdown lines={PRICE_LINES.slice(2)} footnote={PRICE_FOOTNOTE} />
                     </BookingReviewSection>
 
                     <BookingReviewSection>

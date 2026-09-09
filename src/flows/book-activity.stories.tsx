@@ -472,29 +472,17 @@ const reviewFooter = (
  * The pickleball review is the same screen with a court name and a 4-wide group
  * selector; it is not a separate story because nothing about the composition
  * changes, which is the whole argument for one flow.
+ *
+ * One screen, scrolling, rather than a pair split at the fold. The reference
+ * photographs it twice because a static export cannot scroll; every band —
+ * summary, group size, price, policy, the text-updates opt-in and the optional
+ * occasion — is here in one body.
  */
 export const ReviewBooking: Story = {
     decorators: [withKioskSession(), withKioskFrame()],
     render: () => (
-        <KioskScreen scroll={false} footer={reviewFooter}>
+        <KioskScreen footer={reviewFooter}>
             <ReviewBody />
-        </KioskScreen>
-    ),
-};
-
-/**
- * The same screen scrolled to the bands below the fold.
- *
- * Venue policy, the text-updates opt-in and the occasion chips. All three are
- * imported from `booking-review-sections` unchanged — a booking is a booking, and
- * building a second set of these for activities is exactly the duplication this
- * library is being restructured to remove.
- */
-export const ReviewBookingScrolled: Story = {
-    decorators: [withKioskSession(), withKioskFrame()],
-    render: () => (
-        <KioskScreen scroll={false} footer={reviewFooter}>
-            <ReviewBody initialScroll={700} />
         </KioskScreen>
     ),
 };

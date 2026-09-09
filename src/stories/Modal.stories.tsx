@@ -18,7 +18,7 @@ import { TfLogo } from "@/components/foundations/logo/tf-logo";
  * keeps every dialog in calm greyscale.
  */
 const meta = {
-    title: "Components/Actions/Modal",
+    title: "Library (unused)/Actions/Modal",
     component: Dialog,
     parameters: { layout: "centered" },
 } satisfies Meta<typeof Dialog>;

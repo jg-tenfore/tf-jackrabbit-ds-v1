@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Check, ChevronDown, ChevronUp } from "@untitledui/icons";
+import { ChevronDown, ChevronUp } from "@untitledui/icons";
 import { KioskKey } from "@/components/kiosk/keyboard/kiosk-key";
+import { DateCircle } from "@/components/kiosk/booking/date-circle";
 import { cx } from "@/utils/cx";
 
 /**
@@ -77,7 +78,7 @@ export const KioskDatePicker = ({ selected, onSelect, days, stripLength = 5, mod
                 <div className="flex items-center gap-3">
                     <div className="flex flex-1 gap-3 overflow-x-auto scrollbar-hide">
                         {availability.slice(0, stripLength).map((day) => (
-                            <DayCircle
+                            <DateCircle
                                 key={day.date.toISOString()}
                                 day={day}
                                 isSelected={isSameDay(day.date, selected)}
@@ -119,63 +120,6 @@ const ExpandToggle = ({ mode, onPress }: { mode: "week" | "month"; onPress: () =
  * the unavailable state already owns "filled grey" — two states competing for
  * fill would be ambiguous at arm's length.
  */
-const DayCircle = ({
-    day,
-    isSelected,
-    onSelect,
-    showWeekday = false,
-    isMuted = false,
-}: {
-    day: DayAvailability;
-    isSelected: boolean;
-    onSelect: () => void;
-    showWeekday?: boolean;
-    isMuted?: boolean;
-}) => {
-    const isAvailable = day.isAvailable !== false;
-
-    return (
-        <div className="flex shrink-0 flex-col items-center gap-1">
-            <button
-                type="button"
-                disabled={!isAvailable}
-                onClick={onSelect}
-                aria-pressed={isSelected}
-                aria-label={day.date.toDateString() + (isAvailable ? "" : " — unavailable")}
-                className={cx(
-                    "relative flex size-16 items-center justify-center rounded-full text-2xl font-medium transition duration-100 ease-linear",
-                    isAvailable
-                        ? "bg-primary text-primary ring-1 ring-border-primary active:bg-secondary"
-                        : "cursor-not-allowed bg-secondary text-quaternary",
-                    isSelected && "text-brand-secondary ring-2 ring-brand",
-                    isMuted && isAvailable && "text-tertiary",
-                )}
-            >
-                {day.date.getDate()}
-
-                {isSelected && (
-                    <span
-                        className="absolute -top-1 -right-1 flex size-6 items-center justify-center rounded-full bg-brand-solid"
-                        aria-hidden="true"
-                    >
-                        <Check className="size-4 text-white" />
-                    </span>
-                )}
-
-                {day.hasInventory && isAvailable && (
-                    <span className={cx("absolute bottom-2 size-1.5 rounded-full", isSelected ? "bg-brand-solid" : "bg-fg-quaternary")} aria-hidden="true" />
-                )}
-            </button>
-
-            {showWeekday && (
-                <span className={cx("text-base", isSelected ? "font-semibold text-primary" : "text-tertiary")}>
-                    {WEEKDAY[day.date.getDay()]}
-                </span>
-            )}
-        </div>
-    );
-};
-
 /** Full month grid, with leading blanks so weekdays line up in columns. */
 const MonthGrid = ({
     selected,
@@ -227,7 +171,7 @@ const MonthGrid = ({
                     // rather than disappearing, so the month keeps its shape.
                     const day: DayAvailability = entry ?? { date, isAvailable: false };
 
-                    return <DayCircle key={date.toISOString()} day={day} isSelected={isSameDay(date, selected)} onSelect={() => onSelect(date)} />;
+                    return <DateCircle key={date.toISOString()} size="sm" day={day} isSelected={isSameDay(date, selected)} onSelect={() => onSelect(date)} />;
                 })}
             </div>
         </div>
