@@ -2,13 +2,7 @@ import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { SlotCard } from "@/components/kiosk/booking/slot-card";
 import { KioskKey } from "@/components/kiosk/keyboard/kiosk-key";
-import {
-    CheckoutMethodFullScreen,
-    ConfirmationFullScreen,
-    DestructiveConfirmFullScreen,
-    InfoSheetFullScreen,
-    InterstitialFullScreen,
-} from "@/components/kiosk/modals/full-screen-variants";
+import { CheckoutMethodFullScreen, ConfirmationFullScreen, DestructiveConfirmFullScreen } from "@/components/kiosk/modals/full-screen-variants";
 import { KioskFullScreenModal } from "@/components/kiosk/modals/kiosk-full-screen-modal";
 import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { TEE_TIMES } from "@/data/booking";
@@ -16,7 +10,7 @@ import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
 const meta = {
-    title: "Kiosk Core/Overlays/Full Screen",
+    title: "Components/Kiosk Overlays/Full Screen",
     component: KioskFullScreenModal,
     parameters: {
         // "centered" wraps the story in a padded box. At the kiosk viewport
@@ -91,53 +85,6 @@ export const CheckoutMethod: Story = {
     args: {},
     decorators: [withKioskSession(), withKioskFrame()],
     render: () => <Stage>{(o, s) => <CheckoutMethodFullScreen isOpen={o} onOpenChange={s} onBack={() => s(false)} />}</Stage>,
-};
-
-/** Interstitial — a beat in the flow, with no screen behind to return to. */
-export const Interstitial: Story = {
-    args: {},
-    decorators: [withKioskSession(), withKioskFrame()],
-    render: () => (
-        <Stage>
-            {(o, s) => (
-                <InterstitialFullScreen
-                    isOpen={o}
-                    onOpenChange={s}
-                    title="Log in below for everything for your round"
-                    body="Redeem points on the TenFore Golf App."
-                    primaryLabel="Scan my wallet"
-                    secondaryLabel="Continue as guest"
-                    onSecondary={() => s(false)}
-                >
-                    <div data-placeholder-asset="kiosk-and-phone-render" className="mx-auto h-56 w-full max-w-[420px] rounded-2xl bg-secondary ring-1 ring-border-secondary" />
-                </InterstitialFullScreen>
-            )}
-        </Stage>
-    ),
-};
-
-/** Info sheet — long enough that a card would scroll inside an overlay. */
-export const InfoSheet: Story = {
-    args: {},
-    decorators: [withKioskSession(), withKioskFrame()],
-    render: () => (
-        <Stage>
-            {(o, s) => (
-                <InfoSheetFullScreen isOpen={o} onOpenChange={s} title="How to log in">
-                    <ol className="flex flex-col gap-8">
-                        {["Open your TenFore Golf Wallet ID", "Scan your code at the kiosk below", "Check out and book a tee time."].map((step, i) => (
-                            <li key={step} className="flex items-center gap-5">
-                                <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-brand-primary text-2xl font-bold text-brand-secondary">
-                                    {i + 1}
-                                </span>
-                                <span className="text-2xl text-primary">{step}</span>
-                            </li>
-                        ))}
-                    </ol>
-                </InfoSheetFullScreen>
-            )}
-        </Stage>
-    ),
 };
 
 /** Terminal success screen for a completed booking or order. */

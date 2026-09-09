@@ -7,7 +7,7 @@ import { ProgressBar } from "@/components/base/progress-indicators/progress-indi
  * foreground under the monochromatic theme.
  */
 const meta = {
-    title: "Components/Feedback & Status/Progress Indicators",
+    title: "Library (unused)/Feedback & Status/Progress Indicators",
     component: ProgressBar,
     parameters: { layout: "padded" },
     argTypes: {

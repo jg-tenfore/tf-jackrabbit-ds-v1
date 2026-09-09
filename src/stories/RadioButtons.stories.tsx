@@ -9,7 +9,7 @@ import { RadioButton, RadioButtonBase, RadioGroup } from "@/components/base/radi
  * stays greyscale.
  */
 const meta = {
-    title: "Components/Forms/RadioButtons",
+    title: "Library (unused)/Forms/RadioButtons",
     component: RadioGroup,
     parameters: { layout: "centered" },
     argTypes: {

@@ -70,6 +70,10 @@ const ASSETS = [
     { from: "getStarted/Buttons/shutterstock_1730517022 2-1.png", to: "get-started/tee-time.png", renderWidth: 250 },
     { from: "getStarted/Buttons/shutterstock_1730517022 2-2.png", to: "get-started/shop.png", renderWidth: 250 },
 
+    // The two activities the v2 layout adds. Same export batch, same 2x.
+    { from: "getStarted-v2/shutterstock_1730517022 2-3.png", to: "get-started/pickleball.png", renderWidth: 250 },
+    { from: "getStarted-v2/shutterstock_1730517022 2-4.png", to: "get-started/simulator.png", renderWidth: 250 },
+
     // Takeout choice. Both exports carry a large transparent headroom above the
     // artwork — the drawing sits in the lower half of its box — so they are
     // bottom-anchored in their cards and the empty top harmlessly overlaps the
@@ -88,6 +92,11 @@ const ASSETS = [
     // exports mix numbering, casing and spelling conventions, and the rail asks
     // for them by category id.
     { from: "store/tf-logo-square.svg", to: "store/logo-tile.svg" },
+
+    // The Links Drinks promo banner, used whole on the home screen. Composed
+    // markup with the can in a square crop cut the can off top and bottom; the
+    // artwork is one piece and is used as one.
+    { from: "store/transfusion.png", to: "store/promo-transfusion.png", renderWidth: 622 },
     { from: "store/01-Home.png", to: "store/home.png" },
     { from: "store/02-deals.png", to: "store/deals.png" },
     { from: "store/Members.png", to: "store/members.png" },
@@ -98,6 +107,37 @@ const ASSETS = [
     { from: "store/GolfBalls.png", to: "store/golf-balls.png" },
     { from: "store/Memberships.png", to: "store/memberships.png" },
     { from: "store/Clothes.png", to: "store/clothes.png" },
+
+    // Ingredient marks for the customize screen. 48x48 vectors, so they scale
+    // to whatever the row needs. Renamed to the modifier ids the catalogue uses;
+    // two of them are drawn *struck through*, which is the "None" state rather
+    // than the ingredient — see src/data/modifiers.ts.
+    { from: "customizeItem/mustard.svg", to: "modifiers/mustard.svg" },
+    { from: "customizeItem/mayo.svg", to: "modifiers/mayo.svg" },
+    { from: "customizeItem/pickles.svg", to: "modifiers/pickles.svg" },
+    { from: "customizeItem/lettuce_No.svg", to: "modifiers/lettuce.svg" },
+    { from: "customizeItem/cheese.svg", to: "modifiers/cheese.svg" },
+    { from: "customizeItem/noBun.svg", to: "modifiers/bun.svg" },
+    { from: "customizeItem/bacon.svg", to: "modifiers/bacon.svg" },
+    { from: "customizeItem/addOnions.svg", to: "modifiers/onions.svg" },
+    { from: "customizeItem/onionRings.svg", to: "modifiers/onion-rings.svg" },
+    { from: "customizeItem/tripleMeat.svg", to: "modifiers/triple-meat.svg" },
+    { from: "customizeItem/cheeseBlue.svg", to: "modifiers/blue-cheese.svg" },
+    { from: "customizeItem/mozarella.svg", to: "modifiers/mozzarella.svg" },
+
+    // Standby board. Two status marks and the light-on-dark wordmark; the photo
+    // is the same course shot the attract screen uses, so it is not copied again.
+    { from: "waitlistNames/Frame 16622.svg", to: "standby/status-received.svg" },
+    { from: "waitlistNames/Frame 16622-1.svg", to: "standby/status-ready.svg" },
+    { from: "waitlistNames/Group 1.svg", to: "standby/wordmark-dark-bg.svg" },
+
+    // Waitlist registration. The avatar sits between subtitle and field on all
+    // four participant-detail screens; the rest belong to the notify step and
+    // the confirmation, which are not built yet.
+    { from: "standbyWait/Group 31.svg", to: "waitlist/participant-avatar.svg" },
+    { from: "standbyWait/Button.svg", to: "waitlist/notify-sms.svg" },
+    { from: "standbyWait/Button-1.svg", to: "waitlist/notify-email.svg" },
+    { from: "standbyWait/waitlistConfirm-img.svg", to: "waitlist/confirmation.svg" },
 
     // Checkout payment methods. No ground strip: these sit on a white card and
     // their baked white rect is the card colour, not a stray backdrop.

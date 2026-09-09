@@ -9,7 +9,7 @@ import { FileTrigger } from "@/components/base/file-upload-trigger/file-upload-t
  * profile-picture picker. It renders no UI of its own — pass it one child.
  */
 const meta = {
-    title: "Components/Forms/File Upload Trigger",
+    title: "Library (unused)/Forms/File Upload Trigger",
     component: FileTrigger,
     parameters: { layout: "centered" },
     argTypes: {

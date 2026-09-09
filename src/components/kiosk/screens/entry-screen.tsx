@@ -33,6 +33,7 @@ import { cx } from "@/utils/cx";
 export const EntryScreen = ({
     title,
     subtitle,
+    illustration,
     field,
     value,
     onChange,
@@ -46,6 +47,12 @@ export const EntryScreen = ({
 }: {
     title: string;
     subtitle?: string;
+    /**
+     * Artwork between the subtitle and the field. The waitlist screens put a
+     * participant avatar here; auth entry has none. A slot rather than an image
+     * path, so a caller can pass a component when one is warranted.
+     */
+    illustration?: ReactNode;
     /** The field itself — segmented cells, a text line, whatever the screen needs. */
     field: ReactNode;
     value: string;
@@ -64,6 +71,8 @@ export const EntryScreen = ({
             <BrandMark />
             <h1 className="mt-5 text-[44px] leading-tight font-bold text-balance text-primary">{title}</h1>
             {subtitle && <p className="mt-3 max-w-[560px] text-[20px] text-tertiary">{subtitle}</p>}
+
+            {illustration && <div className="mt-6">{illustration}</div>}
 
             <div className="mt-8 w-full px-4">{field}</div>
 

@@ -9,7 +9,7 @@ import { BadgeGroup } from "@/components/base/badges/badge-groups";
  * change. Everything renders in clubhouse greyscale via the monochromatic theme.
  */
 const meta = {
-    title: "Components/Feedback & Status/Badge Group",
+    title: "Library (unused)/Feedback & Status/Badge Group",
     component: BadgeGroup,
     parameters: { layout: "centered" },
     argTypes: {

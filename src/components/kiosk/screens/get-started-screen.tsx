@@ -21,6 +21,19 @@ export const GET_STARTED_OPTIONS: ChoiceOption[] = [
 ];
 
 /**
+ * The four plus the two bookable activities.
+ *
+ * A separate export rather than a flag, because which set a venue shows is a
+ * property of the venue: a course with no courts and no bays should never be
+ * one boolean away from advertising them.
+ */
+export const GET_STARTED_OPTIONS_WITH_ACTIVITIES: ChoiceOption[] = [
+    ...GET_STARTED_OPTIONS,
+    { id: "pickleball", eyebrow: "Book a court, grab a paddle", title: "Pickleball Courts", image: "pickleball.png" },
+    { id: "simulator", eyebrow: "Indoor Golf Experience", title: "Golf Simulator Bays", image: "simulator.png" },
+];
+
+/**
  * "Welcome to The Course! Lets get started!" — the hub the kiosk opens onto
  * once someone has engaged with it.
  *
@@ -35,6 +48,10 @@ export const GET_STARTED_OPTIONS: ChoiceOption[] = [
  *
  * No global nav: Go Back is the only control, because there is nowhere to
  * return to but the attract screen and nothing yet to abandon.
+ *
+ * The grid takes whatever options it is given and lays them out two across, so
+ * the four-card and six-card versions are the same screen with different data
+ * rather than two screens to keep in step.
  */
 export const GetStartedScreen = ({
     courseName = "The Course",
@@ -56,7 +73,12 @@ export const GetStartedScreen = ({
             Welcome to {courseName}! Lets get started!
         </h1>
 
-        <div className="mt-[147px] grid w-full grid-cols-2 gap-[18px] px-16">
+        {/* Two rows sit low in the space, as the four-card reference draws them;
+            three rows fill it and centre. Not one rule with a shrinking margin —
+            CSS has no "147 unless it does not fit" — and not `my-auto` for both,
+            which centres the two-row case 35px above where its reference puts
+            it. Two layouts because there genuinely are two. */}
+        <div className={cx("grid w-full grid-cols-2 gap-[18px] px-16", options.length > 4 ? "my-auto" : "mt-[147px] mb-auto")}>
             {options.map((option) => (
                 <ChoiceCard key={option.id} option={option} size="lg" className="w-full" onPress={() => onSelect?.(option.id)} />
             ))}
@@ -65,7 +87,7 @@ export const GetStartedScreen = ({
         <button
             type="button"
             onClick={onBack}
-            className="mt-auto mb-[103px] h-[58px] w-[354px] rounded-xl text-[24px] text-tertiary ring-1 ring-border-secondary ring-inset transition duration-100 ease-linear active:bg-secondary"
+            className="mb-[103px] h-[58px] w-[354px] rounded-xl text-[24px] text-tertiary ring-1 ring-border-secondary ring-inset transition duration-100 ease-linear active:bg-secondary"
         >
             Go Back
         </button>

@@ -7,7 +7,7 @@ import { InputTags } from "@/components/base/input/input-tags";
  * peels the last chip off. Hairline border, ink focus ring, no fill.
  */
 const meta = {
-    title: "Components/Forms/Inputs/Input Tags",
+    title: "Library (unused)/Forms/Inputs/Input Tags",
     component: InputTags,
     parameters: { layout: "centered" },
     argTypes: {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { KioskKey } from "@/components/kiosk/keyboard/kiosk-key";
-import { ChoiceDialog, ProductDetailDialog, QuantityStepper, RatePickerDialog } from "@/components/kiosk/modals/dialog-variants";
+import { ProductDetailDialog, RatePickerDialog } from "@/components/kiosk/modals/dialog-variants";
 import { KioskDialog } from "@/components/kiosk/modals/kiosk-dialog";
 import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { RATES_FOR_TIME, TEE_TIMES } from "@/data/booking";
@@ -10,7 +10,7 @@ import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
 const meta = {
-    title: "Kiosk Core/Overlays/Dialog (card)",
+    title: "Components/Kiosk Overlays/Dialog (card)",
     component: KioskDialog,
     parameters: {
         // "centered" wraps the story in a padded box. At the kiosk viewport
@@ -71,53 +71,3 @@ export const ProductDetail: Story = {
     ),
 };
 
-/** Choice. Actions stack because they are forward paths, not opposites. */
-export const Choice: Story = {
-    args: {},
-    decorators: [withKioskSession(), withKioskFrame()],
-    render: () => (
-        <Stage>
-            {(o, s) => (
-                <ChoiceDialog
-                    isOpen={o}
-                    onOpenChange={s}
-                    title="Join Standby"
-                    body="To get in tee time, please join the queue and we will provide additional information."
-                    choices={[{ label: "Get in line", isPrimary: true }, { label: "Check my wait time" }]}
-                    footnote="Availability and pricing are subject to change."
-                />
-            )}
-        </Stage>
-    ),
-};
-
-/**
- * The opt-in scrim, for comparison. Note how much closer this reads to a
- * full-screen takeover — which is exactly why it is off by default.
- */
-export const WithScrim: Story = {
-    args: {},
-    decorators: [withKioskSession(), withKioskFrame()],
-    render: () => (
-        <Stage>
-            {(o, s) => (
-                <KioskDialog isOpen={o} onOpenChange={s} scrim title="Scrim enabled" subtitle="Compare against the stories above.">
-                    <p className="text-center text-lg text-tertiary">The page behind is dimmed, so the card stops reading as part of this screen.</p>
-                </KioskDialog>
-            )}
-        </Stage>
-    ),
-};
-
-/** The stepper in isolation. */
-export const Stepper: Story = {
-    args: {},
-    render: function StepperOnly() {
-        const [qty, setQty] = useState(1);
-        return (
-            <div className="w-[500px] p-8">
-                <QuantityStepper value={qty} onChange={setQty} />
-            </div>
-        );
-    },
-};

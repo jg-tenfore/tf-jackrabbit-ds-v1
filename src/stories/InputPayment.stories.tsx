@@ -7,7 +7,7 @@ import { PaymentInput } from "@/components/base/input/input-payment";
  * inside the field. Hairline border, ink focus ring, no fill.
  */
 const meta = {
-    title: "Components/Forms/Inputs/Input Payment",
+    title: "Library (unused)/Forms/Inputs/Input Payment",
     component: PaymentInput,
     parameters: { layout: "centered" },
     argTypes: {

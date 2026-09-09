@@ -17,19 +17,44 @@ const preview: Preview = {
                     // Tokens first — everything below is expressed in them.
                     "Foundations",
                     ["Colors", "Typography", "Spacing", "Radius", "Border", "Effect Styles", "Touch Targets", "Icons", "Logos"],
-                    // Kiosk-native primitives: the parts that exist only because
-                    // this is a touch kiosk, not a desktop app.
-                    "Kiosk Core",
-                    ["Kiosk Frame", "Keyboard", "Global Nav", "Authentication", "Booking", "Store", "Overlays"],
-                    // The shared Untitled UI library, ported from Buck. Source
-                    // material to pull from and refine into kiosk components.
+                    // Every reusable part: the ported Untitled UI library plus
+                    // the kiosk-native primitives, which sit first because they
+                    // are what the flows below are actually assembled from.
+                    "Components",
+                    [
+                        "Kiosk Frame",
+                        "Kiosk Keyboard",
+                        "Kiosk Overlays",
+                        "Kiosk Booking",
+                        "Kiosk Store",
+                        "Marquee",
+                    ],
                     // Persistent chrome that frames every screen.
                     "App Chrome",
-                    // Assembled screens, built from the primitives above.
-                    "Screens",
-                    // The shared Untitled UI library, ported from Buck. Source
-                    // material to pull from and refine into kiosk components.
-                    "Components",
+                    // Every flow under one parent, last: this is the assembled
+                    // end of the library, and a reader who has come down through
+                    // tokens, parts and chrome arrives at the screens those make.
+                    // Sub-groups are in the order a guest meets them, not
+                    // alphabetically, so the sidebar reads as the product does.
+                    "User Flows",
+                    [
+                        "Welcome Screen",
+                        "Interstitials",
+                        "Auth w New User",
+                        "Auth w Existing User",
+                        "Order Sandwich",
+                        "Order Sandwich Guest",
+                        "Book Tee Time",
+                        "Book Activity",
+                        "Waitlist Reg",
+                        "Standby",
+                    ],
+                    // The ported Untitled UI library. Nothing in any flow imports
+                    // it — a dependency trace from every flow story reaches zero
+                    // of its 221 files — so it sits last and says so in its name.
+                    // Kept as source material to pull from, not as part of the
+                    // kiosk system.
+                    "Library (unused)",
                     ["Actions", "Forms", "Feedback & Status", "Layout & Structure", "Media & Visuals", "Navigation"],
                 ],
             },

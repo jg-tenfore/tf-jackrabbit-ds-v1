@@ -5,7 +5,7 @@ import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame } from "@/kiosk/story-helpers";
 
 const meta = {
-    title: "Kiosk Core/Keyboard/Keyboard Field",
+    title: "Components/Kiosk Keyboard/Keyboard Field",
     component: KeyboardField,
     parameters: {
         // "centered" wraps the story in a padded box. At the kiosk viewport

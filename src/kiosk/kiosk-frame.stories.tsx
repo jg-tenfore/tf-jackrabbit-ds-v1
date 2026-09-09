@@ -5,7 +5,7 @@ import { KioskFrame, KioskScreen } from "@/kiosk/kiosk-frame";
 import { referenceExport } from "@/kiosk/story-helpers";
 
 const meta = {
-    title: "Kiosk Core/Kiosk Frame",
+    title: "Components/Kiosk Frame/Frame",
     component: KioskFrame,
     parameters: {
         // "centered" pads the story; at the 750px kiosk viewport that padding

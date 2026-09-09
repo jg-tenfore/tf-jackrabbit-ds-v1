@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { KioskHeader } from "@/components/kiosk/nav/kiosk-header";
 
 const meta = {
-    title: "Kiosk Core/Global Nav/Header",
+    title: "Components/Kiosk Frame/Header",
     component: KioskHeader,
     parameters: {
         // "centered" pads the story; at the 750px kiosk viewport that padding

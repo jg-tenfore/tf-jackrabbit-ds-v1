@@ -20,6 +20,12 @@ import { cx } from "@/utils/cx";
  * The title and the dismiss action stay as markup: they are the parts that are
  * translatable and interactive.
  *
+ * The screen is sized to fit the canvas without scrolling: header, artwork and
+ * button come to 1050 against the 1054 the rail leaves, so nothing moves. A
+ * kiosk panel has no scrollbar and no wheel, and a screen that scrolls by 20px
+ * is a screen where the button is invisible until someone drags it — which
+ * nobody standing at a kiosk thinks to try.
+ *
  * Built as a screen rather than a full-screen overlay, because a member reading
  * these instructions is being told to scan their wallet — the nav rail's drawer
  * has to stay reachable. An overlay would explain the gesture while hiding its
@@ -47,10 +53,10 @@ export const HowToLogInScreen = ({
         <img
             src={ASSET("steps.png")}
             alt="Step 1: open your TenFore Golf Wallet ID, available on the App Store and Google Play. Step 2: scan your code at the kiosk below. Step 3: check out products from your proshop and book a tee time."
-            className="mt-8 w-full"
+            className="mt-6 w-full"
         />
 
-        <div className="mt-auto flex justify-center pt-6 pb-10">
+        <div className="mt-auto flex justify-center pt-6 pb-6">
             <KioskKey size="xl" variant="action" span={0} onPress={onDismiss} className="w-[360px]">
                 {dismissLabel}
             </KioskKey>

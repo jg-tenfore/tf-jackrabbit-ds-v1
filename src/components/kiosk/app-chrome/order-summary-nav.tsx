@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { WalletDrawer } from "@/components/kiosk/app-chrome/wallet-drawer";
+import { SignedInCard, WalletDrawer } from "@/components/kiosk/app-chrome/wallet-drawer";
 import { useKioskSession } from "@/providers/kiosk-session";
 import { cx } from "@/utils/cx";
 
@@ -37,8 +37,9 @@ export const OrderSummaryNav = ({
     isCompleteDisabled = false,
     /**
      * Show the wallet drawer bottom-right, as the guest-checkout reference
-     * draws it. A signed-in user has nothing to gain from it here, so it is
-     * opt-in rather than driven off session state.
+     * draws it. Ignored when signed in, where the identity card takes that
+     * corner instead — a signed-in user has nothing to gain from a log-in
+     * prompt at checkout.
      */
     showWalletDrawer = false,
     className,
@@ -52,7 +53,8 @@ export const OrderSummaryNav = ({
     showWalletDrawer?: boolean;
     className?: string;
 }) => {
-    const { resetSession } = useKioskSession();
+    const { member, mode, signOut, resetSession } = useKioskSession();
+    const isAuthenticated = mode === "authenticated" && member;
     const [isDrawerExpanded, setIsDrawerExpanded] = useState(false);
 
     const handleStartOver = () => {
@@ -117,11 +119,21 @@ export const OrderSummaryNav = ({
             </button>
 
             {/* Overhangs the rail's bottom edge like it does everywhere else, so
-                the drawer stays in one place across every screen. */}
-            {showWalletDrawer && (
+                whichever card is showing stays in one place across every screen.
+                Signed in it is the identity card, exactly as on the main rail —
+                driven off the session rather than a prop, because a signed-in
+                user being shown a "log in" drawer is not a state any screen
+                should be able to ask for. */}
+            {isAuthenticated ? (
                 <div className="absolute right-16 bottom-0">
-                    <WalletDrawer isCompact isExpanded={isDrawerExpanded} onExpandedChange={setIsDrawerExpanded} caption="Scan or tap to" />
+                    <SignedInCard firstName={member.firstName} onSignOut={signOut} />
                 </div>
+            ) : (
+                showWalletDrawer && (
+                    <div className="absolute right-16 bottom-0">
+                        <WalletDrawer isCompact isExpanded={isDrawerExpanded} onExpandedChange={setIsDrawerExpanded} caption="Scan or tap to" />
+                    </div>
+                )
             )}
         </nav>
     );

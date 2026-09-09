@@ -11,7 +11,7 @@ import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
 const meta = {
-    title: "Kiosk Core/Store/Pro Shop Grid",
+    title: "Components/Kiosk Store/Pro Shop Grid",
     component: ProductGrid,
     parameters: {
         // "centered" wraps the story in a padded box. At the kiosk viewport

@@ -7,7 +7,7 @@ import { TextArea } from "@/components/base/textarea/textarea";
  * ink focus ring, no fill.
  */
 const meta = {
-    title: "Components/Forms/Textarea",
+    title: "Library (unused)/Forms/Textarea",
     component: TextArea,
     parameters: { layout: "centered" },
     argTypes: {

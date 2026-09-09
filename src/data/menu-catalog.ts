@@ -94,30 +94,33 @@ export const MENU_ITEMS: MenuItem[] = [
     item("energy-drink", "Energy Drink", "beverages", 550, 210),
     item("orange-juice", "Orange Juice", "beverages", 475, 160),
     item("milkshake", "Milkshake", "beverages", 699, 550),
-    item("transfusion-classic", "Classic Transfusion", "beverages", 1200, 220),
-    item("transfusion-back-nine", "Back Nine Transfusion", "beverages", 1200, 220),
-    item("transfusion-front-nine", "Front Nine Transfusion", "beverages", 1200, 220),
-
-    // Beer, wine and cocktails share a rail row; the sub-filters separate them
-    item("domestic-beer", "Domestic Beer", "beer", 700, 150),
-    item("craft-beer", "Craft Beer", "beer", 900, 210),
-    item("hard-seltzer", "Hard Seltzer", "beer", 800, 100),
-    item("wine", "Wine", "beer", 1100, 125),
-    item("aperol-spritz", "Aperol Spritz", "beer", 1300, 180),
-    item("old-fashioned", "Old Fashioned", "beer", 1400, 200),
-    item("negroni", "Negroni", "beer", 1400, 210),
-    item("whiskey-sour", "Whiskey Sour", "beer", 1300, 190),
-    item("moscow-mule", "Moscow Mule", "beer", 1300, 180),
-    item("gin-and-tonic", "Gin & Tonic", "beer", 1200, 170),
-    item("vodka-tonic", "Vodka Tonic", "beer", 1200, 170),
-    item("cosmopolitan", "Cosmopolitan", "beer", 1300, 200),
-    item("mango-margarita", "Mango Margarita", "beer", 1400, 260),
-    item("paloma", "Paloma", "beer", 1300, 190),
-    item("cape-codder", "Cape Codder", "beer", 1200, 170),
-    item("mimosa", "Mimosa", "beer", 1100, 130),
-    item("strawberry-daiquiri", "Strawberry Daiquiri", "beer", 1400, 300),
-    item("lemon-drop-martini", "Lemon Drop Martini", "beer", 1400, 220),
-    item("bloody-mary", "Bloody Mary", "beer", 1200, 200),
+    
+    // Alcohol — one rail row for everything with alcohol in it, sub-filtered
+    // below. Transfusions live here rather than under Beverages: they are a
+    // 7% ready-to-drink cocktail, and a guest scanning Beverages for a soft
+    // drink should not find one.
+    item("domestic-beer", "Domestic Beer", "alcohol", 700, 150),
+    item("craft-beer", "Craft Beer", "alcohol", 900, 210),
+    item("hard-seltzer", "Hard Seltzer", "alcohol", 800, 100),
+    item("wine", "Wine", "alcohol", 1100, 125),
+    item("aperol-spritz", "Aperol Spritz", "alcohol", 1300, 180),
+    item("old-fashioned", "Old Fashioned", "alcohol", 1400, 200),
+    item("negroni", "Negroni", "alcohol", 1400, 210),
+    item("whiskey-sour", "Whiskey Sour", "alcohol", 1300, 190),
+    item("moscow-mule", "Moscow Mule", "alcohol", 1300, 180),
+    item("gin-and-tonic", "Gin & Tonic", "alcohol", 1200, 170),
+    item("vodka-tonic", "Vodka Tonic", "alcohol", 1200, 170),
+    item("cosmopolitan", "Cosmopolitan", "alcohol", 1300, 200),
+    item("mango-margarita", "Mango Margarita", "alcohol", 1400, 260),
+    item("paloma", "Paloma", "alcohol", 1300, 190),
+    item("cape-codder", "Cape Codder", "alcohol", 1200, 170),
+    item("mimosa", "Mimosa", "alcohol", 1100, 130),
+    item("strawberry-daiquiri", "Strawberry Daiquiri", "alcohol", 1400, 300),
+    item("lemon-drop-martini", "Lemon Drop Martini", "alcohol", 1400, 220),
+    item("bloody-mary", "Bloody Mary", "alcohol", 1200, 200),
+    item("transfusion-classic", "Classic Transfusion", "alcohol", 1200, 220),
+    item("transfusion-back-nine", "Back Nine Transfusion", "alcohol", 1200, 220),
+    item("transfusion-front-nine", "Front Nine Transfusion", "alcohol", 1200, 220),
 ];
 
 /**
@@ -134,7 +137,7 @@ export const MENU_ITEMS: MenuItem[] = [
  */
 export const MENU_CATEGORIES = [
     { id: "sandwiches", label: "Sandwiches", iconSrc: icon("sandwiches") },
-    { id: "beer", label: "Beer", iconSrc: icon("beer") },
+    { id: "alcohol", label: "Alcohol", iconSrc: icon("beer") },
     { id: "beverages", label: "Beverages", iconSrc: icon("beverages") },
     { id: "golf-balls", label: "Golf Balls", iconSrc: icon("golf-balls") },
     { id: "memberships", label: "Memberships", iconSrc: icon("memberships") },
@@ -153,7 +156,7 @@ export const MENU_DESTINATIONS = [
 export const MENU_SUBFILTERS: Record<string, string[]> = {
     sandwiches: ["All", "Hot", "Snacks", "Sweet"],
     beverages: ["All", "Water", "Soft Drinks", "Juices", "Energy Drinks"],
-    beer: ["All", "Domestic", "Craft", "Seltzer", "Wine", "Cocktails"],
+    alcohol: ["All", "Cocktails", "Beer", "Wine", "Seltzer", "Transfusions"],
 };
 
 export const itemsInCategory = (categoryId: string) => MENU_ITEMS.filter((i) => i.category === categoryId);

@@ -76,14 +76,20 @@ export const WalletDrawer = ({
                     className={cx("h-[88px] w-[174px] shrink-0 object-contain", isScanning && "animate-pulse")}
                 />
             )}
-            <span className="text-[14px] leading-tight text-white/90">
+            {/* The compact card is 90 tall against the tab's 214, so its type
+                steps down with it. Reusing the tab's 14/27/32 filled the card
+                edge to edge and made the same control read as a different,
+                louder one wherever it appeared. */}
+            <span className={cx("leading-tight text-white/90", isCompact ? "text-[12px]" : "text-[14px]")}>
                 {isScanning ? "Reading your wallet…" : hasError ? "Try again" : caption}
             </span>
-            <span className="text-[27px] leading-none font-bold">{hasError ? "Not recognized" : "Log In"}</span>
+            <span className={cx("leading-none font-bold", isCompact ? "text-[20px]" : "text-[27px]")}>
+                {hasError ? "Not recognized" : "Log In"}
+            </span>
             {/* Always points down. It is not a disclosure triangle — it points at
                 the physical scanner below the screen, which is where "tap your
                 wallet below" is telling the user to reach. */}
-            <ChevronDown className="size-8" aria-hidden="true" />
+            <ChevronDown className={cx(isCompact ? "size-5" : "size-8")} aria-hidden="true" />
         </button>
     );
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Check } from "@untitledui/icons";
+import { StepMarker, stepStateFor } from "@/components/kiosk/booking/step-marker";
 import { cx } from "@/utils/cx";
 
 export interface BookingStep {
@@ -58,7 +58,7 @@ export const StepRail = ({
                         !isReachable && "cursor-not-allowed",
                     )}
                 >
-                    <StepMarker isComplete={isComplete} isCurrent={isCurrent} />
+                    <StepMarker state={stepStateFor(step.id, currentStepId, completedStepIds)} />
                     <span
                         className={cx(
                             // nowrap: a two-word step label ("Bay location")
@@ -74,20 +74,6 @@ export const StepRail = ({
         })}
     </nav>
 );
-
-const StepMarker = ({ isComplete, isCurrent }: { isComplete: boolean; isCurrent: boolean }) => {
-    if (isComplete) {
-        return (
-            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-solid" aria-hidden="true">
-                <Check className="size-4 text-white" />
-            </span>
-        );
-    }
-    if (isCurrent) {
-        return <span className="size-6 shrink-0 rounded-full ring-[3px] ring-brand" aria-hidden="true" />;
-    }
-    return <span className="size-6 shrink-0 rounded-full bg-quaternary opacity-40" aria-hidden="true" />;
-};
 
 /**
  * The tee sheet's filter rail. Same peeking geometry as `StepRail`, but the

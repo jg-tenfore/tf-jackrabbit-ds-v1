@@ -5,7 +5,7 @@ import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame } from "@/kiosk/story-helpers";
 
 const meta = {
-    title: "Kiosk Core/Booking/Date Picker",
+    title: "Components/Kiosk Booking/Date Picker",
     component: KioskDatePicker,
     parameters: {
         // "centered" wraps the story in a padded box. At the kiosk viewport

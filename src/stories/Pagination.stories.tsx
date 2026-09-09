@@ -8,7 +8,7 @@ import { PaginationPageDefault } from "@/components/application/pagination/pagin
  * current page marker greyscale rather than coloured.
  */
 const meta = {
-    title: "Components/Navigation/Paginations",
+    title: "Library (unused)/Navigation/Paginations",
     component: PaginationPageDefault,
     parameters: { layout: "padded" },
     argTypes: {

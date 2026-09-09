@@ -108,6 +108,19 @@ export const OrderReviewScreen = ({
     );
 };
 
+/**
+ * One line of the order.
+ *
+ * Spacing follows the reference rather than packing: the row breathes at 28
+ * top and bottom, and the secondary buttons sit 20 clear of what they belong
+ * to — View Details under the name, Remove under the stepper. Bunched, the
+ * five controls in a row read as one block and a standing user has to parse
+ * which belongs to which; spread, each pairs visibly with its own column.
+ *
+ * Heights stay at 44 rather than shrinking to the reference's ~31. That is
+ * exactly `TOUCH_FLOOR_MM` at this canvas scale, and Remove is the one control
+ * here whose mis-tap costs the user something.
+ */
 const OrderLineRow = ({
     line,
     onChangeQuantity,
@@ -122,7 +135,7 @@ const OrderLineRow = ({
     const { item, quantity, modifiers } = line;
 
     return (
-        <div className="flex gap-4 border-b border-secondary py-5">
+        <div className="flex gap-4 border-b border-secondary py-7">
             <ProductImage src={item.image} alt={item.name} className="size-[76px] shrink-0 rounded-lg" />
 
             <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -131,13 +144,13 @@ const OrderLineRow = ({
                 <button
                     type="button"
                     onClick={() => onViewDetails?.(item)}
-                    className="mt-2 h-11 w-[132px] rounded-lg text-[15px] text-tertiary ring-1 ring-border-primary transition duration-100 ease-linear ring-inset active:bg-secondary"
+                    className="mt-5 h-11 w-[132px] rounded-lg text-[15px] text-tertiary ring-1 ring-border-primary transition duration-100 ease-linear ring-inset active:bg-secondary"
                 >
                     View Details
                 </button>
             </div>
 
-            <div className="flex shrink-0 flex-col items-end gap-2">
+            <div className="flex shrink-0 flex-col items-end gap-5">
                 <div className="flex items-center overflow-hidden rounded-lg ring-1 ring-border-primary">
                     <StepButton icon={Minus} label="Decrease quantity" onPress={() => onChangeQuantity?.(item.id, Math.max(1, quantity - 1))} />
                     <span className="w-12 text-center text-[19px] font-medium text-primary tabular-nums">{quantity}</span>

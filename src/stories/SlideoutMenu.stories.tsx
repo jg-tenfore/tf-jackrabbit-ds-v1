@@ -13,7 +13,7 @@ import { SlideoutMenu } from "@/components/application/slideout-menus/slideout-m
  * the right; its width is set by `max-w-100` and can be widened via `className`.
  */
 const meta = {
-    title: "Components/Actions/Slideout Menu",
+    title: "Library (unused)/Actions/Slideout Menu",
     component: SlideoutMenu,
     parameters: { layout: "centered" },
     argTypes: {
