@@ -6,7 +6,7 @@ import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
 const meta = {
-    title: "Kiosk Core/Booking/Activity",
+    title: "Components/Kiosk Booking/Activity",
     component: ActivityBooking,
     parameters: {
         // "centered" wraps the story in a padded box. At the kiosk viewport

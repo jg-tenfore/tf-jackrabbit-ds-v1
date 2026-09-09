@@ -5,7 +5,7 @@ import { OnScreenKeyboard, type OnScreenKeyboardProps } from "@/components/kiosk
 import { KEY_SIZES, pxToMm } from "@/kiosk/touch";
 
 const meta = {
-    title: "Kiosk Core/Keyboard/On-Screen Keyboard",
+    title: "Components/Kiosk Keyboard/On-Screen Keyboard",
     component: OnScreenKeyboard,
     parameters: {
         // "centered" pads the story; at the 750px kiosk viewport that padding

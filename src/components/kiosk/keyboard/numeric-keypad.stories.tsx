@@ -6,7 +6,7 @@ import { formatPhone } from "@/components/kiosk/keyboard/keyboard-field";
 import { maxKeyWidthForColumns, pxToMm } from "@/kiosk/touch";
 
 const meta = {
-    title: "Kiosk Core/Keyboard/Numeric Keypad",
+    title: "Components/Kiosk Keyboard/Numeric Keypad",
     component: NumericKeypad,
     parameters: {
         // "centered" pads the story; at the 750px kiosk viewport that padding

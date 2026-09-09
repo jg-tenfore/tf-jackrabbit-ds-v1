@@ -8,13 +8,15 @@ import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
 const meta = {
-    title: "Screens/Entry",
+    title: "Auth w Existing User",
     component: EntryScreen,
     parameters: {
         layout: "fullscreen",
         docs: {
             description: {
-                component: `**Enter your code**, **Enter your email** and **Enter your name** are one layout with different fields, so they share a single \`EntryScreen\` template: brand mark, title, subtitle, field, keyboard, Go Back / Continue.
+                component: `**\`references/flows/1-1-User Account Authentication with Existing User\`** — a member who has an account but is not scanning it.
+
+**Enter your code** and **Enter your email** are one layout with different fields, so they share a single \`EntryScreen\` template: brand mark, title, subtitle, field, keyboard, Go Back / Continue.
 
 The field is a **slot**, not a \`type\` prop. The three fields have genuinely different shapes — six segmented cells, a wide pill, a free-text line — and expressing them through one union would push the differences *into* the template instead of removing them.
 
@@ -74,28 +76,6 @@ export const EnterYourEmail: Story = {
                     value={value}
                     onChange={setValue}
                     layout="email"
-                    onContinue={() => {}}
-                    onBack={() => {}}
-                />
-            </KioskScreen>
-        );
-    },
-};
-
-/** Name entry — no sign-in panel, since guest checkout is already chosen. */
-export const EnterYourName: Story = {
-    args: { title: "", field: null, value: "", onChange: () => {} },
-    decorators: [withKioskSession(), withKioskFrame()],
-    render: function Name() {
-        const [value, setValue] = useState("");
-        return (
-            <KioskScreen scroll={false} footer={<GlobalNav />}>
-                <EntryScreen
-                    title="Enter your name"
-                    subtitle="Enter your full name for your food order."
-                    field={<EntryTextField value={value} placeholder="Enter your Full Name" />}
-                    value={value}
-                    onChange={setValue}
                     onContinue={() => {}}
                     onBack={() => {}}
                 />

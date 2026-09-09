@@ -10,7 +10,7 @@ import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
 const meta = {
-    title: "Kiosk Core/Booking/Tee Time",
+    title: "Components/Kiosk Booking/Tee Time",
     component: TeeTimeBooking,
     parameters: {
         // "centered" wraps the story in a padded box. At the kiosk viewport

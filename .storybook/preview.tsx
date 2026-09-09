@@ -17,20 +17,41 @@ const preview: Preview = {
                     // Tokens first — everything below is expressed in them.
                     "Foundations",
                     ["Colors", "Typography", "Spacing", "Radius", "Border", "Effect Styles", "Touch Targets", "Icons", "Logos"],
-                    // Kiosk-native primitives: the parts that exist only because
-                    // this is a touch kiosk, not a desktop app.
-                    "Kiosk Core",
-                    ["Kiosk Frame", "Keyboard", "Global Nav", "Authentication", "Booking", "Store", "Overlays"],
-                    // The shared Untitled UI library, ported from Buck. Source
-                    // material to pull from and refine into kiosk components.
+                    // Every reusable part: the ported Untitled UI library plus
+                    // the kiosk-native primitives, which sit first because they
+                    // are what the flows below are actually assembled from.
+                    "Components",
+                    [
+                        "Kiosk Frame",
+                        "Kiosk Keyboard",
+                        "Kiosk Overlays",
+                        "Kiosk Booking",
+                        "Kiosk Store",
+                        "Marquee",
+                        "Actions",
+                        "Forms",
+                        "Feedback & Status",
+                        "Layout & Structure",
+                        "Media & Visuals",
+                        "Navigation",
+                    ],
                     // Persistent chrome that frames every screen.
                     "App Chrome",
-                    // Assembled screens, built from the primitives above.
-                    "Screens",
-                    // The shared Untitled UI library, ported from Buck. Source
-                    // material to pull from and refine into kiosk components.
-                    "Components",
-                    ["Actions", "Forms", "Feedback & Status", "Layout & Structure", "Media & Visuals", "Navigation"],
+                    // The flows, in the order a guest meets them. Each is a
+                    // folder in references/flows, and each story in it is one
+                    // screen of that flow assembled from the components above —
+                    // so a component change shows up in every screen that uses
+                    // it, which is the whole point of keeping them separate.
+                    "Welcome Screen",
+                    "Interstitials",
+                    "Auth w New User",
+                    "Auth w Existing User",
+                    "Order Sandwich",
+                    "Order Sandwich Guest",
+                    "Book Tee Time",
+                    "Book Activity",
+                    "Waitlist Reg",
+                    "Standby",
                 ],
             },
         },
