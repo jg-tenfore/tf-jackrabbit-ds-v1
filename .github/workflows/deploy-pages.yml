@@ -1,4 +1,8 @@
-name: Deploy Storybook to GitHub Pages
+name: Deploy to GitHub Pages
+
+# One Pages site carries both artefacts: Storybook at the root, and the
+# clickable prototype at /prototype/. They are built separately and combined
+# into a single upload, because Pages serves one artifact per repo.
 
 on:
     push:
@@ -35,13 +39,29 @@ jobs:
               # that base whenever NETLIFY is unset on a production build.
               run: npm run build-storybook
 
+            - name: Build prototype
+              # basePath has to include the repo subpath as well as /prototype,
+              # or every asset the export emits resolves against the wrong root.
+              run: npm run build
+              env:
+                  PROTOTYPE_BASE: /tf-jackrabbit-ds-v1/prototype
+
+            - name: Combine into one site
+              run: |
+                  mkdir -p site
+                  cp -r storybook-static/. site/
+                  mkdir -p site/prototype
+                  cp -r out/. site/prototype/
+                  test -f site/index.html
+                  test -f site/prototype/index.html
+
             - name: Configure Pages
               uses: actions/configure-pages@v5
 
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
               with:
-                  path: storybook-static
+                  path: site
 
     deploy:
         needs: build
