@@ -21,6 +21,10 @@ export default tseslint.config(
         ignores: [
             "node_modules/**",
             ".next/**",
+            // `next build` static export, and the combined Pages upload built
+            // from it — generated, and gitignored for the same reason.
+            "out/**",
+            "site/**",
             "storybook-static/**",
             "screenshots/**",
             "public/**",

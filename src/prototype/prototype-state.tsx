@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from "react";
+import { type ReactNode, createContext, useCallback, useContext, useMemo, useState } from "react";
 import type { MenuItem } from "@/data/menu-catalog";
 import type { ModifierLevel } from "@/data/modifiers";
 import type { ProShopProduct } from "@/data/pro-shop-types";
@@ -35,6 +35,16 @@ export interface CartLine {
     image?: string;
     /** Menu lines only: the deviations chosen on the customize screen. */
     modifiers?: string[];
+    /**
+     * Menu lines only: the full level map behind those labels.
+     *
+     * Kept alongside the labels rather than instead of them because the two
+     * answer different questions and neither derives from the other cheaply.
+     * "No Pickles" is what a receipt prints, but it cannot be turned back into
+     * a stepper position — so re-opening a line to edit it needs this, and a
+     * real POS would need it too.
+     */
+    levels?: Record<string, ModifierLevel>;
     /** Booking lines only: what was reserved, for the review screen. */
     bookingDetail?: string;
 }
@@ -78,19 +88,26 @@ const TAX_RATE = 0.0825;
 let lineCounter = 0;
 const nextLineId = () => `line-${++lineCounter}`;
 
+/** Identity of a menu line: the item plus the deviations chosen on it. */
+const lineSignature = (name: string, modifierLabels: string[] = []) => `${name}|${modifierLabels.join(",")}`;
+
 export const PrototypeProvider = ({ children }: { children: ReactNode }) => {
     const [lines, setLines] = useState<CartLine[]>([]);
     const [booking, setBooking] = useState<BookingDraft | null>(null);
 
-    const addMenuItem = useCallback((item: MenuItem, _levels?: Record<string, ModifierLevel>, modifierLabels: string[] = []) => {
+    const addMenuItem = useCallback((item: MenuItem, levels?: Record<string, ModifierLevel>, modifierLabels: string[] = []) => {
         setLines((prev) => {
             // An identical item with identical modifiers increments rather than
             // adding a second line — two "No Pickles" burgers are quantity 2,
             // but one plain and one customised are genuinely two lines.
-            const signature = `${item.id}|${modifierLabels.join(",")}`;
-            const existing = prev.find((l) => l.kind === "menu" && `${l.name}|${(l.modifiers ?? []).join(",")}` === `${item.name}|${modifierLabels.join(",")}`);
+            //
+            // Keyed on the labels rather than the level map because the labels
+            // are already the canonical list of deviations, in list order: two
+            // level maps that differ only where both sides match the default
+            // are the same sandwich and should merge.
+            const signature = lineSignature(item.name, modifierLabels);
+            const existing = prev.find((l) => l.kind === "menu" && lineSignature(l.name, l.modifiers) === signature);
             if (existing) return prev.map((l) => (l.lineId === existing.lineId ? { ...l, quantity: l.quantity + 1 } : l));
-            void signature;
             return [
                 ...prev,
                 {
@@ -101,6 +118,7 @@ export const PrototypeProvider = ({ children }: { children: ReactNode }) => {
                     quantity: 1,
                     image: item.image,
                     modifiers: modifierLabels.length ? modifierLabels : undefined,
+                    levels,
                 },
             ];
         });
@@ -110,10 +128,7 @@ export const PrototypeProvider = ({ children }: { children: ReactNode }) => {
         setLines((prev) => {
             const existing = prev.find((l) => l.kind === "pro-shop" && l.name === product.name);
             if (existing) return prev.map((l) => (l.lineId === existing.lineId ? { ...l, quantity: l.quantity + 1 } : l));
-            return [
-                ...prev,
-                { lineId: nextLineId(), kind: "pro-shop", name: product.name, priceCents: product.priceCents, quantity: 1, image: product.image },
-            ];
+            return [...prev, { lineId: nextLineId(), kind: "pro-shop", name: product.name, priceCents: product.priceCents, quantity: 1, image: product.image }];
         });
     }, []);
 
@@ -126,8 +141,7 @@ export const PrototypeProvider = ({ children }: { children: ReactNode }) => {
                 {
                     lineId: nextLineId(),
                     kind: "booking",
-                    name:
-                        draft.kind === "tee-time" ? "Tee Time" : draft.kind === "simulator" ? "Simulator Bay" : "Pickleball Court",
+                    name: draft.kind === "tee-time" ? "Tee Time" : draft.kind === "simulator" ? "Simulator Bay" : "Pickleball Court",
                     priceCents: draft.priceCents,
                     quantity: 1,
                     bookingDetail: detail,
@@ -138,9 +152,7 @@ export const PrototypeProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     const setQuantity = useCallback((lineId: string, quantity: number) => {
-        setLines((prev) =>
-            quantity <= 0 ? prev.filter((l) => l.lineId !== lineId) : prev.map((l) => (l.lineId === lineId ? { ...l, quantity } : l)),
-        );
+        setLines((prev) => (quantity <= 0 ? prev.filter((l) => l.lineId !== lineId) : prev.map((l) => (l.lineId === lineId ? { ...l, quantity } : l))));
     }, []);
 
     const removeLine = useCallback((lineId: string) => setLines((prev) => prev.filter((l) => l.lineId !== lineId)), []);
