@@ -37,21 +37,24 @@ const preview: Preview = {
                     ],
                     // Persistent chrome that frames every screen.
                     "App Chrome",
-                    // The flows, in the order a guest meets them. Each is a
-                    // folder in references/flows, and each story in it is one
-                    // screen of that flow assembled from the components above —
-                    // so a component change shows up in every screen that uses
-                    // it, which is the whole point of keeping them separate.
-                    "Welcome Screen",
-                    "Interstitials",
-                    "Auth w New User",
-                    "Auth w Existing User",
-                    "Order Sandwich",
-                    "Order Sandwich Guest",
-                    "Book Tee Time",
-                    "Book Activity",
-                    "Waitlist Reg",
-                    "Standby",
+                    // Every flow under one parent, last: this is the assembled
+                    // end of the library, and a reader who has come down through
+                    // tokens, parts and chrome arrives at the screens those make.
+                    // Sub-groups are in the order a guest meets them, not
+                    // alphabetically, so the sidebar reads as the product does.
+                    "User Flows",
+                    [
+                        "Welcome Screen",
+                        "Interstitials",
+                        "Auth w New User",
+                        "Auth w Existing User",
+                        "Order Sandwich",
+                        "Order Sandwich Guest",
+                        "Book Tee Time",
+                        "Book Activity",
+                        "Waitlist Reg",
+                        "Standby",
+                    ],
                 ],
             },
         },

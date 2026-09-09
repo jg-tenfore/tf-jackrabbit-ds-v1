@@ -18,6 +18,8 @@ import { cx } from "@/utils/cx";
  *
  * It reuses the same `CategoryRail` and the same `MenuItemCard` as the browse
  * screen, so the rail geometry and the tile treatment stay one set of numbers.
+ * `POPULAR_MIX` deliberately draws across every category — a home grid that
+ * only showed sandwiches would be a category page with a different heading.
  * The greeting is a prop rather than derived from the clock: the time of day a
  * screenshot is taken should not change what QA is diffing.
  */
@@ -31,21 +33,48 @@ export interface HomeTile {
 }
 
 export interface HomePromo {
-    eyebrow?: string;
-    title: string;
-    body?: string;
-    image?: string;
+    /** Full-width banner artwork, used whole. */
+    banner: string;
+    /** Accessible name — the banner carries its own words as pixels. */
+    alt: string;
+    /** Where tapping it goes. */
+    categoryId?: string;
 }
 
+/**
+ * The supplied Links Drinks banner, used as one piece.
+ *
+ * It replaced a composed band — eyebrow, title, body, and the can in a square
+ * crop — which cut the can off top and bottom, because a 504x750 pack shot does
+ * not fit a 126px square. The artwork is a single composition and survives
+ * being treated as one.
+ */
 const DEFAULT_PROMO: HomePromo = {
-    eyebrow: "Links Drinks",
-    title: "Transfusion",
-    body: "Ready-to-drink cocktail, for the course and beyond.",
-    image: "menu-images/transfusion-classic.webp",
+    banner: "screen-assets/store/promo-transfusion.png",
+    alt: "Links Drinks Transfusion — ready-to-drink cocktail, for the course and beyond",
+    categoryId: "alcohol",
 };
 
+/**
+ * A cross-category spread for the home grid.
+ *
+ * Picked by hand rather than sliced off the front of `MENU_ITEMS`, which is
+ * ordered by category and would have shown twenty-four sandwiches. Ordered so
+ * the first row alone already spans food, drink and alcohol.
+ */
+export const POPULAR_MIX_IDS = [
+    "cheeseburger", "domestic-beer", "bottle-of-water",
+    "chicken-sandwich", "aperol-spritz", "soda",
+    "french-fries", "craft-beer", "coffee",
+    "soft-pretzel", "wine", "orange-juice",
+    "hot-dog", "moscow-mule", "sports-drink",
+    "potato-chips", "transfusion-classic", "iced-tea",
+    "cookie", "old-fashioned", "energy-drink",
+    "mms", "mango-margarita", "milkshake",
+] as const;
+
 const DEFAULT_TILES: HomeTile[] = [
-    { categoryId: "beer", label: "Beers", image: "menu-images/domestic-beer.webp" },
+    { categoryId: "alcohol", label: "Alcohol", image: "menu-images/domestic-beer.webp" },
     { categoryId: "sandwiches", label: "Quick Eats", image: "menu-images/mms.webp" },
     { categoryId: "sandwiches", label: "Sandwiches", image: "menu-images/chicken-sandwich.webp" },
     { categoryId: "beverages", label: "Beverages", image: "menu-images/bottle-of-water.webp" },
@@ -90,15 +119,13 @@ export const HomeScreen = ({
             {promo && (
                 <button
                     type="button"
-                    onClick={() => onSelectCategory?.("deals")}
-                    className="flex h-[150px] w-full items-center gap-4 overflow-hidden rounded-2xl bg-secondary px-5 text-left ring-1 ring-border-secondary transition duration-100 ease-linear active:bg-secondary_hover"
+                    onClick={() => onSelectCategory?.(promo.categoryId ?? "deals")}
+                    className="block w-full overflow-hidden rounded-2xl ring-1 ring-border-secondary transition duration-100 ease-linear active:scale-[0.99]"
                 >
-                    <span className="flex min-w-0 flex-1 flex-col gap-1">
-                        {promo.eyebrow && <span className="text-[13px] font-semibold tracking-wide text-brand-secondary uppercase">{promo.eyebrow}</span>}
-                        <span className="text-[26px] leading-tight font-bold text-primary">{promo.title}</span>
-                        {promo.body && <span className="text-[15px] leading-snug text-tertiary">{promo.body}</span>}
-                    </span>
-                    <ProductImage src={promo.image} alt={promo.title} className="h-[126px] w-[126px] shrink-0 rounded-xl bg-transparent" />
+                    {/* Its own aspect, not a fixed height: the banner is one
+                        composition and cropping it to a band is what cut the can
+                        off in the first place. */}
+                    <img src={assetUrl(promo.banner)} alt={promo.alt} className="block w-full" />
                 </button>
             )}
 
@@ -123,6 +150,9 @@ export const HomeScreen = ({
             {featuredItems.length > 0 && (
                 <>
                     <h2 className="mt-8 text-[26px] leading-none font-bold text-primary">{featuredTitle ?? "Featured"}</h2>
+                    {/* Three across, so a long list reads as a browsable grid
+                        rather than a row that runs out of screen. The body
+                        already scrolls, so length is the caller's call. */}
                     <div className="mt-4 grid grid-cols-3 gap-4">
                         {featuredItems.map((item) => (
                             <MenuItemCard key={item.id} item={item} onSelect={onSelectItem} />

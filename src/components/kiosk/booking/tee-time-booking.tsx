@@ -51,10 +51,25 @@ const IN_WINDOW: Record<string, (minutes: number) => boolean> = {
     twilight: (m) => m >= 19 * 60,
 };
 
-export const TeeTimeBooking = ({ slots, className }: { slots: TeeTimeSlot[]; className?: string }) => {
+export const TeeTimeBooking = ({
+    slots,
+    /**
+     * Which state the date picker opens in. It stays interactive either way —
+     * this only chooses the starting state, so the month view is reachable as a
+     * story without forking the screen into a second component.
+     */
+    dateMode = "week",
+    className,
+}: {
+    slots: TeeTimeSlot[];
+    dateMode?: "week" | "month";
+    className?: string;
+}) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [mode, setMode] = useState<"week" | "month">(dateMode);
     const [filters, setFilters] = useState<Record<string, string>>({ holes: "18", time: "all" });
     const [openSlot, setOpenSlot] = useState<TeeTimeSlot | null>(null);
+    const isMonth = mode === "month";
 
     const visible = useMemo(
         () =>
@@ -84,10 +99,27 @@ export const TeeTimeBooking = ({ slots, className }: { slots: TeeTimeSlot[]; cla
                     <p className="text-lg text-tertiary">Browse tee times and book today or in advance</p>
                 </header>
 
-                <KioskDatePicker selected={selectedDate} onSelect={setSelectedDate} />
+                {/* The day strip is pinned above the scrolling slots; the month
+                    grid is not. Expanded, the grid is ~550px tall — pinning it
+                    would leave the slot area a 30px sliver of clipped cards, so
+                    in month mode the picker scrolls away with the content it
+                    filters, which is also how the reference draws it. */}
+                {!isMonth && <KioskDatePicker selected={selectedDate} onSelect={setSelectedDate} mode={mode} onModeChange={setMode} />}
             </div>
 
-            <div className="mt-6 min-h-0 flex-1 overflow-y-auto pr-8 pb-8 pl-[232px] scrollbar-hide">
+            <div className="mt-6 flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto pr-8 pb-8 pl-[232px] scrollbar-hide">
+                {isMonth && <KioskDatePicker selected={selectedDate} onSelect={setSelectedDate} mode={mode} onModeChange={setMode} />}
+
+                {/* The month grid replaces the day strip, and with it the label
+                    that said which day the slots below belong to. Restating the
+                    date here keeps that answer on screen — without it the grid
+                    reads as "some day's tee times". */}
+                {isMonth && (
+                    <h2 className="text-3xl font-bold text-primary">
+                        {selectedDate.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
+                    </h2>
+                )}
+
                 {visible.length === 0 ? (
                     <p className="py-16 text-center text-lg text-tertiary">No tee times match these filters.</p>
                 ) : (

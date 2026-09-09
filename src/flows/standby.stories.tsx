@@ -4,7 +4,7 @@ import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
 const meta = {
-    title: "Standby",
+    title: "User Flows/Standby",
     parameters: {
         layout: "fullscreen",
         docs: {

@@ -15,7 +15,7 @@ import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
 const meta = {
-    title: "Auth w Existing User",
+    title: "User Flows/Auth w Existing User",
     parameters: {
         layout: "fullscreen",
         docs: {

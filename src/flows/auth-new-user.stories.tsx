@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { WelcomeNav } from "@/components/kiosk/app-chrome/welcome-nav";
 import { CodeInput } from "@/components/kiosk/keyboard/code-input";
-import { HomeScreen } from "@/components/kiosk/screens/home-screen";
+import { HomeScreen, POPULAR_MIX_IDS } from "@/components/kiosk/screens/home-screen";
 import { EntryScreen, EntryTextField } from "@/components/kiosk/screens/entry-screen";
 import { HowToLogInScreen } from "@/components/kiosk/screens/how-to-log-in-screen";
 import { ScanPromptScreen } from "@/components/kiosk/screens/scan-prompt-screen";
@@ -15,7 +15,7 @@ import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
 const meta = {
-    title: "Auth w New User",
+    title: "User Flows/Auth w New User",
     parameters: {
         layout: "fullscreen",
         docs: {
@@ -198,7 +198,12 @@ export const SignedInHome: Story = {
     decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
     render: () => (
         <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={0} cartTotal={0} onViewOrder={() => {}} />}>
-            <HomeScreen featuredTitle="New This Week" featuredItems={MENU_ITEMS.slice(0, 3)} onSelectCategory={() => {}} onSelectItem={() => {}} />
+            <HomeScreen
+                featuredTitle="Popular Right Now"
+                featuredItems={POPULAR_MIX_IDS.map((id) => MENU_ITEMS.find((i) => i.id === id)).filter((i) => i !== undefined)}
+                onSelectCategory={() => {}}
+                onSelectItem={() => {}}
+            />
         </KioskScreen>
     ),
 };

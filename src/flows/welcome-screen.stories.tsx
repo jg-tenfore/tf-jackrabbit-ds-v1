@@ -6,7 +6,7 @@ import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
 const meta = {
-    title: "Welcome Screen",
+    title: "User Flows/Welcome Screen",
     parameters: {
         layout: "fullscreen",
         docs: {

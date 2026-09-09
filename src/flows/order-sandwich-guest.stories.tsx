@@ -18,7 +18,7 @@ import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
 const meta = {
-    title: "Order Sandwich Guest",
+    title: "User Flows/Order Sandwich Guest",
     parameters: {
         layout: "fullscreen",
         docs: {

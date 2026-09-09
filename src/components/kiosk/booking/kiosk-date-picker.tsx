@@ -207,6 +207,15 @@ const MonthGrid = ({
             </div>
 
             <div className="grid grid-cols-7 gap-y-4 justify-items-center">
+                {/* Column headers. The week strip carries its weekday under each
+                    circle, but a month grid cannot repeat that 31 times, so the
+                    day-of-week has to be readable off the column instead. */}
+                {WEEKDAY.map((name) => (
+                    <span key={name} aria-hidden="true" className="pb-2 text-lg font-semibold text-secondary">
+                        {name.charAt(0)}
+                    </span>
+                ))}
+
                 {Array.from({ length: firstWeekday }).map((_, i) => (
                     <div key={`blank-${i}`} aria-hidden="true" />
                 ))}

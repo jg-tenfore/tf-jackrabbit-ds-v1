@@ -92,6 +92,11 @@ const ASSETS = [
     // exports mix numbering, casing and spelling conventions, and the rail asks
     // for them by category id.
     { from: "store/tf-logo-square.svg", to: "store/logo-tile.svg" },
+
+    // The Links Drinks promo banner, used whole on the home screen. Composed
+    // markup with the can in a square crop cut the can off top and bottom; the
+    // artwork is one piece and is used as one.
+    { from: "store/transfusion.png", to: "store/promo-transfusion.png", renderWidth: 622 },
     { from: "store/01-Home.png", to: "store/home.png" },
     { from: "store/02-deals.png", to: "store/deals.png" },
     { from: "store/Members.png", to: "store/members.png" },
