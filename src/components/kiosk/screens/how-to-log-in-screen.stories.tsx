@@ -34,7 +34,7 @@ export const Default: Story = {
     args: {},
     decorators: [withKioskSession(), withKioskFrame()],
     render: (args) => (
-        <KioskScreen footer={<GlobalNav />}>
+        <KioskScreen scroll={false} footer={<GlobalNav className="shadow-none" />}>
             <HowToLogInScreen {...args} onDismiss={() => {}} />
         </KioskScreen>
     ),
