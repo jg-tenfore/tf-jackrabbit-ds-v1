@@ -35,9 +35,18 @@ import { usePrototype } from "./prototype-state";
  */
 const resetters = new Set<() => void>();
 
-/** Called at module scope by any flow module holding transient state. */
+/**
+ * Registers transient state to be cleared when the session ends.
+ *
+ * Returns an unregister, so state that lives in a provider can register from an
+ * effect and drop out cleanly when that provider unmounts. Module-scoped stores
+ * can register once at import and ignore the return.
+ */
 export const registerSessionReset = (reset: () => void) => {
     resetters.add(reset);
+    return () => {
+        resetters.delete(reset);
+    };
 };
 
 export const useEndSession = () => {

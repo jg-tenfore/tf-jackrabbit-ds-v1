@@ -23,6 +23,7 @@ import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { type ScreenId, useNavigation } from "@/prototype/navigation";
 import { type CartLine, usePrototype } from "@/prototype/prototype-state";
 import { registerSessionReset, useEndSession } from "@/prototype/session-lifecycle";
+import { useKioskSession } from "@/providers/kiosk-session";
 
 /**
  * The food and pro-shop half of the clickable prototype.
@@ -409,11 +410,16 @@ export const OrderReviewRoute = () => <OrderReviewSurface />;
  */
 export const TakeoutChoiceRoute = () => {
     const { go, goBack } = useNavigation();
+    const { member } = useKioskSession();
     const startOver = useEndSession();
 
     return (
         <KioskScreen scroll={false} footer={<GlobalNav onStartOver={startOver} onHowToLogIn={() => go("how-to-log-in")} />}>
-            <TakeoutChoiceScreen onChoose={() => go("checkout-method")} onBack={goBack} />
+            {/* A guest has to be asked what to call out; a member was asked
+                nothing because the wallet scan already answered it. Sending
+                everyone through the name step would ask a signed-in customer
+                for a name the kiosk is displaying to them at the same moment. */}
+            <TakeoutChoiceScreen onChoose={() => go(member ? "checkout-method" : "enter-name")} onBack={goBack} />
         </KioskScreen>
     );
 };

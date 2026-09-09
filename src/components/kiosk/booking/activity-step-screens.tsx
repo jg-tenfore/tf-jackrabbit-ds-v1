@@ -5,7 +5,7 @@ import { Users01 } from "@untitledui/icons";
 import { type ActivityConfig, stepsFor } from "@/components/kiosk/booking/activity-config";
 import { KioskDatePicker, type DayAvailability } from "@/components/kiosk/booking/kiosk-date-picker";
 import { TimeSlotCard } from "@/components/kiosk/booking/slot-card";
-import { StepRail } from "@/components/kiosk/booking/step-rail";
+import { type BookingStep, StepRail } from "@/components/kiosk/booking/step-rail";
 import { BrandMark } from "@/components/kiosk/brand-mark";
 import { cx } from "@/utils/cx";
 
@@ -34,6 +34,7 @@ import { cx } from "@/utils/cx";
  */
 export const ActivityStepFrame = ({
     config,
+    steps,
     currentStepId,
     completedStepIds = [],
     onStepSelect,
@@ -43,6 +44,14 @@ export const ActivityStepFrame = ({
     className,
 }: {
     config: ActivityConfig;
+    /**
+     * The rail's steps. Defaults to `stepsFor(config)` — the four an activity
+     * asks. Overridable because the rail has to report the order the flow
+     * actually walks: the prototype asks *when* before *how long*, and a tee
+     * time has no duration step at all, so a fixed list would draw a progress
+     * rail that disagrees with the screen it is next to.
+     */
+    steps?: BookingStep[];
     currentStepId: string;
     completedStepIds?: string[];
     onStepSelect?: (id: string) => void;
@@ -67,7 +76,7 @@ export const ActivityStepFrame = ({
         )}
 
         <StepRail
-            steps={stepsFor(config)}
+            steps={steps ?? stepsFor(config)}
             currentStepId={currentStepId}
             completedStepIds={completedStepIds}
             onStepSelect={onStepSelect}

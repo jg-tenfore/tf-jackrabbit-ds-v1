@@ -59,10 +59,19 @@ export const TeeTimeBooking = ({
      * story without forking the screen into a second component.
      */
     dateMode = "week",
+    onSelectSlot,
     className,
 }: {
     slots: TeeTimeSlot[];
     dateMode?: "week" | "month";
+    /**
+     * Fires when a rate is confirmed for a slot, with the day the sheet was
+     * showing. Optional because a story is a still — but the prototype has to
+     * carry the answer forward, and the date lives in this component's state,
+     * so reporting it here is the only way out that does not mean lifting the
+     * whole tee sheet into every caller.
+     */
+    onSelectSlot?: (rate: TeeTimeSlot, date: Date) => void;
     className?: string;
 }) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -137,7 +146,10 @@ export const TeeTimeBooking = ({
                     onOpenChange={(open) => !open && setOpenSlot(null)}
                     time={openSlot.time}
                     rates={RATES_FOR_TIME(openSlot.time)}
-                    onConfirm={() => setOpenSlot(null)}
+                    onConfirm={(rate) => {
+                        setOpenSlot(null);
+                        onSelectSlot?.(rate, selectedDate);
+                    }}
                 />
             )}
         </div>

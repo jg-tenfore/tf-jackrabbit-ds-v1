@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Clock, Flag01, CalendarCheck01, MarkerPin01 } from "@untitledui/icons";
+import { CalendarCheck01, Clock, Flag01, Hourglass01 } from "@untitledui/icons";
 import { cx } from "@/utils/cx";
 
 export interface SummaryLine {
@@ -16,10 +16,15 @@ export interface SummaryLine {
 /**
  * The venue block at the top of a review screen.
  *
- * Facts are icon-led rather than label-led ("Duration: 2 hours" beside a clock,
- * not "Duration" in a column). A standing user scanning a confirmation is
+ * Facts are icon-led rather than label-led ("10:00 AM" beside a clock, not
+ * "Start time" in a column). A standing user scanning a confirmation is
  * checking a handful of values against memory, and the icon gets them to the
  * right line faster than reading labels.
+ *
+ * Which makes the icon load-bearing, so it has to be literal: a clock for the
+ * point in time, an hourglass for the span of it. Start time carried a map pin
+ * until it was seen on a screen — the one place a wrong icon is worse than no
+ * icon is the row a user is checking a time against.
  */
 export const VenueSummary = ({
     venueName,
@@ -45,10 +50,26 @@ export const VenueSummary = ({
         </div>
 
         <dl className="flex flex-col gap-3">
-            {resource && <SummaryFact icon={<Flag01 className="size-6" />} label="Location">{resource}</SummaryFact>}
-            {date && <SummaryFact icon={<CalendarCheck01 className="size-6" />} label="Date">{date}</SummaryFact>}
-            {duration && <SummaryFact icon={<Clock className="size-6" />} label="Duration">{duration}</SummaryFact>}
-            {startTime && <SummaryFact icon={<MarkerPin01 className="size-6" />} label="Start time">{startTime}</SummaryFact>}
+            {resource && (
+                <SummaryFact icon={<Flag01 className="size-6" />} label="Location">
+                    {resource}
+                </SummaryFact>
+            )}
+            {date && (
+                <SummaryFact icon={<CalendarCheck01 className="size-6" />} label="Date">
+                    {date}
+                </SummaryFact>
+            )}
+            {duration && (
+                <SummaryFact icon={<Hourglass01 className="size-6" />} label="Duration">
+                    {duration}
+                </SummaryFact>
+            )}
+            {startTime && (
+                <SummaryFact icon={<Clock className="size-6" />} label="Start time">
+                    {startTime}
+                </SummaryFact>
+            )}
         </dl>
     </div>
 );
@@ -67,14 +88,9 @@ const SummaryFact = ({ icon, label, children }: { icon: ReactNode; label: string
 export const PriceBreakdown = ({ lines, footnote, className }: { lines: SummaryLine[]; footnote?: string; className?: string }) => (
     <div className={cx("flex flex-col gap-3", className)}>
         {lines.map((line) => (
-            <div
-                key={line.label}
-                className={cx("flex items-baseline justify-between gap-4", line.isTotal && "border-t border-secondary pt-4")}
-            >
+            <div key={line.label} className={cx("flex items-baseline justify-between gap-4", line.isTotal && "border-t border-secondary pt-4")}>
                 <span className={cx(line.isTotal ? "text-3xl font-bold text-primary" : "text-lg text-secondary")}>{line.label}</span>
-                <span className={cx("tabular-nums", line.isTotal ? "text-3xl font-bold text-primary" : "text-lg text-secondary")}>
-                    {line.value}
-                </span>
+                <span className={cx("tabular-nums", line.isTotal ? "text-3xl font-bold text-primary" : "text-lg text-secondary")}>{line.value}</span>
             </div>
         ))}
         {footnote && <p className="text-sm text-tertiary italic">{footnote}</p>}

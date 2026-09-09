@@ -132,24 +132,33 @@ export const PrototypeProvider = ({ children }: { children: ReactNode }) => {
         });
     }, []);
 
+    /**
+     * Moves the in-progress booking into the cart.
+     *
+     * Reads `booking` from the closure rather than from a `setBooking` updater.
+     * An updater must be pure — React is free to call it more than once for a
+     * single update, and does exactly that in development — so appending a cart
+     * line from inside one booked the same tee time twice for one tap. It only
+     * showed up in dev, which is worse than showing up everywhere: production
+     * looked correct while every local run was wrong.
+     */
     const confirmBooking = useCallback(() => {
-        setBooking((draft) => {
-            if (!draft) return null;
-            const detail = [draft.resourceLabel, draft.durationLabel, draft.startTime].filter(Boolean).join(" · ");
-            setLines((prev) => [
-                ...prev,
-                {
-                    lineId: nextLineId(),
-                    kind: "booking",
-                    name: draft.kind === "tee-time" ? "Tee Time" : draft.kind === "simulator" ? "Simulator Bay" : "Pickleball Court",
-                    priceCents: draft.priceCents,
-                    quantity: 1,
-                    bookingDetail: detail,
-                },
-            ]);
-            return null;
-        });
-    }, []);
+        if (!booking) return;
+
+        const detail = [booking.resourceLabel, booking.durationLabel, booking.startTime].filter(Boolean).join(" · ");
+        setLines((prev) => [
+            ...prev,
+            {
+                lineId: nextLineId(),
+                kind: "booking",
+                name: booking.kind === "tee-time" ? "Tee Time" : booking.kind === "simulator" ? "Simulator Bay" : "Pickleball Court",
+                priceCents: booking.priceCents,
+                quantity: 1,
+                bookingDetail: detail,
+            },
+        ]);
+        setBooking(null);
+    }, [booking]);
 
     const setQuantity = useCallback((lineId: string, quantity: number) => {
         setLines((prev) => (quantity <= 0 ? prev.filter((l) => l.lineId !== lineId) : prev.map((l) => (l.lineId === lineId ? { ...l, quantity } : l))));
