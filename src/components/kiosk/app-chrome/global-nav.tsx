@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { KioskButton } from "@/components/kiosk/kiosk-button";
 import { SignInPrompt, SignedInCard, WalletDrawer } from "@/components/kiosk/app-chrome/wallet-drawer";
 import { useKioskSession } from "@/providers/kiosk-session";
 import { assetUrl } from "@/utils/asset-url";
@@ -123,13 +124,9 @@ export const GlobalNav = ({
                             </div>
                         )}
 
-                        <button
-                            type="button"
-                            onClick={handleStartOver}
-                            className="h-[52px] w-full rounded-lg text-[18px] text-tertiary ring-1 ring-border-primary ring-inset transition duration-100 ease-linear active:bg-secondary"
-                        >
+                        <KioskButton size="md" onPress={handleStartOver} isFullWidth>
                             Start Over
-                        </button>
+                        </KioskButton>
                     </div>
                 </div>
             </div>

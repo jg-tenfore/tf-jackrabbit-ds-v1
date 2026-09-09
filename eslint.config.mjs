@@ -63,7 +63,10 @@ export default tseslint.config(
     // Node scripts: no browser globals, and console output is the point.
     {
         files: ["scripts/**/*.mjs", "*.config.{mjs,ts}", ".storybook/**/*.{ts,tsx}"],
-        languageOptions: { globals: globals.node },
+        // Browser globals too: the Playwright scripts pass functions to
+        // `page.evaluate`, whose bodies are serialised and run in the page.
+        // They read as Node code and execute as browser code.
+        languageOptions: { globals: { ...globals.node, ...globals.browser } },
         rules: { "no-console": "off" },
     },
 
