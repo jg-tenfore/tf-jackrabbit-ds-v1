@@ -8,6 +8,8 @@ import { CheckoutMethodFullScreen, DestructiveConfirmFullScreen } from "@/compon
 import { AddedToBagScreen } from "@/components/kiosk/order/added-to-bag-screen";
 import { MenuScreen } from "@/components/kiosk/order/menu-screen";
 import { OrderReviewScreen, type OrderLine } from "@/components/kiosk/order/order-review-screen";
+import { CustomizeItemScreen } from "@/components/kiosk/order/customize-item-screen";
+import { FollowInstructionsScreen } from "@/components/kiosk/order/follow-instructions-screen";
 import { OrderSuccessfulScreen } from "@/components/kiosk/order/order-successful-screen";
 import { TakeoutChoiceScreen } from "@/components/kiosk/order/takeout-choice-screen";
 import { ProductImage } from "@/components/kiosk/store/product-image";
@@ -249,6 +251,69 @@ export const OrderSuccessful: Story = {
             }
         >
             <OrderSuccessfulScreen onDismiss={() => {}} />
+        </KioskScreen>
+    ),
+};
+
+/**
+ * The hand-off to the card reader, between checkout and the receipt.
+ *
+ * Deliberately empty below the sentence: no spinner, no progress bar, no
+ * button. Each of those would pull the eye back to the screen the user is
+ * being told to stop looking at, and a spinner would imply this panel is
+ * doing the work and worth waiting on — when the thing that needs attention
+ * is a separate piece of hardware.
+ *
+ * The rail is unchanged from the order review, and shows the **identity card**
+ * rather than the wallet drawer because the session is signed in. That comes
+ * off the session, not a prop: a signed-in user being shown a "log in" prompt
+ * is not a state any screen should be able to ask for.
+ */
+export const FollowInstructions: Story = {
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
+    render: () => (
+        <KioskScreen
+            scroll={false}
+            footer={
+                <OrderSummaryNav
+                    subtotalCents={1499}
+                    taxCents={124}
+                    onCompleteOrder={() => {}}
+                    onOrderMore={() => {}}
+                    onStartOver={() => {}}
+                />
+            }
+        >
+            <FollowInstructionsScreen />
+        </KioskScreen>
+    ),
+};
+
+/**
+ * Customizing an item before it goes in the bag.
+ *
+ * Each row is a **level**, not a quantity — none / regular / extra. The control
+ * looks like a stepper but its middle segment shows a word, because "2 mustard"
+ * means nothing to a kitchen while "Extra" does.
+ *
+ * Only **deviations from the default** are red. An untouched sandwich shows no
+ * red at all, so a glance down the list says what was changed rather than making
+ * you read every row — and that same set is what becomes "No Pickles, Extra
+ * Mayo" on the order line.
+ *
+ * The two presets are deliberately different things. **Make it plain** is a
+ * destination; **Start fresh** is an undo. Conflating them would silently do the
+ * wrong one for half the people who tap.
+ */
+export const CustomizeItem: Story = {
+    decorators: [withKioskSession({ member: MEMBERS[0] }), withKioskFrame()],
+    render: () => (
+        <KioskScreen scroll={false} footer={<GlobalNav hasOrder cartCount={1} cartTotal={13.99} />}>
+            <CustomizeItemScreen
+                item={MENU_ITEMS.find((i) => i.id === "chicken-sandwich")!}
+                onSave={() => {}}
+                onCancel={() => {}}
+            />
         </KioskScreen>
     ),
 };

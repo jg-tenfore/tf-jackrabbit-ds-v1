@@ -99,6 +99,23 @@ const ASSETS = [
     { from: "store/Memberships.png", to: "store/memberships.png" },
     { from: "store/Clothes.png", to: "store/clothes.png" },
 
+    // Ingredient marks for the customize screen. 48x48 vectors, so they scale
+    // to whatever the row needs. Renamed to the modifier ids the catalogue uses;
+    // two of them are drawn *struck through*, which is the "None" state rather
+    // than the ingredient — see src/data/modifiers.ts.
+    { from: "customizeItem/mustard.svg", to: "modifiers/mustard.svg" },
+    { from: "customizeItem/mayo.svg", to: "modifiers/mayo.svg" },
+    { from: "customizeItem/pickles.svg", to: "modifiers/pickles.svg" },
+    { from: "customizeItem/lettuce_No.svg", to: "modifiers/lettuce.svg" },
+    { from: "customizeItem/cheese.svg", to: "modifiers/cheese.svg" },
+    { from: "customizeItem/noBun.svg", to: "modifiers/bun.svg" },
+    { from: "customizeItem/bacon.svg", to: "modifiers/bacon.svg" },
+    { from: "customizeItem/addOnions.svg", to: "modifiers/onions.svg" },
+    { from: "customizeItem/onionRings.svg", to: "modifiers/onion-rings.svg" },
+    { from: "customizeItem/tripleMeat.svg", to: "modifiers/triple-meat.svg" },
+    { from: "customizeItem/cheeseBlue.svg", to: "modifiers/blue-cheese.svg" },
+    { from: "customizeItem/mozarella.svg", to: "modifiers/mozzarella.svg" },
+
     // Checkout payment methods. No ground strip: these sit on a white card and
     // their baked white rect is the card colour, not a stray backdrop.
     { from: "checkoutPayment/checkout-creditCards.svg", to: "checkout/card.svg" },
