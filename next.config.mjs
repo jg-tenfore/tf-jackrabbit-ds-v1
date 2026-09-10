@@ -10,6 +10,12 @@ const base = process.env.PROTOTYPE_BASE ?? "";
 const nextConfig = {
     output: "export",
     basePath: base,
+    // The same value, readable from client code. `basePath` prefixes routes and
+    // <Image>, but assetUrl() builds plain <img> src strings and has no way to
+    // learn it otherwise — which shipped every kiosk photograph pointing at the
+    // domain root. NEXT_PUBLIC_ is inlined at build time, so this survives into
+    // the static export.
+    env: { NEXT_PUBLIC_ASSET_BASE: base },
     // Trailing slashes so Pages resolves /prototype/ to its index.html without
     // a redirect it cannot perform.
     trailingSlash: true,
