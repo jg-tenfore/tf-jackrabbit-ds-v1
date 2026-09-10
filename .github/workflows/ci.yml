@@ -9,7 +9,10 @@ on:
     workflow_dispatch:
 
 jobs:
-    validate:
+    # Fast feedback. Everything here fails in seconds, so it runs alone rather
+    # than behind a five-minute Storybook build.
+    static:
+        name: Typecheck, lint, unit tests
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v5
@@ -25,14 +28,52 @@ jobs:
             - name: Typecheck
               run: npx tsc --noEmit
 
+            # --max-warnings 0: warnings are how unused imports and dead
+            # variables have slipped through here before.
             - name: Lint
               run: npm run lint
 
-            - name: Test
+            - name: Unit tests
               run: npm test
+
+    build:
+        name: Builds and story smoke test
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+
+            - uses: actions/setup-node@v5
+              with:
+                  node-version: 22
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci
 
             - name: Build Storybook
               run: npm run build-storybook
 
             - name: Build Next app
               run: npm run build
+
+            - name: Install Playwright Chromium
+              run: npx playwright install --with-deps chromium
+
+            # Serve the built Storybook under the same subpath GitHub Pages
+            # uses, so the smoke test exercises the real deploy artifact rather
+            # than a differently-based dev build.
+            - name: Serve Storybook at the Pages subpath
+              run: |
+                  mkdir -p /tmp/sb-serve
+                  ln -s "$GITHUB_WORKSPACE/storybook-static" /tmp/sb-serve/tf-jackrabbit-ds-v1
+                  npx http-server /tmp/sb-serve -p 6199 --silent &
+                  npx wait-on http://localhost:6199/tf-jackrabbit-ds-v1/index.json
+
+            # Typecheck proves a story compiles and build-storybook proves it
+            # bundles. Neither notices a screen overflowing its canvas, an image
+            # that 404s, or a component that throws once mounted — all of which
+            # have happened here.
+            - name: Story smoke test
+              run: npm run smoke
+              env:
+                  STORYBOOK_URL: http://localhost:6199/tf-jackrabbit-ds-v1

@@ -23,12 +23,20 @@ export const MenuScreen = ({
     items = MENU_ITEMS,
     initialCategoryId = "sandwiches",
     onSelectItem,
+    onCategoryChange,
     soldOutIds = [],
     className,
 }: {
     items?: MenuItem[];
     initialCategoryId?: string;
     onSelectItem?: (item: MenuItem) => void;
+    /**
+     * Which category is now showing. The screen still owns the state — this
+     * only lets a host remember it, so a flow that leaves for an item detail
+     * and comes back lands in the category the user was browsing rather than
+     * snapping to Sandwiches.
+     */
+    onCategoryChange?: (categoryId: string) => void;
     soldOutIds?: string[];
     className?: string;
 }) => {
@@ -49,6 +57,7 @@ export const MenuScreen = ({
                     if (MENU_CATEGORIES.some((c) => c.id === id)) {
                         setCategoryId(id);
                         setSubFilter("All");
+                        onCategoryChange?.(id);
                     }
                 }}
                 logoSrc={assetUrl("screen-assets/brand/hero-logo.svg")}

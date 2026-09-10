@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { KioskButton } from "@/components/kiosk/kiosk-button";
 import { SignedInCard, WalletDrawer } from "@/components/kiosk/app-chrome/wallet-drawer";
 import { useKioskSession } from "@/providers/kiosk-session";
 import { cx } from "@/utils/cx";
@@ -89,34 +90,21 @@ export const OrderSummaryNav = ({
                 same size and position whether or not the secondary is there. */}
             <div className="mt-9 flex items-center gap-[18px]">
                 {onOrderMore && (
-                    <button
-                        type="button"
-                        onClick={onOrderMore}
-                        className="h-[65px] w-[183px] rounded-lg text-[20px] text-tertiary ring-1 ring-border-primary ring-inset transition duration-100 ease-linear active:bg-secondary"
-                    >
+                    <KioskButton size="lg" onPress={onOrderMore} className="w-[183px]">
                         Order More
-                    </button>
+                    </KioskButton>
                 )}
-                <button
-                    type="button"
-                    onClick={onCompleteOrder}
-                    disabled={isCompleteDisabled}
-                    className="ml-auto h-[65px] w-[421px] rounded-lg bg-brand-solid text-[24px] font-bold text-white transition duration-100 ease-linear active:bg-brand-solid_hover disabled:cursor-not-allowed disabled:opacity-50"
-                >
+                <KioskButton tone="primary" size="lg" onPress={onCompleteOrder} isDisabled={isCompleteDisabled} className="ml-auto w-[421px] text-[24px]">
                     Complete Order
-                </button>
+                </KioskButton>
             </div>
 
             {/* Bottom-anchored and left-aligned, diagonally opposite Complete
                 Order — the same placement it holds on every other rail, so the
                 one destructive control never moves. */}
-            <button
-                type="button"
-                onClick={handleStartOver}
-                className="mt-auto h-[52px] w-[387px] rounded-lg text-[18px] text-tertiary ring-1 ring-border-primary ring-inset transition duration-100 ease-linear active:bg-secondary"
-            >
+            <KioskButton size="md" onPress={handleStartOver} className="mt-auto w-[387px]">
                 Start Over
-            </button>
+            </KioskButton>
 
             {/* Overhangs the rail's bottom edge like it does everywhere else, so
                 whichever card is showing stays in one place across every screen.

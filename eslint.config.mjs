@@ -21,6 +21,10 @@ export default tseslint.config(
         ignores: [
             "node_modules/**",
             ".next/**",
+            // `next build` static export, and the combined Pages upload built
+            // from it — generated, and gitignored for the same reason.
+            "out/**",
+            "site/**",
             "storybook-static/**",
             "screenshots/**",
             "public/**",
@@ -63,7 +67,10 @@ export default tseslint.config(
     // Node scripts: no browser globals, and console output is the point.
     {
         files: ["scripts/**/*.mjs", "*.config.{mjs,ts}", ".storybook/**/*.{ts,tsx}"],
-        languageOptions: { globals: globals.node },
+        // Browser globals too: the Playwright scripts pass functions to
+        // `page.evaluate`, whose bodies are serialised and run in the page.
+        // They read as Node code and execute as browser code.
+        languageOptions: { globals: { ...globals.node, ...globals.browser } },
         rules: { "no-console": "off" },
     },
 
