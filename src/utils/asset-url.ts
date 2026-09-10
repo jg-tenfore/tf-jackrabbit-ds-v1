@@ -13,16 +13,26 @@
  * Vite injects `import.meta.env.BASE_URL`, which is `/` in dev and
  * `/tf-jackrabbit-ds-v1/` in the Pages production build — see the `base` set in
  * `.storybook/main.ts`.
+ *
+ * Next has no such variable, so the prototype passes its own base through
+ * `NEXT_PUBLIC_ASSET_BASE` (set from `basePath` in `next.config.mjs`). Without
+ * it this fell back to `/` and every image in the deployed prototype resolved
+ * against the domain root — exactly the after-deploy failure described above,
+ * reintroduced by the fallback meant to be harmless.
+ *
+ * Vite is checked first because Storybook is the only context where both could
+ * be defined, and there the Vite value is the correct one.
  */
 export const assetUrl = (relativePath: string): string => {
     const clean = relativePath.replace(/^\/+/, "");
 
-    // Guard for non-Vite contexts (a Next route, a node script, a test) where
-    // import.meta.env is undefined — fall back to a root-relative URL.
-    const base =
-        typeof import.meta !== "undefined" && (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL
-            ? (import.meta as unknown as { env: { BASE_URL: string } }).env.BASE_URL
-            : "/";
+    const viteBase = typeof import.meta !== "undefined" ? (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL : undefined;
+
+    // Next inlines this at build time. Empty string is a legitimate value (a
+    // site served from the root), so only `undefined` falls through.
+    const nextBase = typeof process !== "undefined" ? process.env.NEXT_PUBLIC_ASSET_BASE : undefined;
+
+    const base = viteBase ?? nextBase ?? "/";
 
     return `${base.replace(/\/+$/, "")}/${clean}`;
 };
