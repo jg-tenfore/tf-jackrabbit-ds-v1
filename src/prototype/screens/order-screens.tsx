@@ -8,6 +8,7 @@ import { ProductDetailDialog } from "@/components/kiosk/modals/dialog-variants";
 import { CheckoutMethodFullScreen } from "@/components/kiosk/modals/full-screen-variants";
 import { AddedToBagScreen } from "@/components/kiosk/order/added-to-bag-screen";
 import { CustomizeItemScreen } from "@/components/kiosk/order/customize-item-screen";
+import type { FavoriteButtonStyle } from "@/components/kiosk/order/favorite-button";
 import { FollowInstructionsScreen } from "@/components/kiosk/order/follow-instructions-screen";
 import { MenuScreen } from "@/components/kiosk/order/menu-screen";
 import { type OrderLine, OrderReviewScreen } from "@/components/kiosk/order/order-review-screen";
@@ -67,21 +68,22 @@ interface OrderFlowState {
     categoryId: string;
     /** Where "Item added to bag!" hands back to — the grid it was added from. */
     returnTo: ScreenId;
+    favoriteStyle: FavoriteButtonStyle;
 }
 
-const INITIAL_FLOW: OrderFlowState = { item: null, categoryId: "sandwiches", returnTo: "menu" };
+const INITIAL_FLOW: OrderFlowState = { item: null, categoryId: "sandwiches", returnTo: "menu", favoriteStyle: "icon" };
 
 let flow: OrderFlowState = INITIAL_FLOW;
 const flowListeners = new Set<() => void>();
 
-const setFlow = (patch: Partial<OrderFlowState>) => {
+export const setOrderFlow = (patch: Partial<OrderFlowState>) => {
     flow = { ...flow, ...patch };
     flowListeners.forEach((listener) => listener());
 };
 
 // Transient, but not immortal: without this the next customer opens the menu
 // in the category the last one was browsing. See session-lifecycle.
-registerSessionReset(() => setFlow(INITIAL_FLOW));
+registerSessionReset(() => setOrderFlow(INITIAL_FLOW));
 
 const subscribeFlow = (listener: () => void) => {
     flowListeners.add(listener);
@@ -92,7 +94,7 @@ const subscribeFlow = (listener: () => void) => {
 
 const snapshotFlow = () => flow;
 
-const useOrderFlow = () => useSyncExternalStore(subscribeFlow, snapshotFlow, snapshotFlow);
+export const useOrderFlow = () => useSyncExternalStore(subscribeFlow, snapshotFlow, snapshotFlow);
 
 /* -------------------------------------------------------------------------- */
 /* Shared wiring                                                               */
@@ -147,14 +149,17 @@ const BrowseNav = () => {
 export const MenuRoute = () => {
     const { go } = useNavigation();
     const { categoryId } = useOrderFlow();
+    const { favoriteIds, recentIds } = usePrototype();
 
     return (
         <KioskScreen scroll={false} footer={<BrowseNav />}>
             <MenuScreen
                 initialCategoryId={categoryId}
-                onCategoryChange={(id) => setFlow({ categoryId: id })}
+                favoriteIds={favoriteIds}
+                recentIds={recentIds}
+                onCategoryChange={(id) => setOrderFlow({ categoryId: id })}
                 onSelectItem={(item) => {
-                    setFlow({ item, categoryId: item.category, returnTo: "menu" });
+                    setOrderFlow({ item, returnTo: "menu" });
                     go("item-detail");
                 }}
             />
@@ -174,20 +179,28 @@ export const MenuRoute = () => {
  * rather than rendering an empty dialog.
  */
 export const ItemDetailRoute = () => {
-    const { item } = useOrderFlow();
+    const { item, categoryId, favoriteStyle } = useOrderFlow();
     const { go, goBack } = useNavigation();
-    const { addMenuItem } = usePrototype();
+    const { addMenuItem, addProShopItem, favoriteIds, recentIds, toggleFavorite } = usePrototype();
 
     if (!item) return <MenuRoute />;
 
     return (
         <KioskScreen scroll={false} footer={<BrowseNav />}>
-            <MenuScreen initialCategoryId={item.category} onCategoryChange={(id) => setFlow({ categoryId: id })} />
+            <MenuScreen
+                initialCategoryId={categoryId}
+                favoriteIds={favoriteIds}
+                recentIds={recentIds}
+                onCategoryChange={(id) => setOrderFlow({ categoryId: id })}
+            />
 
             <ProductDetailDialog
                 isOpen
                 onOpenChange={(open) => !open && goBack()}
                 name={item.name}
+                isFavorite={favoriteIds.includes(item.id)}
+                onFavoriteChange={() => toggleFavorite(item.id)}
+                favoriteStyle={favoriteStyle}
                 priceCents={item.priceCents}
                 imageSlot={<ProductImage src={item.image} alt={item.name} className="size-48" />}
                 onCustomize={canCustomize(item) ? () => go("customize") : undefined}
@@ -195,7 +208,11 @@ export const ItemDetailRoute = () => {
                     // The dialog's stepper is a count of *this* item, so it adds
                     // that many rather than one — the cart collapses them into a
                     // single line with a quantity of its own.
-                    for (let i = 0; i < quantity; i++) addMenuItem(item);
+                    const product = PRO_SHOP_PRODUCTS.find((product) => product.id === item.id);
+                    for (let i = 0; i < quantity; i++) {
+                        if (product) addProShopItem(product);
+                        else addMenuItem(item);
+                    }
                     go("added-to-bag");
                 }}
             />
@@ -248,13 +265,14 @@ const ADDED_TO_BAG_DWELL_MS = 1800;
 
 export const AddedToBagRoute = () => {
     const { itemCount, totalCents } = usePrototype();
-    const { replace } = useNavigation();
+    const { replace, isDirectEntry } = useNavigation();
     const { returnTo } = useOrderFlow();
 
     useEffect(() => {
+        if (isDirectEntry) return;
         const timer = setTimeout(() => replace(returnTo), ADDED_TO_BAG_DWELL_MS);
         return () => clearTimeout(timer);
-    }, [replace, returnTo]);
+    }, [replace, returnTo, isDirectEntry]);
 
     return (
         <KioskScreen scroll={false}>
@@ -282,7 +300,8 @@ export const AddedToBagRoute = () => {
  */
 export const ProShopRoute = () => {
     const { go } = useNavigation();
-    const { addProShopItem } = usePrototype();
+    const { addProShopItem, favoriteIds, toggleFavorite } = usePrototype();
+    const { favoriteStyle } = useOrderFlow();
     const [selected, setSelected] = useState<ProShopProduct | null>(null);
 
     return (
@@ -297,12 +316,15 @@ export const ProShopRoute = () => {
                     isOpen
                     onOpenChange={(open) => !open && setSelected(null)}
                     name={selected.name}
+                    isFavorite={favoriteIds.includes(selected.id)}
+                    onFavoriteChange={() => toggleFavorite(selected.id)}
+                    favoriteStyle={favoriteStyle}
                     priceCents={selected.priceCents}
                     imageSlot={<ProductImage src={selected.image} alt={selected.name} className="size-56" />}
                     onConfirm={(quantity) => {
                         for (let i = 0; i < quantity; i++) addProShopItem(selected);
                         setSelected(null);
-                        setFlow({ returnTo: "pro-shop" });
+                        setOrderFlow({ returnTo: "pro-shop" });
                         go("added-to-bag");
                     }}
                 />
@@ -387,7 +409,7 @@ const OrderReviewSurface = ({ overlay }: { overlay?: ReactNode }) => {
                     // has no menu detail to open and correctly does nothing.
                     const menuItem = MENU_ITEMS.find((candidate) => candidate.name === item.name);
                     if (!menuItem) return;
-                    setFlow({ item: menuItem, categoryId: menuItem.category, returnTo: "menu" });
+                    setOrderFlow({ item: { ...menuItem, priceCents: item.priceCents }, categoryId: menuItem.category, returnTo: "menu" });
                     go("item-detail");
                 }}
             />
@@ -464,13 +486,14 @@ const TERMINAL_DWELL_MS = 2600;
 
 export const FollowInstructionsRoute = () => {
     const { subtotalCents, taxCents } = usePrototype();
-    const { replace } = useNavigation();
+    const { replace, isDirectEntry } = useNavigation();
     const startOver = useEndSession();
 
     useEffect(() => {
+        if (isDirectEntry) return;
         const timer = setTimeout(() => replace("order-successful"), TERMINAL_DWELL_MS);
         return () => clearTimeout(timer);
-    }, [replace]);
+    }, [replace, isDirectEntry]);
 
     return (
         <KioskScreen

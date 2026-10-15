@@ -1,11 +1,22 @@
 "use client";
 
-import type { ComponentType } from "react";
+import { type ComponentType, useLayoutEffect, useState, useSyncExternalStore } from "react";
+import { MEMBERS } from "@/data/members";
 import { KioskSessionProvider } from "@/providers/kiosk-session";
+import { deepLinkState } from "./deep-link-state";
 import { NavigationProvider, type ScreenId, useNavigation } from "./navigation";
 import { PrototypeProvider } from "./prototype-state";
+import { PrototypeUrlSync } from "./prototype-url-sync";
 import { PrototypeViewport } from "./prototype-viewport";
-import { BookingActivityProvider, BookingDurationRoute, BookingResourceRoute, BookingReviewRoute, BookingWhenRoute } from "./screens/booking-screens";
+import { readScreenLink } from "./screen-links";
+import {
+    BookingActivityProvider,
+    BookingDurationRoute,
+    BookingResourceRoute,
+    BookingReviewRoute,
+    BookingWhenRoute,
+    useBookingActivity,
+} from "./screens/booking-screens";
 import {
     AddedToBagRoute,
     CheckoutMethodRoute,
@@ -17,6 +28,8 @@ import {
     OrderSuccessfulRoute,
     ProShopRoute,
     TakeoutChoiceRoute,
+    setOrderFlow,
+    useOrderFlow,
 } from "./screens/order-screens";
 import {
     AttractRoute,
@@ -72,12 +85,14 @@ const SCREENS: Record<ScreenId, ComponentType> = {
 
 const CurrentScreen = () => {
     const { screen } = useNavigation();
+    const { item, categoryId, favoriteStyle } = useOrderFlow();
+    const { activity } = useBookingActivity();
     const Screen = SCREENS[screen];
     // Keyed so a screen's local state (a keypad's digits, a scroll position)
     // dies with the screen. Without it React reuses the tree between two routes
     // that happen to render the same shape and the second one inherits the
     // first one's half-typed input.
-    return <Screen key={screen} />;
+    return <Screen key={`${screen}:${item?.id ?? ""}:${categoryId}:${activity}:${favoriteStyle}`} />;
 };
 
 /**
@@ -92,16 +107,40 @@ const CurrentScreen = () => {
  * React Aria portal container — every dialog these screens open renders into
  * it, so it has to sit under the providers those dialogs read.
  */
-export const PrototypeApp = () => (
-    <KioskSessionProvider>
-        <PrototypeProvider>
-            <NavigationProvider>
-                <BookingActivityProvider>
-                    <PrototypeViewport>
-                        <CurrentScreen />
-                    </PrototypeViewport>
-                </BookingActivityProvider>
-            </NavigationProvider>
-        </PrototypeProvider>
-    </KioskSessionProvider>
-);
+const PrototypeSession = () => {
+    const [entry] = useState(() => {
+        const url = new URL(window.location.href);
+        const link = readScreenLink(url);
+        const seed = deepLinkState(link);
+        return { link, seed, directEntry: url.searchParams.has("screen") };
+    });
+
+    useLayoutEffect(() => {
+        setOrderFlow({ item: entry.seed.item, categoryId: entry.seed.categoryId, returnTo: "menu", favoriteStyle: entry.link.favoriteStyle ?? "icon" });
+    }, [entry]);
+
+    return (
+        <KioskSessionProvider initialMember={entry.link.screen === "home" ? MEMBERS[0] : null}>
+            <PrototypeProvider initialLines={entry.seed.lines} initialBooking={entry.seed.booking}>
+                <NavigationProvider initial={entry.link.screen} directEntry={entry.directEntry}>
+                    <BookingActivityProvider initialChoice={entry.seed.choice}>
+                        <PrototypeUrlSync />
+                        <PrototypeViewport>
+                            <CurrentScreen />
+                        </PrototypeViewport>
+                    </BookingActivityProvider>
+                </NavigationProvider>
+            </PrototypeProvider>
+        </KioskSessionProvider>
+    );
+};
+
+const subscribeHydration = () => () => {};
+const clientSnapshot = () => true;
+const serverSnapshot = () => false;
+
+/** Defer browser URL reads until hydration, including in the static export. */
+export const PrototypeApp = () => {
+    const hydrated = useSyncExternalStore(subscribeHydration, clientSnapshot, serverSnapshot);
+    return hydrated ? <PrototypeSession /> : null;
+};

@@ -1,52 +1,17 @@
 "use client";
 
-import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from "react";
+import { type ReactNode, createContext, useCallback, useContext, useMemo, useState } from "react";
+import { type ScreenId, screenStack } from "./screen-links";
 
-/**
- * Where the prototype is, and how it got there.
- *
- * A state machine rather than routes. A kiosk has no address bar, no back
- * button and no shareable link — the screen a user is on is a fact about the
- * session, not a location — and the moment you make it a URL you inherit
- * browser history semantics the hardware cannot honour.
- *
- * The one thing routes give for free and this has to do by hand is **back**, so
- * it keeps an explicit stack. `goBack` pops it; `go` pushes. `reset` empties it
- * and returns to the attract screen, which is what Start Over and a completed
- * order both do.
- */
-export type ScreenId =
-    // Session envelope
-    | "attract"
-    | "get-started"
-    | "do-you-want-to-log-in"
-    | "wallet-interstitial"
-    | "how-to-log-in"
-    | "enter-code"
-    | "enter-email"
-    | "home"
-    // Food
-    | "menu"
-    | "item-detail"
-    | "customize"
-    | "added-to-bag"
-    // Pro shop
-    | "pro-shop"
-    // Booking, shared by all three activities
-    | "booking-when"
-    | "booking-duration"
-    | "booking-resource"
-    | "booking-review"
-    // Checkout, shared by everything
-    | "order-review"
-    | "takeout-choice"
-    | "enter-name"
-    | "checkout-method"
-    | "follow-instructions"
-    | "order-successful";
+export type { ScreenId } from "./screen-links";
 
+/** The kiosk screen stack, mirrored to a shareable URL by PrototypeUrlSync. */
 interface NavigationValue {
     screen: ScreenId;
+    /** Hold transient screens open when someone follows a feedback link. */
+    isDirectEntry: boolean;
+    historyMode: "pushState" | "replaceState";
+    restore: (screen: ScreenId) => void;
     /** True when there is somewhere to go back to. */
     canGoBack: boolean;
     go: (screen: ScreenId) => void;
@@ -58,17 +23,40 @@ interface NavigationValue {
 
 const NavigationContext = createContext<NavigationValue | null>(null);
 
-export const NavigationProvider = ({ children, initial = "attract" }: { children: ReactNode; initial?: ScreenId }) => {
-    const [stack, setStack] = useState<ScreenId[]>([initial]);
+export const NavigationProvider = ({
+    children,
+    initial = "attract",
+    directEntry = false,
+}: {
+    children: ReactNode;
+    initial?: ScreenId;
+    directEntry?: boolean;
+}) => {
+    const [{ stack, isDirectEntry, historyMode }, setNavigation] = useState<{
+        stack: ScreenId[];
+        isDirectEntry: boolean;
+        historyMode: "pushState" | "replaceState";
+    }>(() => ({ stack: screenStack(initial), isDirectEntry: directEntry, historyMode: "replaceState" }));
 
-    const go = useCallback((screen: ScreenId) => setStack((prev) => [...prev, screen]), []);
-    const replace = useCallback((screen: ScreenId) => setStack((prev) => [...prev.slice(0, -1), screen]), []);
-    const goBack = useCallback(() => setStack((prev) => (prev.length > 1 ? prev.slice(0, -1) : prev)), []);
-    const reset = useCallback(() => setStack([initial]), [initial]);
+    const go = useCallback(
+        (screen: ScreenId) => setNavigation((prev) => ({ stack: [...prev.stack, screen], isDirectEntry: false, historyMode: "pushState" })),
+        [],
+    );
+    const replace = useCallback(
+        (screen: ScreenId) => setNavigation((prev) => ({ stack: [...prev.stack.slice(0, -1), screen], isDirectEntry: false, historyMode: "replaceState" })),
+        [],
+    );
+    const goBack = useCallback(
+        () =>
+            setNavigation((prev) => ({ stack: prev.stack.length > 1 ? prev.stack.slice(0, -1) : prev.stack, isDirectEntry: false, historyMode: "pushState" })),
+        [],
+    );
+    const reset = useCallback(() => setNavigation({ stack: ["attract"], isDirectEntry: false, historyMode: "replaceState" }), []);
+    const restore = useCallback((screen: ScreenId) => setNavigation({ stack: screenStack(screen), isDirectEntry: true, historyMode: "replaceState" }), []);
 
     const value = useMemo<NavigationValue>(
-        () => ({ screen: stack[stack.length - 1], canGoBack: stack.length > 1, go, replace, goBack, reset }),
-        [stack, go, replace, goBack, reset],
+        () => ({ screen: stack[stack.length - 1], canGoBack: stack.length > 1, isDirectEntry, historyMode, restore, go, replace, goBack, reset }),
+        [stack, isDirectEntry, historyMode, restore, go, replace, goBack, reset],
     );
 
     return <NavigationContext.Provider value={value}>{children}</NavigationContext.Provider>;

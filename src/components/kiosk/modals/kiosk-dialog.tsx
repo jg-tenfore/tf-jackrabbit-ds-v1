@@ -44,6 +44,9 @@ export interface KioskDialogProps extends Omit<AriaModalOverlayProps, "children"
     icon?: FC<{ className?: string }>;
     /** Round close affordance top-left, as on the product detail card. */
     onClose?: () => void;
+    /** Optional action at the top-right, opposite Close. */
+    headerAction?: ReactNode;
+    ariaLabel?: string;
     footer?: ReactNode;
     footerLayout?: DialogFooterLayout;
     align?: "center" | "start";
@@ -58,6 +61,8 @@ export const KioskDialog = ({
     subtitle,
     icon: Icon,
     onClose,
+    headerAction,
+    ariaLabel,
     footer,
     footerLayout = "none",
     align = "center",
@@ -89,18 +94,25 @@ export const KioskDialog = ({
             }
             style={{ maxWidth: KIOSK_WIDTH - 128 }}
         >
-            <AriaDialog className="flex max-h-[900px] flex-col outline-hidden">
-                {(onClose || title || Icon) && (
+            <AriaDialog aria-label={ariaLabel} className="flex max-h-[900px] flex-col outline-hidden">
+                {(onClose || headerAction || title || Icon) && (
                     <div className={cx("flex flex-col px-8 pt-8", align === "center" ? "items-center text-center" : "items-start")}>
-                        {onClose && (
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                aria-label="Close"
-                                className="mb-4 flex size-16 shrink-0 items-center justify-center self-start rounded-full ring-1 ring-border-primary transition duration-100 ease-linear active:bg-secondary"
-                            >
-                                <CloseIcon className="size-7 text-fg-secondary" />
-                            </button>
+                        {(onClose || headerAction) && (
+                            <div className="mb-4 flex w-full items-center justify-between gap-4">
+                                {onClose ? (
+                                    <button
+                                        type="button"
+                                        onClick={onClose}
+                                        aria-label="Close"
+                                        className="flex size-16 shrink-0 items-center justify-center rounded-full ring-1 ring-border-primary transition duration-100 ease-linear focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand active:bg-secondary"
+                                    >
+                                        <CloseIcon className="size-7 text-fg-secondary" />
+                                    </button>
+                                ) : (
+                                    <span />
+                                )}
+                                {headerAction}
+                            </div>
                         )}
                         {Icon && <Icon className="mb-5 size-16 text-fg-brand-primary" aria-hidden="true" />}
                         {title && <h2 className="text-4xl font-bold text-balance text-primary">{title}</h2>}
@@ -108,11 +120,9 @@ export const KioskDialog = ({
                     </div>
                 )}
 
-                {children && <div className="min-h-0 flex-1 overflow-y-auto px-8 py-8 scrollbar-hide">{children}</div>}
+                {children && <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto px-8 py-8">{children}</div>}
 
-                {footer && footerLayout === "split" && (
-                    <div className="grid grid-cols-2 border-t border-secondary [&>*]:h-24 [&>*]:rounded-none">{footer}</div>
-                )}
+                {footer && footerLayout === "split" && <div className="grid grid-cols-2 border-t border-secondary [&>*]:h-24 [&>*]:rounded-none">{footer}</div>}
                 {footer && footerLayout === "stacked" && <div className="flex flex-col gap-4 px-8 pt-2 pb-8">{footer}</div>}
                 {footer && footerLayout === "none" && <div className="px-8 pb-8">{footer}</div>}
             </AriaDialog>

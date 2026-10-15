@@ -5,6 +5,7 @@ import { Minus, Plus } from "@untitledui/icons";
 import { SlotMeta, type TeeTimeSlot } from "@/components/kiosk/booking/slot-card";
 import { KioskKey } from "@/components/kiosk/keyboard/kiosk-key";
 import { DialogSplitFooter, KioskDialog } from "@/components/kiosk/modals/kiosk-dialog";
+import { FavoriteButton, type FavoriteButtonStyle } from "@/components/kiosk/order/favorite-button";
 import { cx } from "@/utils/cx";
 
 /**
@@ -47,11 +48,7 @@ export const RatePickerDialog = ({
             onClose={() => onOpenChange(false)}
             footerLayout="split"
             footer={
-                <DialogSplitFooter
-                    onCancel={() => onOpenChange(false)}
-                    onConfirm={() => selected && onConfirm?.(selected)}
-                    isConfirmDisabled={!selected}
-                />
+                <DialogSplitFooter onCancel={() => onOpenChange(false)} onConfirm={() => selected && onConfirm?.(selected)} isConfirmDisabled={!selected} />
             }
         >
             <div className="flex flex-col gap-4">
@@ -101,6 +98,9 @@ export const ProductDetailDialog = ({
     imageSlot,
     onCustomize,
     onConfirm,
+    isFavorite,
+    onFavoriteChange,
+    favoriteStyle = "icon",
 }: {
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
@@ -109,14 +109,31 @@ export const ProductDetailDialog = ({
     imageSlot?: React.ReactNode;
     onCustomize?: () => void;
     onConfirm?: (quantity: number) => void;
+    isFavorite?: boolean;
+    onFavoriteChange?: (next: boolean) => void;
+    favoriteStyle?: FavoriteButtonStyle;
 }) => {
     const [quantity, setQuantity] = useState(1);
+    const [localFavorite, setLocalFavorite] = useState(false);
+    const saved = isFavorite ?? localFavorite;
 
     return (
         <KioskDialog
             isOpen={isOpen}
             onOpenChange={onOpenChange}
             onClose={() => onOpenChange(false)}
+            ariaLabel={name}
+            headerAction={
+                <FavoriteButton
+                    name={name}
+                    isFavorite={saved}
+                    variant={favoriteStyle}
+                    onToggle={() => {
+                        setLocalFavorite(!saved);
+                        onFavoriteChange?.(!saved);
+                    }}
+                />
+            }
             // Scrimmed, unlike most card overlays here. This one opens over the
             // menu grid — a wall of bright product photography that otherwise
             // competes with the single product being decided on.
@@ -204,17 +221,7 @@ export const ChoiceDialog = ({
  * two most-pressed elements get the most reachable real estate and the count
  * itself — which is read, not pressed — takes the middle.
  */
-export const QuantityStepper = ({
-    value,
-    onChange,
-    min = 1,
-    max = 99,
-}: {
-    value: number;
-    onChange: (next: number) => void;
-    min?: number;
-    max?: number;
-}) => (
+export const QuantityStepper = ({ value, onChange, min = 1, max = 99 }: { value: number; onChange: (next: number) => void; min?: number; max?: number }) => (
     <div className="flex w-full items-center justify-between rounded-xl px-4 py-3 ring-1 ring-border-primary">
         <KioskKey
             size="lg"

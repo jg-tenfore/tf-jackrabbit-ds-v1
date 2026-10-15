@@ -89,8 +89,8 @@ const EMPTY_CHOICE: BookingChoice = { activity: "tee-time", teeRate: null, durat
 
 const BookingActivityContext = createContext<BookingActivityValue | null>(null);
 
-export const BookingActivityProvider = ({ children }: { children: ReactNode }) => {
-    const [choice, setChoice] = useState<BookingChoice>(EMPTY_CHOICE);
+export const BookingActivityProvider = ({ children, initialChoice = EMPTY_CHOICE }: { children: ReactNode; initialChoice?: BookingChoice }) => {
+    const [choice, setChoice] = useState<BookingChoice>(initialChoice);
 
     // Stable, so it can be registered once rather than re-registered on every
     // change to the choice it resets.

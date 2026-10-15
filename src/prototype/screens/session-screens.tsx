@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { WelcomeNav } from "@/components/kiosk/app-chrome/welcome-nav";
 import { CodeInput } from "@/components/kiosk/keyboard/code-input";
 import { EntryScreen, EntryTextField } from "@/components/kiosk/screens/entry-screen";
@@ -34,6 +34,24 @@ import { useKioskSession } from "@/providers/kiosk-session";
  */
 
 const COURSE_NAME = "Sagamore Golf Club";
+
+const DEMO_INPUT = {
+    email: "justin.girard@example.com",
+    code: "482913",
+    name: "Justin Girard",
+};
+
+/** One-tap demo entry, scoped to the prototype's fields. */
+const DemoField = ({ label, onFill, children }: { label: string; onFill: () => void; children: ReactNode }) => (
+    <button
+        type="button"
+        aria-label={label}
+        onClick={onFill}
+        className="block w-full cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand"
+    >
+        {children}
+    </button>
+);
 
 /**
  * A completed wallet scan moves the session on.
@@ -228,7 +246,17 @@ export const EnterCodeRoute = () => {
             <EntryScreen
                 title="Enter your code"
                 subtitle="Enter your 6-digit code using the TenFore Golf app and earn points for your next tee time."
-                field={<CodeInput value={value} length={6} isMasked isInvalid={isInvalid} />}
+                field={
+                    <DemoField
+                        label="Fill demo member code"
+                        onFill={() => {
+                            setValue(DEMO_INPUT.code);
+                            setIsInvalid(false);
+                        }}
+                    >
+                        <CodeInput value={value} length={6} isMasked isInvalid={isInvalid} />
+                    </DemoField>
+                }
                 value={value}
                 onChange={(next) => {
                     setValue(next);
@@ -261,7 +289,11 @@ export const EnterEmailRoute = () => {
             <EntryScreen
                 title="Enter your email"
                 subtitle="Enter your email address to get started."
-                field={<EntryTextField value={value} placeholder="you@example.com" />}
+                field={
+                    <DemoField label="Fill demo email" onFill={() => setValue(DEMO_INPUT.email)}>
+                        <EntryTextField value={value} placeholder="you@example.com" />
+                    </DemoField>
+                }
                 value={value}
                 onChange={setValue}
                 layout="email"
@@ -313,7 +345,11 @@ export const EnterNameRoute = () => {
             <EntryScreen
                 title="Enter your name"
                 subtitle={isBooking ? "Enter your full name for your reservation." : "Enter your full name for your food order."}
-                field={<EntryTextField value={value} placeholder="Enter your Full Name" />}
+                field={
+                    <DemoField label="Fill demo name" onFill={() => setValue(DEMO_INPUT.name)}>
+                        <EntryTextField value={value} placeholder="Enter your Full Name" />
+                    </DemoField>
+                }
                 value={value}
                 onChange={setValue}
                 onContinue={() => go("checkout-method")}
