@@ -2,6 +2,7 @@
 
 import { type ReactNode, createContext, useCallback, useContext, useMemo, useState } from "react";
 import type { MenuItem } from "@/data/menu-catalog";
+import { DEMO_FAVORITE_IDS, DEMO_RECENT_IDS } from "@/data/menu-collections";
 import type { ModifierLevel } from "@/data/modifiers";
 import type { ProShopProduct } from "@/data/pro-shop-types";
 
@@ -15,10 +16,8 @@ import type { ProShopProduct } from "@/data/pro-shop-types";
  * the maths is real, and modifiers carry from the customize screen onto the
  * order line.
  *
- * State lives here rather than in the URL because a kiosk has no address bar
- * and no back button — the screen a user is on is a fact about the session, not
- * a location. `KioskSessionProvider` still owns scan state; this sits beside it
- * and owns everything a session accumulates.
+ * The URL identifies the screen for feedback; the cart stays in memory.
+ * `KioskSessionProvider` owns scan state; this owns what a session accumulates.
  *
  * A session ends **only** on Start Over or a completed order. No idle timer: a
  * demo that resets itself mid-sentence is worse than one left on a checkout.
@@ -66,6 +65,9 @@ interface PrototypeValue {
     taxCents: number;
     totalCents: number;
     itemCount: number;
+    favoriteIds: string[];
+    recentIds: string[];
+    toggleFavorite: (id: string) => void;
 
     booking: BookingDraft | null;
     setBooking: (draft: BookingDraft | null) => void;
@@ -89,48 +91,74 @@ let lineCounter = 0;
 const nextLineId = () => `line-${++lineCounter}`;
 
 /** Identity of a menu line: the item plus the deviations chosen on it. */
-const lineSignature = (name: string, modifierLabels: string[] = []) => `${name}|${modifierLabels.join(",")}`;
+const lineSignature = (name: string, priceCents: number, modifierLabels: string[] = []) => `${name}|${priceCents}|${modifierLabels.join(",")}`;
 
-export const PrototypeProvider = ({ children }: { children: ReactNode }) => {
-    const [lines, setLines] = useState<CartLine[]>([]);
-    const [booking, setBooking] = useState<BookingDraft | null>(null);
+export const PrototypeProvider = ({
+    children,
+    initialLines = [],
+    initialBooking = null,
+}: {
+    children: ReactNode;
+    initialLines?: CartLine[];
+    initialBooking?: BookingDraft | null;
+}) => {
+    const [lines, setLines] = useState<CartLine[]>(initialLines);
+    const [booking, setBooking] = useState<BookingDraft | null>(initialBooking);
+    const [favoriteIds, setFavoriteIds] = useState<string[]>(DEMO_FAVORITE_IDS);
+    const [recentIds, setRecentIds] = useState<string[]>(DEMO_RECENT_IDS);
+    const toggleFavorite = useCallback(
+        (id: string) => setFavoriteIds((ids) => (ids.includes(id) ? ids.filter((existing) => existing !== id) : [id, ...ids])),
+        [],
+    );
+    const rememberItem = useCallback((id: string) => setRecentIds((ids) => [id, ...ids.filter((existing) => existing !== id)].slice(0, 8)), []);
 
-    const addMenuItem = useCallback((item: MenuItem, levels?: Record<string, ModifierLevel>, modifierLabels: string[] = []) => {
-        setLines((prev) => {
-            // An identical item with identical modifiers increments rather than
-            // adding a second line — two "No Pickles" burgers are quantity 2,
-            // but one plain and one customised are genuinely two lines.
-            //
-            // Keyed on the labels rather than the level map because the labels
-            // are already the canonical list of deviations, in list order: two
-            // level maps that differ only where both sides match the default
-            // are the same sandwich and should merge.
-            const signature = lineSignature(item.name, modifierLabels);
-            const existing = prev.find((l) => l.kind === "menu" && lineSignature(l.name, l.modifiers) === signature);
-            if (existing) return prev.map((l) => (l.lineId === existing.lineId ? { ...l, quantity: l.quantity + 1 } : l));
-            return [
-                ...prev,
-                {
-                    lineId: nextLineId(),
-                    kind: "menu",
-                    name: item.name,
-                    priceCents: item.priceCents,
-                    quantity: 1,
-                    image: item.image,
-                    modifiers: modifierLabels.length ? modifierLabels : undefined,
-                    levels,
-                },
-            ];
-        });
-    }, []);
+    const addMenuItem = useCallback(
+        (item: MenuItem, levels?: Record<string, ModifierLevel>, modifierLabels: string[] = []) => {
+            rememberItem(item.id);
+            setLines((prev) => {
+                // An identical item with identical modifiers increments rather than
+                // adding a second line — two "No Pickles" burgers are quantity 2,
+                // but one plain and one customised are genuinely two lines.
+                //
+                // Keyed on the labels rather than the level map because the labels
+                // are already the canonical list of deviations, in list order: two
+                // level maps that differ only where both sides match the default
+                // are the same sandwich and should merge.
+                const signature = lineSignature(item.name, item.priceCents, modifierLabels);
+                const existing = prev.find((l) => l.kind === "menu" && lineSignature(l.name, l.priceCents, l.modifiers) === signature);
+                if (existing) return prev.map((l) => (l.lineId === existing.lineId ? { ...l, quantity: l.quantity + 1 } : l));
+                return [
+                    ...prev,
+                    {
+                        lineId: nextLineId(),
+                        kind: "menu",
+                        name: item.name,
+                        priceCents: item.priceCents,
+                        quantity: 1,
+                        image: item.image,
+                        modifiers: modifierLabels.length ? modifierLabels : undefined,
+                        levels,
+                    },
+                ];
+            });
+        },
+        [rememberItem],
+    );
 
-    const addProShopItem = useCallback((product: ProShopProduct) => {
-        setLines((prev) => {
-            const existing = prev.find((l) => l.kind === "pro-shop" && l.name === product.name);
-            if (existing) return prev.map((l) => (l.lineId === existing.lineId ? { ...l, quantity: l.quantity + 1 } : l));
-            return [...prev, { lineId: nextLineId(), kind: "pro-shop", name: product.name, priceCents: product.priceCents, quantity: 1, image: product.image }];
-        });
-    }, []);
+    const addProShopItem = useCallback(
+        (product: ProShopProduct) => {
+            rememberItem(product.id);
+            setLines((prev) => {
+                const existing = prev.find((l) => l.kind === "pro-shop" && l.name === product.name);
+                if (existing) return prev.map((l) => (l.lineId === existing.lineId ? { ...l, quantity: l.quantity + 1 } : l));
+                return [
+                    ...prev,
+                    { lineId: nextLineId(), kind: "pro-shop", name: product.name, priceCents: product.priceCents, quantity: 1, image: product.image },
+                ];
+            });
+        },
+        [rememberItem],
+    );
 
     /**
      * Moves the in-progress booking into the cart.
@@ -169,6 +197,8 @@ export const PrototypeProvider = ({ children }: { children: ReactNode }) => {
     const resetOrder = useCallback(() => {
         setLines([]);
         setBooking(null);
+        setFavoriteIds(DEMO_FAVORITE_IDS);
+        setRecentIds(DEMO_RECENT_IDS);
     }, []);
 
     const value = useMemo<PrototypeValue>(() => {
@@ -176,6 +206,9 @@ export const PrototypeProvider = ({ children }: { children: ReactNode }) => {
         const taxCents = Math.round(subtotalCents * TAX_RATE);
         return {
             lines,
+            favoriteIds,
+            recentIds,
+            toggleFavorite,
             subtotalCents,
             taxCents,
             totalCents: subtotalCents + taxCents,
@@ -189,7 +222,7 @@ export const PrototypeProvider = ({ children }: { children: ReactNode }) => {
             removeLine,
             resetOrder,
         };
-    }, [lines, booking, confirmBooking, addMenuItem, addProShopItem, setQuantity, removeLine, resetOrder]);
+    }, [lines, favoriteIds, recentIds, toggleFavorite, booking, confirmBooking, addMenuItem, addProShopItem, setQuantity, removeLine, resetOrder]);
 
     return <PrototypeContext.Provider value={value}>{children}</PrototypeContext.Provider>;
 };

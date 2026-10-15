@@ -108,9 +108,37 @@ and both clear the cart, the booking draft, each flow's transient state and the
 signed-in member. There is no idle timer: a demo that resets itself mid-sentence
 is worse than one left on a checkout.
 
-Navigation is a state machine, not routes. A kiosk has no address bar, no back
-button and no shareable link, so the screen a user is on is a fact about the
-session rather than a location.
+The prototype updates the address as you navigate. Copy the current URL to send
+feedback about a particular screen, or open one directly:
+
+- `http://localhost:3000/?screen=enter-email`
+- `http://localhost:3000/?screen=customize&item=chicken-sandwich`
+- `http://localhost:3000/?screen=booking-review&activity=pickleball`
+- `http://localhost:3000/?screen=checkout-method`
+
+The same query strings work under the published `/prototype/` path after
+deployment. Browser Back and Forward follow screen links. A fresh link supplies
+demo items, a cart, or a booking when the screen needs them; links identify the
+screen and its item/category/activity, rather than saving a complete session.
+Direct links to the added-to-bag and payment-instructions screens hold them open
+for review. In the normal flow, those screens still advance automatically.
+
+### Shopping collections and favorites
+
+The menu rail includes populated **Deals**, **Members**, and **Recent & Favs**
+collections. Their offers, initial favorites, and recent orders are demo fixtures
+in `src/data/menu-collections.ts`. Deal and member prices carry into the cart;
+favorites and recent orders update during the session and reset to the fixtures
+on Start Over.
+
+Compare the modal's two favorite-button treatments locally:
+
+- Circular star: `http://localhost:3000/?screen=item-detail&item=bottle-of-water`
+- Star with Save/Saved label: `http://localhost:3000/?screen=item-detail&item=bottle-of-water&favoriteStyle=labeled`
+
+Storybook has both treatments and their saved states under **Components → Kiosk
+Overlays → Dialog (card)**, and interactive collection previews under
+**Components → Kiosk Store → Menu Collections**.
 
 ### Signing in
 

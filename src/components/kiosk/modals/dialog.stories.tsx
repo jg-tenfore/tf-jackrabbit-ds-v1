@@ -1,11 +1,15 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
+import { SlotCard } from "@/components/kiosk/booking/slot-card";
 import { KioskKey } from "@/components/kiosk/keyboard/kiosk-key";
 import { ProductDetailDialog, RatePickerDialog } from "@/components/kiosk/modals/dialog-variants";
 import { KioskDialog } from "@/components/kiosk/modals/kiosk-dialog";
-import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
+import type { FavoriteButtonStyle } from "@/components/kiosk/order/favorite-button";
+import { MenuScreen } from "@/components/kiosk/order/menu-screen";
+import { ProductImage } from "@/components/kiosk/store/product-image";
 import { RATES_FOR_TIME, TEE_TIMES } from "@/data/booking";
-import { SlotCard } from "@/components/kiosk/booking/slot-card";
+import { MENU_ITEMS } from "@/data/menu-catalog";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 
@@ -71,3 +75,46 @@ export const ProductDetail: Story = {
     ),
 };
 
+const FavoriteWaterPreview = ({ variant, initiallySaved = false }: { variant: FavoriteButtonStyle; initiallySaved?: boolean }) => {
+    const [isOpen, setIsOpen] = useState(true);
+    const [isFavorite, setIsFavorite] = useState(initiallySaved);
+    const item = MENU_ITEMS.find((item) => item.id === "bottle-of-water")!;
+    return (
+        <KioskScreen scroll={false} footer={<GlobalNav />}>
+            <MenuScreen initialCategoryId="beverages" favoriteIds={isFavorite ? [item.id] : []} onSelectItem={() => setIsOpen(true)} />
+            <ProductDetailDialog
+                isOpen={isOpen}
+                onOpenChange={setIsOpen}
+                name={item.name}
+                priceCents={item.priceCents}
+                imageSlot={<ProductImage src={item.image} alt={item.name} className="size-48" />}
+                favoriteStyle={variant}
+                isFavorite={isFavorite}
+                onFavoriteChange={setIsFavorite}
+                onConfirm={() => setIsOpen(false)}
+            />
+        </KioskScreen>
+    );
+};
+
+/** A: a circular star mirroring the close control. Tap to save or unsave. */
+export const FavoriteIcon: Story = {
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: () => <FavoriteWaterPreview variant="icon" />,
+};
+
+/** B: star and an explicit Save/Saved label, with the same touch target height. */
+export const FavoriteLabeled: Story = {
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: () => <FavoriteWaterPreview variant="labeled" />,
+};
+
+export const FavoriteIconSaved: Story = {
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: () => <FavoriteWaterPreview variant="icon" initiallySaved />,
+};
+
+export const FavoriteLabeledSaved: Story = {
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: () => <FavoriteWaterPreview variant="labeled" initiallySaved />,
+};

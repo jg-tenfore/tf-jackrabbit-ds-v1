@@ -36,6 +36,9 @@ export interface MenuItem extends Omit<ProShopProduct, "image"> {
     calories?: number;
     /** Chosen modifiers, e.g. "No Pickles, Extra Mayo". */
     modifiers?: string[];
+    /** Demo offer information shown in curated shopping collections. */
+    offerLabel?: string;
+    originalPriceCents?: number;
 }
 
 const item = (
@@ -94,7 +97,7 @@ export const MENU_ITEMS: MenuItem[] = [
     item("energy-drink", "Energy Drink", "beverages", 550, 210),
     item("orange-juice", "Orange Juice", "beverages", 475, 160),
     item("milkshake", "Milkshake", "beverages", 699, 550),
-    
+
     // Alcohol — one rail row for everything with alcohol in it, sub-filtered
     // below. Transfusions live here rather than under Beverages: they are a
     // 7% ready-to-drink cocktail, and a guest scanning Beverages for a soft

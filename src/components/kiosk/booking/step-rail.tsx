@@ -64,7 +64,11 @@ export const StepRail = ({
                             // nowrap: a two-word step label ("Bay location")
                             // wraps and breaks the rail's fixed row height.
                             "text-lg whitespace-nowrap",
-                            isCurrent ? "font-semibold text-brand-secondary underline decoration-2 underline-offset-8" : isComplete ? "text-primary" : "text-quaternary",
+                            isCurrent
+                                ? "font-semibold text-brand-secondary underline decoration-2 underline-offset-8"
+                                : isComplete
+                                  ? "text-primary"
+                                  : "text-quaternary",
                         )}
                     >
                         {step.label}
@@ -170,7 +174,7 @@ export const CategoryRail = ({
 
         <RailGroup>
             {destinations.map((entry) => (
-                <RailRow key={entry.id} entry={entry} onPress={() => onSelect?.(entry.id)} />
+                <RailRow key={entry.id} entry={entry} isActive={entry.id === activeCategoryId} onPress={() => onSelect?.(entry.id)} />
             ))}
         </RailGroup>
 
