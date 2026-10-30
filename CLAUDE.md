@@ -102,6 +102,9 @@ is what the slot grid needs.
 
 `Foundations` -> `App Chrome` -> `Kiosk Core` -> `Screens` -> `Components`.
 
+`Golf Courses` sits after `User Flows`: the same flow screens re-rendered with a
+course's branding (see below).
+
 `App Chrome` is the persistent frame around every screen (the global nav rail).
 `Screens` is assembled surfaces built from the primitives. `Kiosk Core` is the
 kiosk-native building blocks. `Components` is the ported Buck library — source
@@ -308,3 +311,18 @@ under `mix-blend-difference`.
 
 This repo is authored solely by **jg-tenfore <justin.girard@tenfore.golf>**
 (set repo-locally). Do not commit under any other identity.
+
+## Course branding
+
+A course is **data, not a fork**. `CourseBrand` (`src/data/courses.ts`) holds a
+course's marks, photos, name, tagline, marquee and weather; screens read it via
+`useCourseBrand()` and fall back to TenFore's own assets when there is no
+`CourseBrandProvider` — so every unbranded story is unchanged by branding work.
+Stories brand with `withCourseBrand(brand)`; `src/golf-courses/course-stories.tsx`
+builds the same seven screens for any course.
+
+Course sources live in `references/102926/<course>/`. `npm run
+build-course-assets` crops each photo to the exact box it fills, at 2x, into
+`public/screen-assets/courses/<id>/`, and never upscales — it reports what is
+under 2x instead. Colour tokens are deliberately *not* per-course.
+

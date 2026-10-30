@@ -1,8 +1,10 @@
 import type { Decorator } from "@storybook/nextjs-vite";
-import { KioskFrame } from "@/kiosk/kiosk-frame";
-import type { KioskTarget } from "@/kiosk/constants";
-import { KioskSessionProvider } from "@/providers/kiosk-session";
+import type { CourseBrand } from "@/data/courses";
 import type { Member } from "@/data/members";
+import type { KioskTarget } from "@/kiosk/constants";
+import { KioskFrame } from "@/kiosk/kiosk-frame";
+import { CourseBrandProvider } from "@/providers/course-brand";
+import { KioskSessionProvider } from "@/providers/kiosk-session";
 
 /**
  * Story decorators for kiosk QA.
@@ -28,6 +30,15 @@ export const withKioskSession =
         <KioskSessionProvider initialMember={options.member ?? null} defaultWalletCode={options.defaultWalletCode}>
             <Story />
         </KioskSessionProvider>
+    );
+
+/** Brand every screen in the story for a course. See `src/data/courses.ts`. */
+export const withCourseBrand =
+    (brand: CourseBrand): Decorator =>
+    (Story) => (
+        <CourseBrandProvider brand={brand}>
+            <Story />
+        </CourseBrandProvider>
     );
 
 /**

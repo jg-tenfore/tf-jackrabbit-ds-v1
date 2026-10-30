@@ -11,6 +11,7 @@
         "shoot": "node scripts/screenshot.mjs",
         "build-pos-images": "node scripts/build-pos-images.mjs",
         "build-screen-assets": "node scripts/build-screen-assets.mjs",
+        "build-course-assets": "node scripts/build-course-assets.mjs",
         "lint": "eslint . --max-warnings 0",
         "lint:fix": "eslint . --fix",
         "test": "vitest run",

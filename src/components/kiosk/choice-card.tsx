@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight } from "@untitledui/icons";
+import { useCourseBrand } from "@/providers/course-brand";
 import { assetUrl } from "@/utils/asset-url";
 import { cx, sortCx } from "@/utils/cx";
 
@@ -10,7 +11,10 @@ export interface ChoiceOption {
     eyebrow: string;
     /** The label, phrased as the thing the user is about to do. */
     title: string;
-    /** Path under `screen-assets/get-started/`. */
+    /**
+     * Path under `screen-assets/get-started/`. A branded kiosk swaps in the
+     * course's own photo for this option id, when it has one.
+     */
     image: string;
 }
 
@@ -69,19 +73,20 @@ export const ChoiceCard = ({
     className?: string;
 }) => {
     const style = styles[size];
+    const courseImage = useCourseBrand()?.optionImages[option.id];
 
     return (
         <button
             type="button"
             onClick={onPress}
             className={cx(
-                "flex shrink-0 flex-col rounded-2xl text-left ring-1 ring-border-secondary ring-inset transition duration-75 ease-linear active:scale-[0.98] active:bg-tertiary",
+                "flex shrink-0 flex-col rounded-2xl text-left ring-1 ring-border-secondary transition duration-75 ease-linear ring-inset active:scale-[0.98] active:bg-tertiary",
                 style.card,
                 className,
             )}
         >
             <img
-                src={assetUrl(`screen-assets/get-started/${option.image}`)}
+                src={assetUrl(courseImage ?? `screen-assets/get-started/${option.image}`)}
                 alt=""
                 aria-hidden="true"
                 className={cx("w-full shrink-0 rounded-xl object-cover", style.image)}

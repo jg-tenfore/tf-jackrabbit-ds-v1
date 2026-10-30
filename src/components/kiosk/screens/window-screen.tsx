@@ -4,6 +4,7 @@ import { ChoiceCard, type ChoiceOption } from "@/components/kiosk/choice-card";
 import { Marquee } from "@/components/kiosk/marquee";
 import { GET_STARTED_OPTIONS } from "@/components/kiosk/screens/get-started-screen";
 import { WEATHER_ICONS, type WeatherCondition, weatherLabel } from "@/data/weather";
+import { useCourseBrand } from "@/providers/course-brand";
 import { assetUrl } from "@/utils/asset-url";
 import { cx } from "@/utils/cx";
 
@@ -33,15 +34,19 @@ export const DEFAULT_MARQUEE = ["Trusted by over thousands of golfers nationwide
  * The photo is dimmed top and bottom by a gradient rather than a flat scrim:
  * the logo, weather and marquee all need contrast, and the middle of the frame
  * is where the course actually shows.
+ *
+ * Everything course-specific — photo, logo, name, tagline, weather, marquee —
+ * comes from the course brand when there is one. Props still win, so a story
+ * can pin any single value without unbranding the rest.
  */
 export const WindowScreen = ({
-    courseName = "The Course",
-    tagline = "Play. Eat. Relax.",
-    temperature = 74,
-    condition = "partly-cloudy-day",
-    wind = "12mph NE",
+    courseName,
+    tagline,
+    temperature,
+    condition,
+    wind,
     options = GET_STARTED_OPTIONS,
-    marqueeItems = DEFAULT_MARQUEE,
+    marqueeItems,
     onSelect,
     className,
 }: {
@@ -54,47 +59,66 @@ export const WindowScreen = ({
     marqueeItems?: string[];
     onSelect?: (id: string) => void;
     className?: string;
-}) => (
-    <div className={cx("relative w-full overflow-hidden", className)} style={{ height: WINDOW_HERO_HEIGHT }}>
-        <img src={ASSET("background.png")} alt="" aria-hidden="true" className="absolute inset-0 size-full object-cover" />
-        {/* Darkest where text sits, clearest through the middle of the frame. */}
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/25 to-black/70" />
+}) => {
+    const brand = useCourseBrand();
+    const name = courseName ?? brand?.name ?? "The Course";
+    const weather = {
+        temperature: temperature ?? brand?.weather.temperature ?? 74,
+        condition: condition ?? brand?.weather.condition ?? "partly-cloudy-day",
+        wind: wind ?? brand?.weather.wind ?? "12mph NE",
+    };
 
-        <div className="relative z-10 flex h-full flex-col pt-[75px]">
-            <header className="flex items-start justify-between px-16">
-                <img src={ASSET("tf-logo-dark-bg.svg")} alt={`${courseName} — TenFore Golf`} className="h-[72px] w-[264px] object-contain object-left" />
+    return (
+        <div className={cx("relative w-full overflow-hidden", className)} style={{ height: WINDOW_HERO_HEIGHT }}>
+            <img
+                src={brand ? assetUrl(brand.heroImage) : ASSET("background.png")}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 size-full object-cover"
+            />
+            {/* Darkest where text sits, clearest through the middle of the frame. */}
+            <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/25 to-black/70" />
 
-                <div className="flex flex-col items-end gap-2">
-                    <div className="flex items-center gap-2">
-                        <span className="text-[50px] leading-none font-bold text-white tabular-nums">{temperature}&deg;</span>
-                        <img
-                            src={assetUrl(`screen-assets/weather/${WEATHER_ICONS[condition]}`)}
-                            alt={weatherLabel(condition)}
-                            className="size-16 shrink-0"
-                        />
+            <div className="relative z-10 flex h-full flex-col pt-[75px]">
+                <header className="flex items-start justify-between px-16">
+                    {brand ? (
+                        <img src={assetUrl(brand.markOnDark.src)} alt={brand.name} className={cx("object-contain object-left", brand.markOnDark.className)} />
+                    ) : (
+                        <img src={ASSET("tf-logo-dark-bg.svg")} alt={`${name} — TenFore Golf`} className="h-[72px] w-[264px] object-contain object-left" />
+                    )}
+
+                    <div className="flex flex-col items-end gap-2">
+                        <div className="flex items-center gap-2">
+                            <span className="text-[50px] leading-none font-bold text-white tabular-nums">{weather.temperature}&deg;</span>
+                            <img
+                                src={assetUrl(`screen-assets/weather/${WEATHER_ICONS[weather.condition]}`)}
+                                alt={weatherLabel(weather.condition)}
+                                className="size-16 shrink-0"
+                            />
+                        </div>
+                        <p className="text-[24px] leading-none text-white/90">Wind: {weather.wind}</p>
                     </div>
-                    <p className="text-[24px] leading-none text-white/90">Wind: {wind}</p>
+                </header>
+
+                <div className="mt-[110px] px-16">
+                    <h1 className="text-[48px] leading-tight font-bold text-white">Welcome to {name}</h1>
+                    <p className="mt-2 text-[32px] leading-tight text-white/90">{tagline ?? brand?.tagline ?? "Play. Eat. Relax."}</p>
                 </div>
-            </header>
 
-            <div className="mt-[110px] px-16">
-                <h1 className="text-[48px] leading-tight font-bold text-white">Welcome to {courseName}</h1>
-                <p className="mt-2 text-[32px] leading-tight text-white/90">{tagline}</p>
-            </div>
-
-            {/* Runs past the right edge on purpose and scrolls to reach the rest.
+                {/* Runs past the right edge on purpose and scrolls to reach the rest.
                 overflow-y is explicitly hidden rather than left to default: with
                 one axis scrollable CSS promotes the other to auto, which would
                 let a stray pixel of card shadow make the row scroll vertically
                 too. `pr-16` gives the last card the same inset as the first once
                 the row is scrolled to its end. */}
-            <div className="mt-[74px] flex gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-16 scrollbar-hide">
-                {options.map((option) => (
-                    <ChoiceCard key={option.id} option={option} size="sm" onPress={() => onSelect?.(option.id)} />
-                ))}
-            </div>
+                <div className="mt-[74px] scrollbar-hide flex gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain px-16">
+                    {options.map((option) => (
+                        <ChoiceCard key={option.id} option={option} size="sm" onPress={() => onSelect?.(option.id)} />
+                    ))}
+                </div>
 
-            <Marquee items={marqueeItems} className="mt-[97px] text-[30px] text-white/70" />
+                <Marquee items={marqueeItems ?? brand?.marqueeItems ?? DEFAULT_MARQUEE} className="mt-[97px] text-[30px] text-white/70" />
+            </div>
         </div>
-    </div>
-);
+    );
+};

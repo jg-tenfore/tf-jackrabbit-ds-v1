@@ -2,6 +2,7 @@
 
 import { BrandMark } from "@/components/kiosk/brand-mark";
 import { ChoiceCard, type ChoiceOption } from "@/components/kiosk/choice-card";
+import { useCourseBrand } from "@/providers/course-brand";
 import { cx } from "@/utils/cx";
 
 /**
@@ -54,7 +55,7 @@ export const GET_STARTED_OPTIONS_WITH_ACTIVITIES: ChoiceOption[] = [
  * rather than two screens to keep in step.
  */
 export const GetStartedScreen = ({
-    courseName = "The Course",
+    courseName,
     options = GET_STARTED_OPTIONS,
     onSelect,
     onBack,
@@ -65,31 +66,35 @@ export const GetStartedScreen = ({
     onSelect?: (id: string) => void;
     onBack?: () => void;
     className?: string;
-}) => (
-    <div className={cx("flex h-full w-full flex-col items-center pt-[70px] text-center", className)}>
-        <BrandMark />
+}) => {
+    const brand = useCourseBrand();
 
-        <h1 className="mt-[26px] px-12 text-[50px] leading-[1.08] font-bold text-balance text-primary">
-            Welcome to {courseName}! Lets get started!
-        </h1>
+    return (
+        <div className={cx("flex h-full w-full flex-col items-center pt-[70px] text-center", className)}>
+            <BrandMark />
 
-        {/* Two rows sit low in the space, as the four-card reference draws them;
+            <h1 className="mt-[26px] px-12 text-[50px] leading-[1.08] font-bold text-balance text-primary">
+                Welcome to {courseName ?? brand?.name ?? "The Course"}! Lets get started!
+            </h1>
+
+            {/* Two rows sit low in the space, as the four-card reference draws them;
             three rows fill it and centre. Not one rule with a shrinking margin —
             CSS has no "147 unless it does not fit" — and not `my-auto` for both,
             which centres the two-row case 35px above where its reference puts
             it. Two layouts because there genuinely are two. */}
-        <div className={cx("grid w-full grid-cols-2 gap-[18px] px-16", options.length > 4 ? "my-auto" : "mt-[147px] mb-auto")}>
-            {options.map((option) => (
-                <ChoiceCard key={option.id} option={option} size="lg" className="w-full" onPress={() => onSelect?.(option.id)} />
-            ))}
-        </div>
+            <div className={cx("grid w-full grid-cols-2 gap-[18px] px-16", options.length > 4 ? "my-auto" : "mt-[147px] mb-auto")}>
+                {options.map((option) => (
+                    <ChoiceCard key={option.id} option={option} size="lg" className="w-full" onPress={() => onSelect?.(option.id)} />
+                ))}
+            </div>
 
-        <button
-            type="button"
-            onClick={onBack}
-            className="mb-[103px] h-[58px] w-[354px] rounded-xl text-[24px] text-tertiary ring-1 ring-border-secondary ring-inset transition duration-100 ease-linear active:bg-secondary"
-        >
-            Go Back
-        </button>
-    </div>
-);
+            <button
+                type="button"
+                onClick={onBack}
+                className="mb-[103px] h-[58px] w-[354px] rounded-xl text-[24px] text-tertiary ring-1 ring-border-secondary transition duration-100 ease-linear ring-inset active:bg-secondary"
+            >
+                Go Back
+            </button>
+        </div>
+    );
+};

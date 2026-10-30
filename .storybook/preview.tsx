@@ -49,6 +49,11 @@ const preview: Preview = {
                         "Waitlist Reg",
                         "Standby",
                     ],
+                    // The kiosk branded per venue: the same User Flows screens
+                    // rendered with a course's logo and photography. After the
+                    // flows, because it is those flows under review again.
+                    "Golf Courses",
+                    ["Montgomery County Golf", "Memorial Park"],
                     // The ported Untitled UI library. Nothing in any flow imports
                     // it — a dependency trace from every flow story reaches zero
                     // of its 221 files — so it sits last and says so in its name.
