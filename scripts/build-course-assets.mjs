@@ -3,8 +3,8 @@
  *
  * Source of truth is the folder each course's marketing team handed over under
  * `references/102926/`. Those are camera originals and web downloads — a 6000px
- * Getty frame next to a 192px favicon — so unlike `build-screen-assets.mjs` this
- * does not copy. Every photo is cropped to the exact box it fills on the kiosk,
+ * Getty frame next to a thumbnail-sized web grab — so unlike
+ * `build-screen-assets.mjs` this does not copy. Every photo is cropped to the exact box it fills on the kiosk,
  * at 2x, and re-encoded, so a 4.8MB original becomes a few hundred KB and the
  * crop is chosen here, once, instead of by `object-position` guesses per screen.
  *
@@ -61,16 +61,10 @@ const ASSETS = [
     { from: "MCG - Montgomery County Golf/JoshuaFernandez.com20250919145107-scaled.jpg", to: "mcg/card-check-in.jpg", box: "card", focus: [0.6, 0.72] },
     { from: "MCG - Montgomery County Golf/NW18Green.jpg", to: "mcg/card-tee-time.jpg", box: "card", focus: [0.7, 0.6] },
 
-    // Memorial Park. The seal is a 192px raster — the only logo supplied — and
-    // already a circle on transparency, so it works on light and dark grounds
-    // alike. It is the one asset here that cannot be fixed in this script; see
-    // the audit.
-    {
-        from: "Houston - Memorial Park Golf Course/a926d7_246f392db848420bb9efa7a620834863~mv2.png",
-        to: "memorial-park/logo.png",
-        logo: "copy",
-        renderWidth: 112,
-    },
+    // Memorial Park. The crest is a clean vector, outlined type and all, and
+    // already a circle on transparency, so one file works on light and dark
+    // grounds alike.
+    { from: "Houston - Memorial Park Golf Course/Memorial_Park_Houston_Clean_Vector.svg", to: "memorial-park/logo.svg", logo: "copy" },
     { from: "Houston - Memorial Park Golf Course/GettyImages-1229358769.jpg", to: "memorial-park/hero.jpg", box: "hero", focus: [0.62, 0.5] },
     // The sky and tree line out of the Getty frame. The skyline shot was the
     // obvious pick for Houston, but it was taken during the tournament week: at
@@ -79,7 +73,13 @@ const ASSETS = [
     { from: "Houston - Memorial Park Golf Course/GettyImages-1229358769.jpg", to: "memorial-park/standby.jpg", box: "standby", focus: [0.45, 0.32], zoom: 0.5 },
     { from: "Houston - Memorial Park Golf Course/images.jpeg", to: "memorial-park/card-check-in.jpg", box: "card", focus: [0.55, 0.6] },
     // The island green alone, zoomed in past the same tents.
-    { from: "Houston - Memorial Park Golf Course/memorial-park-scenic-kp-sder.avif", to: "memorial-park/card-tee-time.jpg", box: "card", focus: [0.72, 0.64], zoom: 0.5 },
+    {
+        from: "Houston - Memorial Park Golf Course/memorial-park-scenic-kp-sder.avif",
+        to: "memorial-park/card-tee-time.jpg",
+        box: "card",
+        focus: [0.72, 0.64],
+        zoom: 0.5,
+    },
 ];
 
 /** Every fill in the MCG mark goes to white; the drawing has no other colours. */

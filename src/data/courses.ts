@@ -71,10 +71,10 @@ export const MEMORIAL_PARK_GOLF: CourseBrand = {
     tagline: "Houston's course since 1936.",
     marqueeItems: ["Houston's municipal course since 1936", "Book a tee time, grab a bite, enjoy the round"],
     // A round seal, so it keeps a square box — just a larger one, because the
-    // ring lettering is the identity and it closes up below about 64px. The
-    // source is 192px, which caps every render at 96px for 2x.
-    mark: { src: MEMORIAL_PARK("logo.png"), className: "size-16" },
-    markOnDark: { src: MEMORIAL_PARK("logo.png"), className: "size-24" },
+    // ring lettering is the identity and it closes up below about 64px. It is
+    // a vector, so no render size is capped by the source.
+    mark: { src: MEMORIAL_PARK("logo.svg"), className: "size-16" },
+    markOnDark: { src: MEMORIAL_PARK("logo.svg"), className: "size-24" },
     heroImage: MEMORIAL_PARK("hero.jpg"),
     standbyImage: MEMORIAL_PARK("standby.jpg"),
     // No first-time or shop photography was supplied, so those cards keep the
