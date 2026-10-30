@@ -1,6 +1,7 @@
 "use client";
 
 import { BrandMark } from "@/components/kiosk/brand-mark";
+import { useCourseBrand } from "@/providers/course-brand";
 import { useKioskSession } from "@/providers/kiosk-session";
 import { assetUrl } from "@/utils/asset-url";
 import { cx } from "@/utils/cx";
@@ -30,7 +31,7 @@ const ASSET = (file: string) => assetUrl(`screen-assets/welcome/${file}`);
  * scanner, so tapping the render triggers the read rather than being decorative.
  */
 export const ScanPromptScreen = ({
-    courseName = "Sagamore Golf Club",
+    courseName,
     onEnterCode,
     onDecline,
     onHowToLogIn,
@@ -45,6 +46,7 @@ export const ScanPromptScreen = ({
     className?: string;
 }) => {
     const { scanStatus, beginScan, resetSession } = useKioskSession();
+    const brand = useCourseBrand();
     const isScanning = scanStatus === "scanning";
     const hasError = scanStatus === "not-found" || scanStatus === "expired";
 
@@ -66,7 +68,7 @@ export const ScanPromptScreen = ({
                 inside it eats the very width being set and quietly pushed the
                 copy onto a third line. */}
             <p className="mt-5 max-w-[540px] text-[27px] leading-snug text-tertiary">
-                Scan your TenFore Golf Wallet below to check in to {courseName}
+                Scan your TenFore Golf Wallet below to check in to {courseName ?? brand?.name ?? "Sagamore Golf Club"}
             </p>
 
             <button
@@ -95,7 +97,7 @@ export const ScanPromptScreen = ({
                     <button
                         type="button"
                         onClick={onHowToLogIn}
-                        className="flex h-[62px] w-[303px] items-center justify-center gap-3 rounded-xl text-[24px] text-secondary ring-1 ring-border-secondary ring-inset transition duration-100 ease-linear active:bg-secondary"
+                        className="flex h-[62px] w-[303px] items-center justify-center gap-3 rounded-xl text-[24px] text-secondary ring-1 ring-border-secondary transition duration-100 ease-linear ring-inset active:bg-secondary"
                     >
                         <InfoBadge />
                         How do I Log In?
@@ -105,7 +107,7 @@ export const ScanPromptScreen = ({
                 <button
                     type="button"
                     onClick={handleStartOver}
-                    className="h-[79px] w-[501px] rounded-xl text-[24px] text-tertiary ring-1 ring-border-secondary ring-inset transition duration-100 ease-linear active:bg-secondary"
+                    className="h-[79px] w-[501px] rounded-xl text-[24px] text-tertiary ring-1 ring-border-secondary transition duration-100 ease-linear ring-inset active:bg-secondary"
                 >
                     Start Over
                 </button>
@@ -127,7 +129,7 @@ const ChoiceButton = ({ children, onPress }: { children: string; onPress?: () =>
     <button
         type="button"
         onClick={onPress}
-        className="h-[86px] w-full rounded-xl bg-primary text-[30px] font-bold text-primary ring-1 ring-border-secondary ring-inset transition duration-75 ease-linear active:scale-[0.98] active:bg-secondary"
+        className="h-[86px] w-full rounded-xl bg-primary text-[30px] font-bold text-primary ring-1 ring-border-secondary transition duration-75 ease-linear ring-inset active:scale-[0.98] active:bg-secondary"
     >
         {children}
     </button>

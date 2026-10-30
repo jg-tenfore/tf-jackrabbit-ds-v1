@@ -1,5 +1,6 @@
 "use client";
 
+import { useCourseBrand } from "@/providers/course-brand";
 import { assetUrl } from "@/utils/asset-url";
 import { cx } from "@/utils/cx";
 
@@ -44,42 +45,55 @@ export const StandbyBoardScreen = ({
     heading?: string;
     columns?: StandbyColumn[];
     className?: string;
-}) => (
-    <div className={cx("relative flex h-full w-full flex-col", className)}>
-        {/* The photo band sits behind the top of the card rather than filling
+}) => {
+    const brand = useCourseBrand();
+
+    return (
+        <div className={cx("relative flex h-full w-full flex-col", className)}>
+            {/* The photo band sits behind the top of the card rather than filling
             the screen: the card has to start high enough to hold five names, and
             a full-bleed photo behind white text would leave the names on grass. */}
-        <div className="absolute inset-x-0 top-0 h-[420px] overflow-hidden">
-            <img src={assetUrl("screen-assets/window/background.png")} alt="" aria-hidden="true" className="size-full object-cover" />
-            <div aria-hidden="true" className="absolute inset-0 bg-black/55" />
-        </div>
+            <div className="absolute inset-x-0 top-0 h-[420px] overflow-hidden">
+                <img
+                    src={assetUrl(brand?.standbyImage ?? "screen-assets/window/background.png")}
+                    alt=""
+                    aria-hidden="true"
+                    className="size-full object-cover"
+                />
+                <div aria-hidden="true" className="absolute inset-0 bg-black/55" />
+            </div>
 
-        <div className="relative z-10 flex flex-col items-center pt-[60px]">
-            <img src={ASSET("wordmark-dark-bg.svg")} alt="TenFore Golf" className="h-[52px] w-[264px] object-contain" />
-            <h1 className="mt-8 px-16 text-center text-[38px] leading-tight font-bold text-white">{heading}</h1>
-        </div>
+            <div className="relative z-10 flex flex-col items-center pt-[60px]">
+                {brand ? (
+                    <img src={assetUrl(brand.markOnDark.src)} alt={brand.name} className={cx("object-contain", brand.markOnDark.className)} />
+                ) : (
+                    <img src={ASSET("wordmark-dark-bg.svg")} alt="TenFore Golf" className="h-[52px] w-[264px] object-contain" />
+                )}
+                <h1 className="mt-8 px-16 text-center text-[38px] leading-tight font-bold text-white">{heading}</h1>
+            </div>
 
-        <div className="relative z-10 mt-8 min-h-0 flex-1 px-11">
-            <div className="flex h-full flex-col rounded-t-3xl bg-primary px-9 pt-9 shadow-[0_-8px_32px_rgba(0,0,0,0.18)]">
-                <div className="grid grid-cols-2 gap-8">
-                    {columns.map((column) => (
-                        <div key={column.id} className="flex flex-col">
-                            <div className="flex items-center gap-4">
-                                <img src={ASSET(column.icon)} alt="" aria-hidden="true" className="size-14 shrink-0" />
-                                <h2 className="text-[27px] font-bold text-brand-secondary">{column.label}</h2>
+            <div className="relative z-10 mt-8 min-h-0 flex-1 px-11">
+                <div className="flex h-full flex-col rounded-t-3xl bg-primary px-9 pt-9 shadow-[0_-8px_32px_rgba(0,0,0,0.18)]">
+                    <div className="grid grid-cols-2 gap-8">
+                        {columns.map((column) => (
+                            <div key={column.id} className="flex flex-col">
+                                <div className="flex items-center gap-4">
+                                    <img src={ASSET(column.icon)} alt="" aria-hidden="true" className="size-14 shrink-0" />
+                                    <h2 className="text-[27px] font-bold text-brand-secondary">{column.label}</h2>
+                                </div>
+
+                                <ul className="mt-7 flex flex-col gap-6">
+                                    {column.names.map((name) => (
+                                        <li key={name} className="text-[27px] font-bold text-primary">
+                                            {name}
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-
-                            <ul className="mt-7 flex flex-col gap-6">
-                                {column.names.map((name) => (
-                                    <li key={name} className="text-[27px] font-bold text-primary">
-                                        {name}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-);
+    );
+};

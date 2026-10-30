@@ -2,6 +2,8 @@
 
 import type { ReactNode } from "react";
 import { StepMarker, stepStateFor } from "@/components/kiosk/booking/step-marker";
+import { useCourseBrand } from "@/providers/course-brand";
+import { assetUrl } from "@/utils/asset-url";
 import { cx } from "@/utils/cx";
 
 export interface BookingStep {
@@ -164,27 +166,38 @@ export const CategoryRail = ({
     onSelect?: (id: string) => void;
     logoSrc?: string;
     className?: string;
-}) => (
-    <nav aria-label="Menu categories" className={cx("absolute top-0 -left-16 z-10 flex w-[272px] flex-col gap-5", className)}>
-        {logoSrc && (
-            <div className="flex h-[152px] items-center justify-start rounded-r-2xl bg-primary pl-16 shadow-sm ring-1 ring-border-secondary">
-                <img src={logoSrc} alt="" aria-hidden="true" className="size-28" />
-            </div>
-        )}
+}) => {
+    // The tile shows whoever the kiosk belongs to: a branded course's mark
+    // replaces the TenFore one the caller passes, and `object-contain` lets a
+    // wide lettermark sit in the same 112px box as a round mark.
+    const brand = useCourseBrand();
 
-        <RailGroup>
-            {destinations.map((entry) => (
-                <RailRow key={entry.id} entry={entry} isActive={entry.id === activeCategoryId} onPress={() => onSelect?.(entry.id)} />
-            ))}
-        </RailGroup>
+    return (
+        <nav aria-label="Menu categories" className={cx("absolute top-0 -left-16 z-10 flex w-[272px] flex-col gap-5", className)}>
+            {/* Centred in the *visible* tile, as the store references draw it.
+                `pl-16` is the 64px the canvas clips off the left, so centring
+                inside the padding box centres on what the user can see —
+                `justify-start` left the mark hugging the bezel. */}
+            {logoSrc && (
+                <div className="flex h-[152px] items-center justify-center rounded-r-2xl bg-primary pl-16 shadow-sm ring-1 ring-border-secondary">
+                    <img src={brand ? assetUrl(brand.mark.src) : logoSrc} alt="" aria-hidden="true" className="size-28 object-contain" />
+                </div>
+            )}
 
-        <RailGroup>
-            {categories.map((entry) => (
-                <RailRow key={entry.id} entry={entry} isActive={entry.id === activeCategoryId} onPress={() => onSelect?.(entry.id)} />
-            ))}
-        </RailGroup>
-    </nav>
-);
+            <RailGroup>
+                {destinations.map((entry) => (
+                    <RailRow key={entry.id} entry={entry} isActive={entry.id === activeCategoryId} onPress={() => onSelect?.(entry.id)} />
+                ))}
+            </RailGroup>
+
+            <RailGroup>
+                {categories.map((entry) => (
+                    <RailRow key={entry.id} entry={entry} isActive={entry.id === activeCategoryId} onPress={() => onSelect?.(entry.id)} />
+                ))}
+            </RailGroup>
+        </nav>
+    );
+};
 
 /**
  * One card per group. `divide-y` puts the rule *between* rows only, so the
