@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { BrandMark } from "@/components/kiosk/brand-mark";
 import { assetUrl } from "@/utils/asset-url";
 import { cx } from "@/utils/cx";
@@ -18,6 +19,10 @@ const ASSET = (file: string) => assetUrl(`screen-assets/order/${file}`);
  * It closes with the wordmark and an attribution line rather than more chrome.
  * By this point the person has what they came for and the next thing the panel
  * shows is the attract loop, so the screen's job is to hand back gracefully.
+ *
+ * The same sign-off closes the waitlist flow, so the illustration is a prop and
+ * `children` is a slot under the subtitle for anything the person should leave
+ * knowing — there, their place in line and party size.
  */
 export const OrderSuccessfulScreen = ({
     heading = "All set! Good luck and enjoy the round",
@@ -28,6 +33,8 @@ export const OrderSuccessfulScreen = ({
     subtitle = "The selections you have chosen will be removed.",
     dismissLabel = "Tap anywhere to dismiss",
     attribution = "Experience powered by TenFore Golf",
+    illustrationSrc = ASSET("golf-cart.svg"),
+    children,
     onDismiss,
     className,
 }: {
@@ -35,6 +42,10 @@ export const OrderSuccessfulScreen = ({
     subtitle?: string;
     dismissLabel?: string;
     attribution?: string;
+    /** Full asset URL. Defaults to the order flow's golf cart. */
+    illustrationSrc?: string;
+    /** Details under the subtitle. Must be non-interactive: the screen is one button. */
+    children?: ReactNode;
     onDismiss?: () => void;
     className?: string;
 }) => (
@@ -51,9 +62,13 @@ export const OrderSuccessfulScreen = ({
         <h1 className="mt-[80px] max-w-[600px] px-16 text-[48px] leading-[1.12] font-bold text-balance text-primary">{heading}</h1>
         {subtitle && <p className="mt-4 px-16 text-[24px] text-tertiary">{subtitle}</p>}
 
-        <img src={ASSET("golf-cart.svg")} alt="" aria-hidden="true" className="mt-[132px] h-[268px] w-[353px] object-contain" />
+        {children && <div className="mt-10">{children}</div>}
 
-        <p className="mt-[70px] text-[22px] text-tertiary">{dismissLabel}</p>
+        {/* With details above it, the illustration gives back the room they
+            took, so the dismiss line and wordmark stay where they always are. */}
+        <img src={illustrationSrc} alt="" aria-hidden="true" className={cx("h-[268px] w-[353px] object-contain", children ? "mt-12" : "mt-[132px]")} />
+
+        <p className={cx("text-[22px] text-tertiary", children ? "mt-12" : "mt-[70px]")}>{dismissLabel}</p>
 
         <div className="mt-auto flex flex-col items-center gap-3 pb-[64px]">
             <img src={ASSET("wordmark.svg")} alt="TenFore Golf" className="h-[56px] w-[285px] object-contain" />
