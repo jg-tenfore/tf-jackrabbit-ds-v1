@@ -100,10 +100,10 @@ export const courseStories = (brand: CourseBrand) => {
             MEMBERS[0],
         ),
 
-        /** The board read from across the pro shop: course photo band and light mark. */
+        /** The board read from across the pro shop: course photo band and light mark, over the welcome actions. */
         StandbyBoard: branded({
             render: () => (
-                <KioskScreen scroll={false} footer={<GlobalNav />}>
+                <KioskScreen scroll={false} footer={<WelcomeNav onStartOrder={() => {}} onJoinWaitlist={() => {}} />}>
                     <StandbyBoardScreen />
                 </KioskScreen>
             ),
