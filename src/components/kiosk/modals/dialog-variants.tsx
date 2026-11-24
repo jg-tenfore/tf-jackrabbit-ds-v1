@@ -96,6 +96,7 @@ export const ProductDetailDialog = ({
     name,
     priceCents,
     subtitle,
+    maxQuantity,
     imageSlot,
     onCustomize,
     onConfirm,
@@ -109,6 +110,8 @@ export const ProductDetailDialog = ({
     priceCents: number;
     /** One quiet line under the price — what the item is, when the name alone does not say. */
     subtitle?: string;
+    /** Upper bound for the quantity stepper, when the item has one. */
+    maxQuantity?: number;
     imageSlot?: React.ReactNode;
     onCustomize?: () => void;
     onConfirm?: (quantity: number) => void;
@@ -165,7 +168,7 @@ export const ProductDetailDialog = ({
                     </KioskKey>
                 )}
 
-                <QuantityStepper value={quantity} onChange={setQuantity} />
+                <QuantityStepper value={quantity} onChange={setQuantity} max={maxQuantity} />
             </div>
         </KioskDialog>
     );

@@ -49,9 +49,19 @@ export const ballCountLabel = (b: RangeBucket) => `About ${b.ballCount} balls`;
  */
 export interface RangeExtra extends MenuItem {
     note: string;
+    /** Ball codes one of these issues — four for a party pack, none for a card. */
+    codes?: number;
 }
 
-const extra = (id: string, name: string, priceCents: number, detail: string, note: string, packaging: MenuItem["packaging"] = "single"): RangeExtra => ({
+const extra = (
+    id: string,
+    name: string,
+    priceCents: number,
+    detail: string,
+    note: string,
+    packaging: MenuItem["packaging"] = "single",
+    codes?: number,
+): RangeExtra => ({
     id,
     name,
     brand: "",
@@ -62,6 +72,7 @@ const extra = (id: string, name: string, priceCents: number, detail: string, not
     image: `screen-assets/range/${id}.webp`,
     detail,
     note,
+    codes,
 });
 
 /** Sample extras: a group pack, a gift card and a punch card. Prices are placeholders. */
@@ -84,3 +95,6 @@ export const RANGE_MENU_FULL: (RangeBucket | RangeExtra)[] = [...RANGE_BUCKETS, 
 /** The line under the price on an item's detail sheet. */
 export const rangeItemNote = (item: RangeBucket | RangeExtra) =>
     "ballCount" in item ? `${ballCountLabel(item)} · each bucket gets its own ball code` : item.note;
+
+/** Ball codes one unit of an item issues: one per bucket, set per extra. */
+export const codesPerUnit = (item: RangeBucket | RangeExtra) => ("ballCount" in item ? 1 : (item.codes ?? 0));
