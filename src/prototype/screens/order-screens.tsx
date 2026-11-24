@@ -121,7 +121,7 @@ const toDollars = (cents: number) => cents / 100;
 const canCustomize = (item: MenuItem) => item.category === "sandwiches";
 
 /** The rail as it appears on every browse screen: bag, running total, Start Over. */
-const BrowseNav = () => {
+export const BrowseNav = () => {
     const { itemCount, totalCents } = usePrototype();
     const { go } = useNavigation();
     const startOver = useEndSession();
@@ -388,7 +388,10 @@ const OrderReviewSurface = ({ overlay }: { overlay?: ReactNode }) => {
                     subtotalCents={subtotalCents}
                     taxCents={taxCents}
                     isCompleteDisabled={lines.length === 0}
-                    onCompleteOrder={() => go("takeout-choice")}
+                    // "For here or to go?" and a guest's name are both for the
+                    // kitchen. An order with no food — a bucket of balls, a tee
+                    // time — goes straight to paying.
+                    onCompleteOrder={() => go(lines.some((l) => l.kind === "menu") ? "takeout-choice" : "checkout-method")}
                     onOrderMore={() => go("menu")}
                     onStartOver={startOver}
                     // Ignored when signed in, where the identity card takes the
@@ -485,27 +488,22 @@ export const CheckoutMethodRoute = () => {
 const TERMINAL_DWELL_MS = 2600;
 
 export const FollowInstructionsRoute = () => {
-    const { subtotalCents, taxCents } = usePrototype();
+    const { subtotalCents, taxCents, lines } = usePrototype();
+    // Paid for buckets get their codes before anything else.
+    const paidTo = lines.some((l) => l.kind === "range") ? "ball-code" : "order-successful";
     const { replace, isDirectEntry } = useNavigation();
     const startOver = useEndSession();
 
     useEffect(() => {
         if (isDirectEntry) return;
-        const timer = setTimeout(() => replace("order-successful"), TERMINAL_DWELL_MS);
+        const timer = setTimeout(() => replace(paidTo), TERMINAL_DWELL_MS);
         return () => clearTimeout(timer);
-    }, [replace, isDirectEntry]);
+    }, [replace, isDirectEntry, paidTo]);
 
     return (
         <KioskScreen
             scroll={false}
-            footer={
-                <OrderSummaryNav
-                    subtotalCents={subtotalCents}
-                    taxCents={taxCents}
-                    onCompleteOrder={() => replace("order-successful")}
-                    onStartOver={startOver}
-                />
-            }
+            footer={<OrderSummaryNav subtotalCents={subtotalCents} taxCents={taxCents} onCompleteOrder={() => replace(paidTo)} onStartOver={startOver} />}
         >
             <FollowInstructionsScreen />
         </KioskScreen>
@@ -526,6 +524,12 @@ export const FollowInstructionsRoute = () => {
  */
 export const OrderSuccessfulRoute = () => {
     const endSession = useEndSession();
+    const { lines } = usePrototype();
+    // Buckets still in the cart here were not paid for at the kiosk (paying
+    // here goes to the ball code screen first), so the code comes from the
+    // counter once they are — the kiosk cannot hand out a code for an unpaid
+    // bucket.
+    const owesBallCode = lines.some((l) => l.kind === "range");
 
     return (
         <KioskScreen
@@ -538,7 +542,10 @@ export const OrderSuccessfulRoute = () => {
                 </div>
             }
         >
-            <OrderSuccessfulScreen subtitle="Your order is on its way to the kitchen." onDismiss={endSession} />
+            <OrderSuccessfulScreen
+                subtitle={owesBallCode ? "Pay at the counter and they'll give you your ball code." : "Your order is on its way to the kitchen."}
+                onDismiss={endSession}
+            />
         </KioskScreen>
     );
 };

@@ -23,6 +23,12 @@ export const SCREEN_IDS = [
     "checkout-method",
     "follow-instructions",
     "order-successful",
+    "range-balls",
+    "ball-code",
+    "waitlist-group-size",
+    "waitlist-name",
+    "waitlist-added",
+    "standby-board",
 ] as const;
 
 export type ScreenId = (typeof SCREEN_IDS)[number];
@@ -78,6 +84,7 @@ export const screenStack = (screen: ScreenId): ScreenId[] => {
         "enter-name": "takeout-choice",
         "checkout-method": "enter-name",
         "follow-instructions": "checkout-method",
+        "waitlist-name": "waitlist-group-size",
     };
     return [...screenStack(parents[screen] ?? "attract"), screen];
 };

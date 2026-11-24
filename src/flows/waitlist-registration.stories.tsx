@@ -1,16 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Users01 } from "@untitledui/icons";
 import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { SignedOutCard } from "@/components/kiosk/app-chrome/wallet-drawer";
 import { WelcomeNav } from "@/components/kiosk/app-chrome/welcome-nav";
-import { BookingActionBar, BookingReviewSection } from "@/components/kiosk/booking/booking-review-sections";
-import { VenueSummary } from "@/components/kiosk/booking/booking-summary";
-import { GroupSizeSelector, TransportSelector } from "@/components/kiosk/booking/segmented-selector";
-import { KioskButton } from "@/components/kiosk/kiosk-button";
+import { BookingActionBar, StepFooter } from "@/components/kiosk/booking/booking-review-sections";
 import { OrderSuccessfulScreen } from "@/components/kiosk/order/order-successful-screen";
 import { EntryScreen, EntryTextField } from "@/components/kiosk/screens/entry-screen";
-import { DEFAULT_STANDBY_COLUMNS, StandbyBoardScreen, type StandbyColumn, type StandbyEntry } from "@/components/kiosk/screens/standby-board-screen";
+import { DEFAULT_STANDBY_COLUMNS, StandbyBoardScreen } from "@/components/kiosk/screens/standby-board-screen";
+import { WaitlistGroupSizeScreen } from "@/components/kiosk/waitlist/group-size-screen";
+import { PlaceInLine } from "@/components/kiosk/waitlist/place-in-line";
+import { nextPlaceInLine, useLiveStandby } from "@/components/kiosk/waitlist/use-live-standby";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
 import { assetUrl } from "@/utils/asset-url";
@@ -49,63 +48,6 @@ The rest of this flow's reference screens (course and time-window pick, notifica
 
 export default meta;
 type Story = StoryObj<typeof meta>;
-
-/** Parties that walk up while the board is running, in order, then round again. */
-const ARRIVALS: StandbyEntry[] = [
-    { name: "Ava P.", partySize: 2 },
-    { name: "Mason D.", partySize: 4 },
-    { name: "Sofia L.", partySize: 1 },
-    { name: "James K.", partySize: 3 },
-    { name: "Chloe B.", partySize: 2 },
-    { name: "Owen H.", partySize: 4 },
-    { name: "Grace N.", partySize: 2 },
-    { name: "Caleb V.", partySize: 1 },
-];
-
-/** Long enough to watch one change finish before the next starts. */
-const STEP_MS = 2400;
-
-const withIds = (columns: StandbyColumn[]) => columns.map((c) => ({ ...c, entries: c.entries.map((e) => ({ ...e, id: e.id ?? e.name })) }));
-
-/**
- * Plays the four things that happen to a standby list, in turn, forever: a
- * party joins, the first ready party tees off, the front of Up Next is called,
- * and the front of the line moves up. One of each per cycle keeps every column
- * the same length, so the loop never drifts into an overflowing board.
- *
- * The counters live outside the state updater because React may run an updater
- * twice in development; anything it increments would skip.
- */
-const useLiveStandby = () => {
-    const [columns, setColumns] = useState(() => withIds(DEFAULT_STANDBY_COLUMNS));
-
-    useEffect(() => {
-        let step = 0;
-        let arrivals = 0;
-        const timer = setInterval(() => {
-            const event = step++ % 4;
-            const arrival = ARRIVALS[arrivals % ARRIVALS.length];
-            const arrivalId = `${arrival.name}-${arrivals}`;
-            if (event === 0) arrivals++;
-
-            setColumns(([received, upNext, ready]) => {
-                if (event === 0) return [{ ...received, entries: [...received.entries, { ...arrival, id: arrivalId }] }, upNext, ready];
-                if (event === 1) return [received, upNext, { ...ready, entries: ready.entries.slice(1) }];
-                if (event === 2) {
-                    const [called, ...rest] = upNext.entries;
-                    if (!called) return [received, upNext, ready];
-                    return [received, { ...upNext, entries: rest }, { ...ready, entries: [...ready.entries, called] }];
-                }
-                const [front, ...rest] = received.entries;
-                if (!front) return [received, upNext, ready];
-                return [{ ...received, entries: rest }, { ...upNext, entries: [...upNext.entries, front] }, ready];
-            });
-        }, STEP_MS);
-        return () => clearInterval(timer);
-    }, []);
-
-    return columns;
-};
 
 /**
  * The standby board, as it sits on the wall between check-ins — live. Parties
@@ -180,37 +122,20 @@ export const GroupSize: Story = {
         return (
             <KioskScreen
                 footer={
-                    <>
+                    <StepFooter>
                         <BookingActionBar onBack={() => {}} onBook={() => {}} bookLabel="Continue" isBookDisabled={!groupSize || !transport || !subcourse} />
                         <GlobalNav />
-                    </>
+                    </StepFooter>
                 }
             >
-                <div className="flex flex-col">
-                    <BookingReviewSection className="border-t-0 pt-10">
-                        <VenueSummary
-                            venueName="Falls Road Golf Course"
-                            address="MCG Golf Courses"
-                            date="Thursday, January 8th, 2026"
-                            duration="2 hours"
-                            startTime="6:00AM – 9:00AM"
-                        />
-                    </BookingReviewSection>
-                    <BookingReviewSection>
-                        <GroupSizeSelector value={groupSize} onChange={setGroupSize} max={8} isOpenEnded />
-                    </BookingReviewSection>
-                    <BookingReviewSection>
-                        <TransportSelector value={transport} onChange={setTransport} />
-                    </BookingReviewSection>
-                    <BookingReviewSection>
-                        <div className="flex flex-col gap-4">
-                            <h3 className="text-2xl font-bold text-primary">Subcourse</h3>
-                            <KioskButton size="xl" isFullWidth onPress={() => setSubcourse("Main Course Only")} className="text-primary">
-                                {subcourse ?? "Select Subcourse"}
-                            </KioskButton>
-                        </div>
-                    </BookingReviewSection>
-                </div>
+                <WaitlistGroupSizeScreen
+                    groupSize={groupSize}
+                    onGroupSizeChange={setGroupSize}
+                    transport={transport}
+                    onTransportChange={setTransport}
+                    subcourse={subcourse}
+                    onSelectSubcourse={() => setSubcourse("Main Course Only")}
+                />
             </KioskScreen>
         );
     },
@@ -274,25 +199,7 @@ export const EnterYourEmail = detailStory("Enter Your Email", "Enter your email"
  * Where a new party lands: behind everyone the board numbers. Derived from the
  * board's own fixture so the confirmation and the board never disagree.
  */
-const NEW_PLACE_IN_LINE = DEFAULT_STANDBY_COLUMNS.filter((c) => c.numbered).reduce((n, c) => n + c.entries.length, 0) + 1;
-
-/** Place in line and party size — the two numbers the board will show them. */
-const PlaceInLine = ({ place, partySize }: { place: number; partySize: number }) => (
-    <div className="flex items-stretch rounded-2xl bg-secondary px-2 py-5">
-        <div className="flex w-[200px] flex-col items-center gap-1">
-            <span className="text-[44px] leading-none font-bold text-primary tabular-nums">#{place}</span>
-            <span className="text-[18px] text-tertiary">Place in line</span>
-        </div>
-        <div aria-hidden="true" className="w-[3px] bg-border-primary" />
-        <div className="flex w-[200px] flex-col items-center gap-1">
-            <span className="flex items-center gap-2 text-[44px] leading-none font-bold text-primary tabular-nums">
-                <Users01 className="size-9 text-fg-quaternary" aria-hidden="true" />
-                {partySize >= 8 ? "8+" : partySize}
-            </span>
-            <span className="text-[18px] text-tertiary">{partySize === 1 ? "Player" : "Players"}</span>
-        </div>
-    </div>
-);
+const NEW_PLACE_IN_LINE = nextPlaceInLine();
 
 /**
  * The sign-off, with the party's place in line and size — the same two numbers

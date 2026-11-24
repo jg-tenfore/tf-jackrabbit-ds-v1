@@ -34,6 +34,11 @@ export interface MenuItem extends Omit<ProShopProduct, "image"> {
     image?: string;
     /** Shown under the name, as the references draw it. */
     calories?: number;
+    /**
+     * A short line under the name for things that have no calories — "About 80
+     * balls" on a range bucket. Shown in place of calories when set.
+     */
+    detail?: string;
     /** Chosen modifiers, e.g. "No Pickles, Extra Mayo". */
     modifiers?: string[];
     /** Demo offer information shown in curated shopping collections. */

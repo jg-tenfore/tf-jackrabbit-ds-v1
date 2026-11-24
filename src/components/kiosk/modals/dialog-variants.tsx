@@ -95,6 +95,7 @@ export const ProductDetailDialog = ({
     onOpenChange,
     name,
     priceCents,
+    subtitle,
     imageSlot,
     onCustomize,
     onConfirm,
@@ -106,6 +107,8 @@ export const ProductDetailDialog = ({
     onOpenChange: (open: boolean) => void;
     name: string;
     priceCents: number;
+    /** One quiet line under the price — what the item is, when the name alone does not say. */
+    subtitle?: string;
     imageSlot?: React.ReactNode;
     onCustomize?: () => void;
     onConfirm?: (quantity: number) => void;
@@ -153,6 +156,7 @@ export const ProductDetailDialog = ({
                 <div className="flex flex-col items-center gap-1">
                     <h3 className="text-4xl font-bold text-balance text-primary">{name}</h3>
                     <p className="text-3xl font-bold text-primary tabular-nums">${(priceCents / 100).toFixed(2)}</p>
+                    {subtitle && <p className="mt-1 text-center text-[18px] text-balance text-tertiary">{subtitle}</p>}
                 </div>
 
                 {onCustomize && (

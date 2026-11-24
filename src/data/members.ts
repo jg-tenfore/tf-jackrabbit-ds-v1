@@ -18,6 +18,14 @@ export interface Member {
     homeCourse: string;
     points: number;
     avatarUrl?: string;
+    /**
+     * Contact details on file. Both are optional because real accounts are
+     * missing one or the other all the time — and anything sent after a
+     * purchase (a range ball code, a receipt) has to say which one it used and
+     * ask for the other rather than assume.
+     */
+    email?: string;
+    phone?: string;
 }
 
 export const MEMBERS: Member[] = [
@@ -30,6 +38,8 @@ export const MEMBERS: Member[] = [
         memberNumber: "TF-1031466",
         homeCourse: "Sagamore Golf Club",
         points: 2480,
+        email: "justin.girard@example.com",
+        phone: "(240) 555-0148",
     },
     {
         id: "member-002",
@@ -40,6 +50,8 @@ export const MEMBERS: Member[] = [
         memberNumber: "TF-2277301",
         homeCourse: "Sagamore Golf Club",
         points: 610,
+        // Email only: the account predates phone capture.
+        email: "dana.whitfield@example.com",
     },
     {
         id: "staff-001",
@@ -50,6 +62,8 @@ export const MEMBERS: Member[] = [
         memberNumber: "TF-STAFF-04",
         homeCourse: "Sagamore Golf Club",
         points: 0,
+        // Phone only: staff accounts are created at the desk with a mobile.
+        phone: "(240) 555-0192",
     },
 ];
 

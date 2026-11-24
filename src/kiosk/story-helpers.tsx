@@ -14,11 +14,16 @@ import { KioskSessionProvider } from "@/providers/kiosk-session";
  * shows up as a real pixel difference rather than a story-setup difference.
  */
 
-/** Render the story inside the kiosk canvas, optionally scaled to a real panel. */
+/**
+ * Render the story inside the kiosk canvas, optionally scaled to a real panel.
+ *
+ * Fits the window by default (the toolbar's "Kiosk size" switches to 1:1), so
+ * a whole screen is visible on a laptop without scrolling to its buttons.
+ */
 export const withKioskFrame =
     (options: { target?: KioskTarget; chrome?: boolean; overlaySrc?: string } = {}): Decorator =>
-    (Story) => (
-        <KioskFrame {...options}>
+    (Story, context) => (
+        <KioskFrame {...options} fit={context.globals.kioskSize !== "actual"}>
             <Story />
         </KioskFrame>
     );

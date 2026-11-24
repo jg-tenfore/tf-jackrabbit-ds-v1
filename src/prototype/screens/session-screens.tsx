@@ -4,7 +4,11 @@ import { type ReactNode, useEffect, useState } from "react";
 import { WelcomeNav } from "@/components/kiosk/app-chrome/welcome-nav";
 import { CodeInput } from "@/components/kiosk/keyboard/code-input";
 import { EntryScreen, EntryTextField } from "@/components/kiosk/screens/entry-screen";
-import { GET_STARTED_OPTIONS_WITH_ACTIVITIES, GetStartedScreen } from "@/components/kiosk/screens/get-started-screen";
+import {
+    ATTRACT_OPTIONS_WITH_ACTIVITIES_AND_RANGE,
+    GET_STARTED_OPTIONS_WITH_ACTIVITIES_AND_RANGE,
+    GetStartedScreen,
+} from "@/components/kiosk/screens/get-started-screen";
 import { HomeScreen } from "@/components/kiosk/screens/home-screen";
 import { HowToLogInScreen } from "@/components/kiosk/screens/how-to-log-in-screen";
 import { ScanPromptScreen } from "@/components/kiosk/screens/scan-prompt-screen";
@@ -89,6 +93,7 @@ const useGetStartedRouter = () => {
         if (id === "first-time") return go("wallet-interstitial");
         if (id === "check-in") return go("do-you-want-to-log-in");
         if (id === "shop") return go("menu");
+        if (id === "range-balls") return go("range-balls");
 
         const kind = id === "simulator" ? "simulator" : id === "pickleball" ? "pickleball" : "tee-time";
         setActivity(kind);
@@ -102,9 +107,10 @@ const useGetStartedRouter = () => {
 /**
  * The attract loop.
  *
- * The card row is the six-option set rather than the four, so both activities
- * are reachable from a standing start — the row scrolls, which is what makes
- * offering six there honest.
+ * The card row is every option — range balls first, then the four and both
+ * activities — so all of them are reachable from a standing start. The row
+ * scrolls, which is what makes offering seven there honest; the range leads
+ * because only the first two and a half cards show before a scroll.
  */
 export const AttractRoute = () => {
     const { go } = useNavigation();
@@ -121,11 +127,11 @@ export const AttractRoute = () => {
                         continueAsGuest();
                         go("get-started");
                     }}
-                    onJoinWaitlist={() => go("get-started")}
+                    onJoinWaitlist={() => go("waitlist-group-size")}
                 />
             }
         >
-            <WindowScreen courseName={COURSE_NAME} options={GET_STARTED_OPTIONS_WITH_ACTIVITIES} onSelect={selectStart} />
+            <WindowScreen courseName={COURSE_NAME} options={ATTRACT_OPTIONS_WITH_ACTIVITIES_AND_RANGE} onSelect={selectStart} />
         </KioskScreen>
     );
 };
@@ -144,7 +150,7 @@ export const GetStartedRoute = () => {
         <KioskScreen scroll={false}>
             <GetStartedScreen
                 courseName={COURSE_NAME}
-                options={GET_STARTED_OPTIONS_WITH_ACTIVITIES}
+                options={GET_STARTED_OPTIONS_WITH_ACTIVITIES_AND_RANGE}
                 onSelect={selectStart}
                 onBack={() => (canGoBack ? goBack() : reset())}
             />
@@ -202,7 +208,7 @@ export const WalletInterstitialRoute = () => {
                 // Moving on from the pitch lands on the log-in question rather
                 // than skipping it — the interstitial argues for the wallet, and
                 // the question is where that argument is answered.
-                <WelcomeNav onStartOrder={() => go("do-you-want-to-log-in")} onJoinWaitlist={() => go("get-started")} />
+                <WelcomeNav onStartOrder={() => go("do-you-want-to-log-in")} onJoinWaitlist={() => go("waitlist-group-size")} />
             }
         >
             <WalletInterstitialScreen />
