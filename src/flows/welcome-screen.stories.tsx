@@ -1,6 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { WelcomeNav } from "@/components/kiosk/app-chrome/welcome-nav";
-import { GET_STARTED_OPTIONS_WITH_ACTIVITIES, GetStartedScreen } from "@/components/kiosk/screens/get-started-screen";
+import {
+    ATTRACT_OPTIONS_WITH_RANGE,
+    GET_STARTED_OPTIONS_WITH_ACTIVITIES,
+    GET_STARTED_OPTIONS_WITH_ACTIVITIES_AND_RANGE,
+    GET_STARTED_OPTIONS_WITH_RANGE,
+    GetStartedScreen,
+} from "@/components/kiosk/screens/get-started-screen";
 import { WindowScreen } from "@/components/kiosk/screens/window-screen";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
@@ -46,6 +52,19 @@ export const AttractEveningRain: Story = {
     ),
 };
 
+/**
+ * A venue with a driving range. The range card leads the row, because only the
+ * first two and a half cards show before a scroll. See Buy Range Balls.
+ */
+export const AttractWithRange: Story = {
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: () => (
+        <KioskScreen scroll={false} footer={<WelcomeNav onStartOrder={() => {}} onJoinWaitlist={() => {}} />}>
+            <WindowScreen options={ATTRACT_OPTIONS_WITH_RANGE} onSelect={() => {}} />
+        </KioskScreen>
+    ),
+};
+
 /** The hub, once someone has engaged. Four peers, none of them primary. */
 export const GetStarted: Story = {
     decorators: [withKioskSession(), withKioskFrame()],
@@ -71,16 +90,39 @@ export const GetStartedWithActivities: Story = {
     ),
 };
 
+/**
+ * With range balls as a fifth option, the same size as the other four, on its
+ * own in the last row. See Buy Range Balls.
+ */
+export const GetStartedWithRange: Story = {
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: () => (
+        <KioskScreen scroll={false}>
+            <GetStartedScreen options={GET_STARTED_OPTIONS_WITH_RANGE} onSelect={() => {}} onBack={() => {}} />
+        </KioskScreen>
+    ),
+};
+
+/**
+ * Everything: the activities and the range — the set the prototype runs. Seven
+ * options — more than fit, so the card area scrolls under a white fade while Go Back stays put; checked with the
+ * longest real course name, which takes the heading to three lines.
+ */
+export const GetStartedWithEverything: Story = {
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: () => (
+        <KioskScreen scroll={false}>
+            <GetStartedScreen courseName="Sagamore Golf Club" options={GET_STARTED_OPTIONS_WITH_ACTIVITIES_AND_RANGE} onSelect={() => {}} onBack={() => {}} />
+        </KioskScreen>
+    ),
+};
+
 /** A venue with no pro shop. The grid reflows rather than leaving a hole. */
 export const GetStartedWithoutProShop: Story = {
     decorators: [withKioskSession(), withKioskFrame()],
     render: () => (
         <KioskScreen scroll={false}>
-            <GetStartedScreen
-                options={GET_STARTED_OPTIONS_WITH_ACTIVITIES.filter((option) => option.id !== "shop")}
-                onSelect={() => {}}
-                onBack={() => {}}
-            />
+            <GetStartedScreen options={GET_STARTED_OPTIONS_WITH_ACTIVITIES.filter((option) => option.id !== "shop")} onSelect={() => {}} onBack={() => {}} />
         </KioskScreen>
     ),
 };

@@ -1,28 +1,29 @@
 import { useEffect, useRef, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { PICKLEBALL_CONFIG, SIMULATOR_CONFIG, type ActivityConfig } from "@/components/kiosk/booking/activity-config";
+import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
+import { SignedOutCard } from "@/components/kiosk/app-chrome/wallet-drawer";
+import { WelcomeNav } from "@/components/kiosk/app-chrome/welcome-nav";
+import { type ActivityConfig, PICKLEBALL_CONFIG, SIMULATOR_CONFIG } from "@/components/kiosk/booking/activity-config";
 import {
     ActivityBackBar,
     ActivityDayTimePicker,
     ActivityDurationList,
     ActivityResourceGrid,
+    type ActivityResourceOption,
     ActivityStepFrame,
     durationOptionsFor,
-    type ActivityResourceOption,
 } from "@/components/kiosk/booking/activity-step-screens";
+import {
+    BookingActionBar,
+    BookingOccasionChips,
+    BookingReviewSection,
+    BookingUpdatesToggle,
+    BookingVenuePolicy,
+    StepFooter,
+} from "@/components/kiosk/booking/booking-review-sections";
 import { DueBar, PriceBreakdown, VenueSummary } from "@/components/kiosk/booking/booking-summary";
 import type { DayAvailability } from "@/components/kiosk/booking/kiosk-date-picker";
 import { GroupSizeSelector } from "@/components/kiosk/booking/segmented-selector";
-import {
-    BookingActionBar,
-    BookingUpdatesToggle,
-    BookingOccasionChips,
-    BookingReviewSection,
-    BookingVenuePolicy,
-} from "@/components/kiosk/booking/booking-review-sections";
-import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
-import { SignedOutCard } from "@/components/kiosk/app-chrome/wallet-drawer";
-import { WelcomeNav } from "@/components/kiosk/app-chrome/welcome-nav";
 import { CheckoutMethodFullScreen } from "@/components/kiosk/modals/full-screen-variants";
 import { OrderSuccessfulScreen } from "@/components/kiosk/order/order-successful-screen";
 import { EntryScreen, EntryTextField } from "@/components/kiosk/screens/entry-screen";
@@ -84,14 +85,16 @@ const JANUARY_2026_FROM_THE_8TH = JANUARY_2026.slice(7);
 /** Every unit is the same price and cap, so the card is comparing names and places. */
 const RATE_NOTE = "$40.00 + 2.49 Fee / hr";
 
-const unit = (maxParticipants: number) => (id: string, name: string, note: string): ActivityResourceOption => ({
-    id,
-    name,
-    note,
-    maxParticipants,
-    priceCents: 4249,
-    rateNote: RATE_NOTE,
-});
+const unit =
+    (maxParticipants: number) =>
+    (id: string, name: string, note: string): ActivityResourceOption => ({
+        id,
+        name,
+        note,
+        maxParticipants,
+        priceCents: 4249,
+        rateNote: RATE_NOTE,
+    });
 
 const court = unit(4);
 const bay = unit(6);
@@ -126,10 +129,10 @@ const OCCASIONS = ["Celebration", "Gathering", "Networking", "Reunion", "Birthda
 
 /** The mid-flow footer: Back above the rail, exactly as every step draws it. */
 const stepFooter = (
-    <>
+    <StepFooter>
         <ActivityBackBar onBack={() => {}} />
         <GlobalNav />
-    </>
+    </StepFooter>
 );
 
 /**
@@ -140,21 +143,9 @@ const stepFooter = (
  * driver — same components either way, but a story can pin step 3 without
  * having to answer steps 1 and 2 first.
  */
-const step = (
-    config: ActivityConfig,
-    currentStepId: string,
-    completedStepIds: string[],
-    body: React.ReactNode,
-    subtitle?: string,
-) => (
+const step = (config: ActivityConfig, currentStepId: string, completedStepIds: string[], body: React.ReactNode, subtitle?: string) => (
     <KioskScreen scroll={false} footer={stepFooter}>
-        <ActivityStepFrame
-            config={config}
-            currentStepId={currentStepId}
-            completedStepIds={completedStepIds}
-            subtitle={subtitle}
-            showBrandCard
-        >
+        <ActivityStepFrame config={config} currentStepId={currentStepId} completedStepIds={completedStepIds} subtitle={subtitle} showBrandCard>
             {body}
         </ActivityStepFrame>
     </KioskScreen>
@@ -285,11 +276,7 @@ export const PickleballDuration: Story = {
             PICKLEBALL_CONFIG,
             "duration",
             [],
-            <ActivityDurationList
-                title="How long do you want to play for?"
-                options={durationOptionsFor(PICKLEBALL_CONFIG)}
-                onSelect={() => {}}
-            />,
+            <ActivityDurationList title="How long do you want to play for?" options={durationOptionsFor(PICKLEBALL_CONFIG)} onSelect={() => {}} />,
         ),
 };
 
@@ -357,11 +344,7 @@ export const SimulatorDuration: Story = {
             SIMULATOR_CONFIG,
             "duration",
             [],
-            <ActivityDurationList
-                title="How long do you want to play for?"
-                options={durationOptionsFor(SIMULATOR_CONFIG)}
-                onSelect={() => {}}
-            />,
+            <ActivityDurationList title="How long do you want to play for?" options={durationOptionsFor(SIMULATOR_CONFIG)} onSelect={() => {}} />,
         ),
 };
 
@@ -401,7 +384,7 @@ const ReviewBody = ({ initialScroll = 0 }: { initialScroll?: number }) => {
     }, [initialScroll]);
 
     return (
-        <div ref={scroller} className="h-full overflow-y-auto scrollbar-hide">
+        <div ref={scroller} className="scrollbar-hide h-full overflow-y-auto">
             <BookingReviewSection>
                 <VenueSummary
                     venueName={VENUE.name}
@@ -452,13 +435,13 @@ const ReviewBody = ({ initialScroll = 0 }: { initialScroll?: number }) => {
  * one place on this screen a number could be misread.
  */
 const reviewFooter = (
-    <>
+    <StepFooter>
         <div className="bg-primary">
             <DueBar dueNow="$20.74" dueLater="$1.71" total="$55.22" />
             <BookingActionBar onBack={() => {}} onBook={() => {}} />
         </div>
         <GlobalNav />
-    </>
+    </StepFooter>
 );
 
 /**

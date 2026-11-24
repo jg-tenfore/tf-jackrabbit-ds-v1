@@ -1,7 +1,6 @@
 import type { Preview } from "@storybook/nextjs-vite";
 import { RouterProvider } from "react-aria-components";
 import { KIOSK_HEIGHT, KIOSK_WIDTH } from "../src/kiosk/constants";
-
 // The full Untitled UI + Tailwind v4 pipeline. theme.css carries the TenFore
 // green brand ramp, ported unchanged from the Buck design system.
 import "../src/styles/globals.css";
@@ -21,14 +20,7 @@ const preview: Preview = {
                     // the kiosk-native primitives, which sit first because they
                     // are what the flows below are actually assembled from.
                     "Components",
-                    [
-                        "Kiosk Frame",
-                        "Kiosk Keyboard",
-                        "Kiosk Overlays",
-                        "Kiosk Booking",
-                        "Kiosk Store",
-                        "Marquee",
-                    ],
+                    ["Kiosk Frame", "Kiosk Keyboard", "Kiosk Overlays", "Kiosk Booking", "Kiosk Store", "Marquee"],
                     // Persistent chrome that frames every screen.
                     "App Chrome",
                     // Every flow under one parent, last: this is the assembled
@@ -44,6 +36,7 @@ const preview: Preview = {
                         "Auth w Existing User",
                         "Order Sandwich",
                         "Order Sandwich Guest",
+                        "Buy Range Balls",
                         "Book Tee Time",
                         "Book Activity",
                         "Waitlist Reg",
@@ -84,9 +77,28 @@ const preview: Preview = {
             },
         },
     },
+    // The kiosk canvas fits the window by default, so a whole screen shows on a
+    // laptop without scrolling to its buttons. The fixed 750x1298 viewport used
+    // to be the default; it made the preview pane taller than most windows.
+    // It is still in the viewport menu, and "Actual size" gives 1:1 for pixel
+    // review against the exports.
+    globalTypes: {
+        kioskSize: {
+            description: "Kiosk canvas size",
+            toolbar: {
+                title: "Kiosk size",
+                icon: "zoom",
+                items: [
+                    { value: "fit", title: "Fit to window" },
+                    { value: "actual", title: "Actual size (1:1)" },
+                ],
+                dynamicTitle: true,
+            },
+        },
+    },
     initialGlobals: {
         backgrounds: { value: "canvas" },
-        viewport: { value: "kiosk", isRotated: false },
+        kioskSize: "fit",
     },
     decorators: [
         // Kiosk screens have no browser to navigate, so swallow react-aria link

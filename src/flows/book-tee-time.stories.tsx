@@ -3,16 +3,17 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { SignedOutCard } from "@/components/kiosk/app-chrome/wallet-drawer";
 import { WelcomeNav } from "@/components/kiosk/app-chrome/welcome-nav";
+import {
+    BookingActionBar,
+    BookingOccasionChips,
+    BookingReviewSection,
+    BookingUpdatesToggle,
+    BookingVenuePolicy,
+    StepFooter,
+} from "@/components/kiosk/booking/booking-review-sections";
 import { DueBar, PriceBreakdown, VenueSummary } from "@/components/kiosk/booking/booking-summary";
 import { GroupSizeSelector } from "@/components/kiosk/booking/segmented-selector";
 import type { TeeTimeSlot } from "@/components/kiosk/booking/slot-card";
-import {
-    BookingActionBar,
-    BookingUpdatesToggle,
-    BookingOccasionChips,
-    BookingReviewSection,
-    BookingVenuePolicy,
-} from "@/components/kiosk/booking/booking-review-sections";
 import { TeeTimeBooking } from "@/components/kiosk/booking/tee-time-booking";
 import { RatePickerDialog } from "@/components/kiosk/modals/dialog-variants";
 import { CheckoutMethodFullScreen } from "@/components/kiosk/modals/full-screen-variants";
@@ -67,11 +68,11 @@ const PRICE_FOOTNOTE = "*Morbi leo risus, porta ac consectetur ac, vestibulum at
 
 /** The rail as every screen in this flow carries it: signed out, no order yet. */
 const reviewFooter = (
-    <>
+    <StepFooter>
         <DueBar dueNow="$20.74" dueLater="$1.71" total="$55.22" className="ml-auto w-[485px] px-0 pr-16" />
         <BookingActionBar onBack={() => {}} onBook={() => {}} />
         <GlobalNav />
-    </>
+    </StepFooter>
 );
 
 /**
@@ -103,13 +104,7 @@ export const DoYouWantToLogIn: Story = {
     decorators: [withKioskSession(), withKioskFrame()],
     render: () => (
         <KioskScreen scroll={false}>
-            <ScanPromptScreen
-                courseName="Sagamore Golf Club"
-                onEnterCode={() => {}}
-                onDecline={() => {}}
-                onHowToLogIn={() => {}}
-                onStartOver={() => {}}
-            />
+            <ScanPromptScreen courseName="Sagamore Golf Club" onEnterCode={() => {}} onDecline={() => {}} onHowToLogIn={() => {}} onStartOver={() => {}} />
         </KioskScreen>
     ),
 };
@@ -147,10 +142,10 @@ export const BookATimeWeekView: Story = {
         <KioskScreen
             scroll={false}
             footer={
-                <>
+                <StepFooter>
                     <BookingActionBar backLabel="Back" onBack={() => {}} />
                     <GlobalNav />
-                </>
+                </StepFooter>
             }
         >
             <TeeTimeBooking slots={TEE_TIMES} />
@@ -172,10 +167,10 @@ export const BookATimeMonthView: Story = {
         <KioskScreen
             scroll={false}
             footer={
-                <>
+                <StepFooter>
                     <BookingActionBar backLabel="Back" onBack={() => {}} />
                     <GlobalNav />
-                </>
+                </StepFooter>
             }
         >
             <TeeTimeBooking slots={TEE_TIMES} dateMode="month" />
@@ -199,10 +194,10 @@ export const AvailableRates: Story = {
             <KioskScreen
                 scroll={false}
                 footer={
-                    <>
+                    <StepFooter>
                         <BookingActionBar backLabel="Back" onBack={() => {}} />
                         <GlobalNav />
-                    </>
+                    </StepFooter>
                 }
             >
                 <TeeTimeBooking slots={TEE_TIMES} />

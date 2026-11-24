@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useState, useSyncExternalStore } from "react";
 import { UNSAFE_PortalProvider } from "react-aria";
 import { KIOSK_HEIGHT, KIOSK_TARGETS, KIOSK_WIDTH, type KioskTarget } from "@/kiosk/constants";
 import { cx } from "@/utils/cx";
@@ -16,6 +16,13 @@ interface KioskFrameProps {
     chrome?: boolean;
     /** Overlay a reference export at 50% opacity to diff against. */
     overlaySrc?: string;
+    /**
+     * Shrink the canvas to fit the window when the window is smaller than it,
+     * so a whole screen — its bottom buttons included — is visible without
+     * scrolling. Never enlarges, never stretches. Storybook turns this on by
+     * default; its toolbar switches to 1:1 for pixel review.
+     */
+    fit?: boolean;
     className?: string;
 }
 
@@ -41,8 +48,20 @@ interface KioskFrameProps {
  * content on the wrong axis. Anchoring the portal here keeps overlays inside the
  * canvas they belong to, and inherits its scale transform on real panels.
  */
-export const KioskFrame = ({ children, target = "design", chrome = false, overlaySrc, className }: KioskFrameProps) => {
-    const { width: targetWidth, height: targetHeight } = KIOSK_TARGETS[target];
+const subscribeResize = (onChange: () => void) => {
+    window.addEventListener("resize", onChange);
+    return () => window.removeEventListener("resize", onChange);
+};
+/** The scale that fits the canvas in the window, capped at 1:1. */
+const windowFitScale = () => Math.min(1, window.innerWidth / KIOSK_WIDTH, window.innerHeight / KIOSK_HEIGHT);
+const serverFitScale = () => 1;
+
+export const KioskFrame = ({ children, target = "design", chrome = false, overlaySrc, fit = false, className }: KioskFrameProps) => {
+    const fitScale = useSyncExternalStore(subscribeResize, windowFitScale, serverFitScale);
+    const isFitted = fit && target === "design" && !chrome;
+    const { width: targetWidth, height: targetHeight } = isFitted
+        ? { width: Math.floor(KIOSK_WIDTH * fitScale), height: Math.floor(KIOSK_HEIGHT * fitScale) }
+        : KIOSK_TARGETS[target];
     // State rather than a ref: the container has to exist *before* an overlay
     // that is open on first paint reads it, and a ref set during commit does not
     // trigger the re-render that would let it.
@@ -110,7 +129,7 @@ export const KioskScreen = ({ header, footer, children, scroll = true, className
     <div className={cx("flex h-full w-full flex-col overflow-x-hidden bg-primary", className)}>
         {header && <div className="relative z-20 shrink-0">{header}</div>}
 
-        <div className={cx("relative min-h-0 flex-1", scroll ? "overflow-y-auto scrollbar-hide" : "overflow-hidden")}>{children}</div>
+        <div className={cx("relative min-h-0 flex-1", scroll ? "scrollbar-hide overflow-y-auto" : "overflow-hidden")}>{children}</div>
 
         {footer && <div className="relative z-30 shrink-0">{footer}</div>}
     </div>

@@ -31,6 +31,7 @@ import {
     setOrderFlow,
     useOrderFlow,
 } from "./screens/order-screens";
+import { BallCodeRoute, RangeBallsRoute } from "./screens/range-screens";
 import {
     AttractRoute,
     DoYouWantToLogInRoute,
@@ -42,6 +43,7 @@ import {
     HowToLogInRoute,
     WalletInterstitialRoute,
 } from "./screens/session-screens";
+import { StandbyBoardRoute, WaitlistAddedRoute, WaitlistGroupSizeRoute, WaitlistNameRoute } from "./screens/waitlist-screens";
 
 /**
  * The prototype's whole router: one screen id to one component.
@@ -81,6 +83,14 @@ const SCREENS: Record<ScreenId, ComponentType> = {
     "checkout-method": CheckoutMethodRoute,
     "follow-instructions": FollowInstructionsRoute,
     "order-successful": OrderSuccessfulRoute,
+    // Range balls
+    "range-balls": RangeBallsRoute,
+    "ball-code": BallCodeRoute,
+    // Waitlist
+    "waitlist-group-size": WaitlistGroupSizeRoute,
+    "waitlist-name": WaitlistNameRoute,
+    "waitlist-added": WaitlistAddedRoute,
+    "standby-board": StandbyBoardRoute,
 };
 
 const CurrentScreen = () => {

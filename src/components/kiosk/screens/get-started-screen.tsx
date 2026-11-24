@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BrandMark } from "@/components/kiosk/brand-mark";
 import { ChoiceCard, type ChoiceOption } from "@/components/kiosk/choice-card";
 import { useCourseBrand } from "@/providers/course-brand";
@@ -34,6 +35,29 @@ export const GET_STARTED_OPTIONS_WITH_ACTIVITIES: ChoiceOption[] = [
     { id: "simulator", eyebrow: "Indoor Golf Experience", title: "Golf Simulator Bays", image: "simulator.png" },
 ];
 
+/** The way into the range-ball purchase, for a venue with a driving range. */
+export const RANGE_BALLS_OPTION: ChoiceOption = { id: "range-balls", eyebrow: "Driving range", title: "Buy a Bucket of Balls", image: "range-balls.jpg" };
+
+/**
+ * The four plus range balls, for the hub. Five cards, all the same size: the
+ * fifth sits on its own in the last row rather than being stretched to fill it.
+ */
+export const GET_STARTED_OPTIONS_WITH_RANGE: ChoiceOption[] = [...GET_STARTED_OPTIONS, RANGE_BALLS_OPTION];
+
+/** Everything: the activities and the range. Seven — more than fit, so the hub scrolls. */
+export const GET_STARTED_OPTIONS_WITH_ACTIVITIES_AND_RANGE: ChoiceOption[] = [...GET_STARTED_OPTIONS_WITH_ACTIVITIES, RANGE_BALLS_OPTION];
+
+/**
+ * The same five for the attract row, with the range **first**. That row runs
+ * off the right edge and only about two and a half cards show before a scroll,
+ * so a range card in fifth place would be invisible to someone walking past —
+ * which is exactly who the attract screen is for.
+ */
+export const ATTRACT_OPTIONS_WITH_RANGE: ChoiceOption[] = [RANGE_BALLS_OPTION, ...GET_STARTED_OPTIONS];
+
+/** The attract row with the activities too, range still first. */
+export const ATTRACT_OPTIONS_WITH_ACTIVITIES_AND_RANGE: ChoiceOption[] = [RANGE_BALLS_OPTION, ...GET_STARTED_OPTIONS_WITH_ACTIVITIES];
+
 /**
  * "Welcome to The Course! Lets get started!" — the hub the kiosk opens onto
  * once someone has engaged with it.
@@ -53,6 +77,11 @@ export const GET_STARTED_OPTIONS_WITH_ACTIVITIES: ChoiceOption[] = [
  * The grid takes whatever options it is given and lays them out two across, so
  * the four-card and six-card versions are the same screen with different data
  * rather than two screens to keep in step.
+ *
+ * Every card is the same size and weight, however many there are — an odd one
+ * out sits alone in its row. When more rows than fit are given, the cards are
+ * not shrunk to make room: the card area scrolls under the heading, a white
+ * fade at its foot says there is more, and Go Back stays put below it.
  */
 export const GetStartedScreen = ({
     courseName,
@@ -68,30 +97,99 @@ export const GetStartedScreen = ({
     className?: string;
 }) => {
     const brand = useCourseBrand();
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [hasMoreBelow, setHasMoreBelow] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false);
+
+    // The fade is a promise of more, so it shows only while there is more:
+    // never on a hub that fits, and gone once the last row is in view.
+    const measure = useCallback(() => {
+        const el = scrollRef.current;
+        if (!el) return;
+        setHasMoreBelow(el.scrollTop + el.clientHeight < el.scrollHeight - 4);
+        // Collapse past 24px, expand only back at the very top. The gap between
+        // the two stops the heading flickering when a scroll comes to rest
+        // near the threshold — collapsing itself changes the scroller's height.
+        setIsCollapsed((was) => (was ? el.scrollTop > 2 : el.scrollTop > 24));
+    }, []);
+    useEffect(() => {
+        const el = scrollRef.current;
+        if (!el) return;
+        measure();
+        const observer = new ResizeObserver(measure);
+        observer.observe(el);
+        if (el.firstElementChild) observer.observe(el.firstElementChild);
+        return () => observer.disconnect();
+    }, [measure, options.length]);
 
     return (
-        <div className={cx("flex h-full w-full flex-col items-center pt-[70px] text-center", className)}>
-            <BrandMark />
+        <div
+            className={cx(
+                "flex h-full w-full flex-col items-center text-center transition-[padding] duration-200 ease-out",
+                isCollapsed ? "pt-8" : "pt-[70px]",
+                className,
+            )}
+        >
+            {/* Once the cards are scrolled, the heading collapses to one line and
+            the mark tucks away, so the room goes to the cards. Back at the top it
+            opens again. A hub that fits never scrolls, so it never changes. */}
+            <div
+                aria-hidden={isCollapsed}
+                className={cx("overflow-hidden transition-all duration-200 ease-out", isCollapsed ? "max-h-0 opacity-0" : "max-h-24 opacity-100")}
+            >
+                <BrandMark />
+            </div>
 
-            <h1 className="mt-[26px] px-12 text-[50px] leading-[1.08] font-bold text-balance text-primary">
-                Welcome to {courseName ?? brand?.name ?? "The Course"}! Lets get started!
+            <h1
+                className={cx(
+                    "px-12 font-bold text-balance text-primary transition-all duration-200 ease-out",
+                    // Leading after the size: `cx` merges classes, and a text size
+                    // listed after a leading class would drop it.
+                    isCollapsed ? "mt-0 text-[32px] leading-[1.08]" : "mt-[26px] text-[50px] leading-[1.08]",
+                )}
+            >
+                Welcome to {courseName ?? brand?.name ?? "The Course"}!<span className={cx(isCollapsed && "hidden")}> Lets get started!</span>
             </h1>
 
-            {/* Two rows sit low in the space, as the four-card reference draws them;
-            three rows fill it and centre. Not one rule with a shrinking margin —
-            CSS has no "147 unless it does not fit" — and not `my-auto` for both,
-            which centres the two-row case 35px above where its reference puts
-            it. Two layouts because there genuinely are two. */}
-            <div className={cx("grid w-full grid-cols-2 gap-[18px] px-16", options.length > 4 ? "my-auto" : "mt-[147px] mb-auto")}>
-                {options.map((option) => (
-                    <ChoiceCard key={option.id} option={option} size="lg" className="w-full" onPress={() => onSelect?.(option.id)} />
-                ))}
+            <div className="relative mt-6 min-h-0 w-full flex-1">
+                <div ref={scrollRef} onScroll={measure} className="scrollbar-hide h-full overflow-y-auto overscroll-contain">
+                    {/* Two rows sit low in the space, as the four-card reference
+                    draws them; three rows fill it and centre. Not one rule with a
+                    shrinking margin — CSS has no "147 unless it does not fit" — and
+                    not `my-auto` for both, which centres the two-row case 35px above
+                    where its reference puts it. Two layouts because there genuinely
+                    are two. `min-h-full` is what lets either rule work inside a
+                    scroller, and the bottom padding lets the last row scroll clear of
+                    the fade. */}
+                    <div className="flex min-h-full flex-col">
+                        <div
+                            className={cx(
+                                "grid w-full grid-cols-2 gap-[18px] px-16",
+                                options.length > 4 ? "my-auto py-2" : "mt-[123px] mb-auto",
+                                hasMoreBelow || options.length > 6 ? "pb-24" : "",
+                            )}
+                        >
+                            {options.map((option) => (
+                                <ChoiceCard key={option.id} option={option} size="lg" className="w-full" onPress={() => onSelect?.(option.id)} />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    aria-hidden="true"
+                    className={cx(
+                        "pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-bg-primary via-bg-primary/80 to-transparent transition-opacity duration-200 ease-linear",
+                        hasMoreBelow ? "opacity-100" : "opacity-0",
+                    )}
+                />
             </div>
 
             <button
                 type="button"
                 onClick={onBack}
-                className="mb-[103px] h-[58px] w-[354px] rounded-xl text-[24px] text-tertiary ring-1 ring-border-secondary transition duration-100 ease-linear ring-inset active:bg-secondary"
+                // Outside the scroller, so it never moves and never sits under the fade.
+                className="relative z-10 mt-6 mb-[103px] h-[58px] w-[354px] shrink-0 rounded-xl bg-primary text-[24px] text-tertiary ring-1 ring-border-secondary transition duration-100 ease-linear ring-inset active:bg-secondary"
             >
                 Go Back
             </button>

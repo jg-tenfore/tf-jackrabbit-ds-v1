@@ -19,6 +19,7 @@ import {
     BookingReviewSection,
     BookingUpdatesToggle,
     BookingVenuePolicy,
+    StepFooter,
 } from "@/components/kiosk/booking/booking-review-sections";
 import { DueBar, PriceBreakdown, VenueSummary } from "@/components/kiosk/booking/booking-summary";
 import { GroupSizeSelector } from "@/components/kiosk/booking/segmented-selector";
@@ -342,10 +343,10 @@ export const BookingWhenRoute = () => {
             <KioskScreen
                 scroll={false}
                 footer={
-                    <>
+                    <StepFooter>
                         <BookingActionBar backLabel="Back" onBack={back} />
                         <PrototypeGlobalNav />
-                    </>
+                    </StepFooter>
                 }
             >
                 <TeeTimeBooking
@@ -364,10 +365,10 @@ export const BookingWhenRoute = () => {
         <KioskScreen
             scroll={false}
             footer={
-                <>
+                <StepFooter>
                     <ActivityBackBar onBack={back} />
                     <PrototypeGlobalNav />
-                </>
+                </StepFooter>
             }
         >
             <ActivityStepFrame config={config} steps={stepsForKind(activity)} currentStepId="start-time" showBrandCard>
@@ -430,10 +431,10 @@ export const BookingDurationRoute = () => {
         <KioskScreen
             scroll={false}
             footer={
-                <>
+                <StepFooter>
                     <ActivityBackBar onBack={() => canGoBack && goBack()} />
                     <PrototypeGlobalNav />
-                </>
+                </StepFooter>
             }
         >
             <ActivityStepFrame
@@ -501,10 +502,10 @@ export const BookingResourceRoute = () => {
         <KioskScreen
             scroll={false}
             footer={
-                <>
+                <StepFooter>
                     <ActivityBackBar onBack={() => canGoBack && goBack()} />
                     <PrototypeGlobalNav />
-                </>
+                </StepFooter>
             }
         >
             <ActivityStepFrame
@@ -577,7 +578,7 @@ export const BookingReviewRoute = () => {
     return (
         <KioskScreen
             footer={
-                <>
+                <StepFooter>
                     {/* Opaque, because the body scrolls behind it: `DueBar` has
                         no background of its own and a total over moving text is
                         the one number on this screen that could be misread. */}
@@ -593,7 +594,7 @@ export const BookingReviewRoute = () => {
                         />
                     </div>
                     <PrototypeGlobalNav />
-                </>
+                </StepFooter>
             }
         >
             <div className="flex flex-col">

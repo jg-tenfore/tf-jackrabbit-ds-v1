@@ -5,6 +5,7 @@ import type { MenuItem } from "@/data/menu-catalog";
 import { DEMO_FAVORITE_IDS, DEMO_RECENT_IDS } from "@/data/menu-collections";
 import type { ModifierLevel } from "@/data/modifiers";
 import type { ProShopProduct } from "@/data/pro-shop-types";
+import type { RangeBucket } from "@/data/range-catalog";
 
 /**
  * The prototype's session — one cart, one identity, one booking in progress.
@@ -27,7 +28,7 @@ import type { ProShopProduct } from "@/data/pro-shop-types";
 export interface CartLine {
     /** Unique per line, not per product — two sandwiches customised differently are two lines. */
     lineId: string;
-    kind: "menu" | "pro-shop" | "booking";
+    kind: "menu" | "pro-shop" | "booking" | "range";
     name: string;
     priceCents: number;
     quantity: number;
@@ -46,6 +47,19 @@ export interface CartLine {
     levels?: Record<string, ModifierLevel>;
     /** Booking lines only: what was reserved, for the review screen. */
     bookingDetail?: string;
+    /** Range lines only: which bucket, so the ball code screen can label each code. */
+    rangeBucketId?: string;
+}
+
+/** The party that joined the waitlist on this kiosk, as the board will show it. */
+export interface WaitlistEntry {
+    /** Stable id on the board, so the row can be marked "You". */
+    id: string;
+    /** First name and last initial — the board never shows more. */
+    name: string;
+    partySize: number;
+    /** Place in line at the moment of joining. */
+    place: number;
 }
 
 export interface BookingDraft {
@@ -76,6 +90,12 @@ interface PrototypeValue {
 
     addMenuItem: (item: MenuItem, levels?: Record<string, ModifierLevel>, modifierLabels?: string[]) => void;
     addProShopItem: (product: ProShopProduct) => void;
+    /** Adds buckets of one size; the same size again raises the quantity. */
+    addRangeBuckets: (bucket: RangeBucket, quantity: number) => void;
+    /** Drops range lines once their codes are issued, leaving any food to finish. */
+    clearRangeLines: () => void;
+    waitlist: WaitlistEntry | null;
+    setWaitlist: (entry: WaitlistEntry | null) => void;
     setQuantity: (lineId: string, quantity: number) => void;
     removeLine: (lineId: string) => void;
     /** Start Over and order completion both land here. */
@@ -104,6 +124,7 @@ export const PrototypeProvider = ({
 }) => {
     const [lines, setLines] = useState<CartLine[]>(initialLines);
     const [booking, setBooking] = useState<BookingDraft | null>(initialBooking);
+    const [waitlist, setWaitlist] = useState<WaitlistEntry | null>(null);
     const [favoriteIds, setFavoriteIds] = useState<string[]>(DEMO_FAVORITE_IDS);
     const [recentIds, setRecentIds] = useState<string[]>(DEMO_RECENT_IDS);
     const toggleFavorite = useCallback(
@@ -188,6 +209,28 @@ export const PrototypeProvider = ({
         setBooking(null);
     }, [booking]);
 
+    const addRangeBuckets = useCallback((bucket: RangeBucket, quantity: number) => {
+        setLines((prev) => {
+            const existing = prev.find((l) => l.kind === "range" && l.rangeBucketId === bucket.id);
+            if (existing) return prev.map((l) => (l.lineId === existing.lineId ? { ...l, quantity: l.quantity + quantity } : l));
+            return [
+                ...prev,
+                {
+                    lineId: nextLineId(),
+                    kind: "range",
+                    name: bucket.name,
+                    priceCents: bucket.priceCents,
+                    quantity,
+                    image: bucket.image,
+                    modifiers: [`About ${bucket.ballCount} balls`],
+                    rangeBucketId: bucket.id,
+                },
+            ];
+        });
+    }, []);
+
+    const clearRangeLines = useCallback(() => setLines((prev) => prev.filter((l) => l.kind !== "range")), []);
+
     const setQuantity = useCallback((lineId: string, quantity: number) => {
         setLines((prev) => (quantity <= 0 ? prev.filter((l) => l.lineId !== lineId) : prev.map((l) => (l.lineId === lineId ? { ...l, quantity } : l))));
     }, []);
@@ -197,6 +240,7 @@ export const PrototypeProvider = ({
     const resetOrder = useCallback(() => {
         setLines([]);
         setBooking(null);
+        setWaitlist(null);
         setFavoriteIds(DEMO_FAVORITE_IDS);
         setRecentIds(DEMO_RECENT_IDS);
     }, []);
@@ -218,11 +262,30 @@ export const PrototypeProvider = ({
             confirmBooking,
             addMenuItem,
             addProShopItem,
+            addRangeBuckets,
+            clearRangeLines,
+            waitlist,
+            setWaitlist,
             setQuantity,
             removeLine,
             resetOrder,
         };
-    }, [lines, favoriteIds, recentIds, toggleFavorite, booking, confirmBooking, addMenuItem, addProShopItem, setQuantity, removeLine, resetOrder]);
+    }, [
+        lines,
+        favoriteIds,
+        recentIds,
+        toggleFavorite,
+        booking,
+        confirmBooking,
+        addMenuItem,
+        addProShopItem,
+        addRangeBuckets,
+        clearRangeLines,
+        waitlist,
+        setQuantity,
+        removeLine,
+        resetOrder,
+    ]);
 
     return <PrototypeContext.Provider value={value}>{children}</PrototypeContext.Provider>;
 };

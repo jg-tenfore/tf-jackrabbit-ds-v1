@@ -142,6 +142,7 @@ export const StandbyBoardScreen = ({
     onHome,
     homeLabel = "Back to Home",
     hero = "band",
+    highlightId,
     className,
 }: {
     heading?: string;
@@ -160,6 +161,12 @@ export const StandbyBoardScreen = ({
      * still leaves room for eight parties in a column.
      */
     hero?: "band" | "tall";
+    /**
+     * The entry id of the party looking at the board — the one that just
+     * joined on this kiosk. Its name goes brand green with a "You" tag, so it
+     * can be found at a glance among a dozen others.
+     */
+    highlightId?: string;
     className?: string;
 }) => {
     const isTall = hero === "tall";
@@ -244,9 +251,24 @@ export const StandbyBoardScreen = ({
                                                         </span>
                                                     )}
                                                     <div className="flex min-w-0 flex-col">
-                                                        <span className="truncate text-[24px] leading-tight font-bold text-primary">{entry.name}</span>
-                                                        <span className="mt-1 flex items-center gap-1.5 text-[18px] font-medium text-tertiary tabular-nums">
-                                                            <Users01 className="size-[18px] shrink-0 text-fg-quaternary" aria-hidden="true" />
+                                                        <span
+                                                            className={cx(
+                                                                "truncate text-[24px] leading-tight font-bold",
+                                                                highlightId && entry.id === highlightId ? "text-brand-secondary" : "text-primary",
+                                                            )}
+                                                        >
+                                                            {entry.name}
+                                                        </span>
+                                                        <span className="mt-1 flex items-center gap-1.5 text-[18px] font-medium whitespace-nowrap text-tertiary tabular-nums">
+                                                            {/* "You" takes the icon's place rather than adding to the
+                                                            line: a third-width column has room for one or the other. */}
+                                                            {highlightId && entry.id === highlightId ? (
+                                                                <span className="rounded-full bg-brand-solid px-2 py-0.5 text-[13px] leading-none font-semibold text-white">
+                                                                    You
+                                                                </span>
+                                                            ) : (
+                                                                <Users01 className="size-[18px] shrink-0 text-fg-quaternary" aria-hidden="true" />
+                                                            )}
                                                             {partyLabel(entry.partySize)}
                                                         </span>
                                                     </div>

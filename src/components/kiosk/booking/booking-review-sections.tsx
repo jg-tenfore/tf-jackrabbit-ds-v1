@@ -72,11 +72,7 @@ export const BookingUpdatesToggle = ({
     onLearnMore?: () => void;
 }) => (
     <div className="flex flex-col gap-3">
-        <AriaSwitch
-            isSelected={isSelected}
-            onChange={onChange}
-            className="flex w-full cursor-pointer items-center justify-between gap-6 outline-hidden"
-        >
+        <AriaSwitch isSelected={isSelected} onChange={onChange} className="flex w-full cursor-pointer items-center justify-between gap-6 outline-hidden">
             <span className="text-4xl font-bold text-primary">{title}</span>
             <span
                 className={cx(
@@ -86,10 +82,7 @@ export const BookingUpdatesToggle = ({
                 aria-hidden="true"
             >
                 <span
-                    className={cx(
-                        "size-11 rounded-full bg-primary shadow-md transition-transform duration-100 ease-linear",
-                        isSelected && "translate-x-10",
-                    )}
+                    className={cx("size-11 rounded-full bg-primary shadow-md transition-transform duration-100 ease-linear", isSelected && "translate-x-10")}
                 />
             </span>
         </AriaSwitch>
@@ -183,7 +176,7 @@ export const BookingActionBar = ({
             type="button"
             onClick={onBack}
             className={cx(
-                "h-[65px] rounded-lg text-[20px] text-tertiary ring-1 ring-border-primary ring-inset transition duration-100 ease-linear active:bg-secondary",
+                "h-[65px] rounded-lg text-[20px] text-tertiary ring-1 ring-border-primary transition duration-100 ease-linear ring-inset active:bg-secondary",
                 onBook ? "w-[183px] shrink-0" : "flex-1",
             )}
         >
@@ -201,3 +194,15 @@ export const BookingActionBar = ({
         )}
     </div>
 );
+
+/**
+ * A step's footer — action buttons stacked on the nav rail — laid flat.
+ *
+ * The rule: **no shadow on a step footer**. Go Back / Continue / Buy sit on the
+ * page, not in a raised container, so nothing above them is cast in shade. The
+ * layout is untouched — same rows, same spacing, same hairline above the rail.
+ * The rail's own upward shadow is switched off here because it is what drew the
+ * box around the buttons. (The order summary rail is a different thing: a
+ * totals panel, and it keeps its shadow.)
+ */
+export const StepFooter = ({ children }: { children: ReactNode }) => <div className="relative z-50 bg-primary [&>nav]:shadow-none">{children}</div>;

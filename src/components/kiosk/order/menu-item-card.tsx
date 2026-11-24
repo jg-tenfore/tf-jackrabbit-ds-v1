@@ -48,7 +48,11 @@ export const MenuItemCard = ({
                 <span className="text-[19px] leading-tight font-semibold text-primary">{item.name}</span>
                 {isFavorite && <Star01 aria-label="Favorite" className="size-5 shrink-0 fill-amber-400 text-amber-500" />}
             </div>
-            {item.calories !== undefined && <span className="text-[13px] text-tertiary">{item.calories} cal</span>}
+            {item.detail ? (
+                <span className="text-[13px] text-tertiary">{item.detail}</span>
+            ) : (
+                item.calories !== undefined && <span className="text-[13px] text-tertiary">{item.calories} cal</span>
+            )}
             <span className="mt-1 flex flex-wrap items-baseline gap-2 text-[19px] font-semibold text-primary tabular-nums">
                 ${(item.priceCents / 100).toFixed(2)}
                 {item.originalPriceCents !== undefined && (

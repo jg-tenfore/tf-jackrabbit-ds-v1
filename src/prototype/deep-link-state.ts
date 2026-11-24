@@ -3,6 +3,7 @@ import { TEE_TIMES } from "@/data/booking";
 import { MENU_CATEGORIES, MENU_DESTINATIONS, MENU_ITEMS, type MenuItem } from "@/data/menu-catalog";
 import { collectionItems } from "@/data/menu-collections";
 import { PRO_SHOP_PRODUCTS } from "@/data/pro-shop-catalog";
+import { RANGE_BUCKETS } from "@/data/range-catalog";
 import { COURSES } from "@/data/sagamore";
 import type { BookingDraft, CartLine } from "./prototype-state";
 import type { ScreenLink } from "./screen-links";
@@ -36,18 +37,35 @@ export const deepLinkState = (link: ScreenLink) => {
     const needsCart = ["added-to-bag", "order-review", "takeout-choice", "enter-name", "checkout-method", "follow-instructions", "order-successful"].includes(
         link.screen,
     );
-    const lines: CartLine[] = needsCart
-        ? [
-              {
-                  lineId: "demo-item",
-                  kind: "menu",
-                  name: item.name,
-                  priceCents: item.priceCents,
-                  quantity: 1,
-                  image: item.image,
-              },
-          ]
-        : [];
+    // The ball code screen issues codes for the range lines in the cart, so a
+    // direct link to it brings a medium bucket along.
+    const medium = RANGE_BUCKETS[1];
+    const lines: CartLine[] =
+        link.screen === "ball-code"
+            ? [
+                  {
+                      lineId: "demo-bucket",
+                      kind: "range",
+                      name: medium.name,
+                      priceCents: medium.priceCents,
+                      quantity: 1,
+                      image: medium.image,
+                      modifiers: [`About ${medium.ballCount} balls`],
+                      rangeBucketId: medium.id,
+                  },
+              ]
+            : needsCart
+              ? [
+                    {
+                        lineId: "demo-item",
+                        kind: "menu",
+                        name: item.name,
+                        priceCents: item.priceCents,
+                        quantity: 1,
+                        image: item.image,
+                    },
+                ]
+              : [];
 
     return { item, categoryId, choice, booking, lines };
 };
