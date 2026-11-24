@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReactNode, createContext, useCallback, useContext, useMemo, useState } from "react";
+import { MAX_BALL_CODES } from "@/components/kiosk/range/ball-code-screen";
 import type { MenuItem } from "@/data/menu-catalog";
 import { DEMO_FAVORITE_IDS, DEMO_RECENT_IDS } from "@/data/menu-collections";
 import type { ModifierLevel } from "@/data/modifiers";
@@ -211,8 +212,12 @@ export const PrototypeProvider = ({
 
     const addRangeBuckets = useCallback((bucket: RangeBucket, quantity: number) => {
         setLines((prev) => {
+            // Never more buckets in one order than the ball code screen shows.
+            const already = prev.filter((l) => l.kind === "range").reduce((n, l) => n + l.quantity, 0);
+            const adding = Math.min(quantity, MAX_BALL_CODES - already);
+            if (adding <= 0) return prev;
             const existing = prev.find((l) => l.kind === "range" && l.rangeBucketId === bucket.id);
-            if (existing) return prev.map((l) => (l.lineId === existing.lineId ? { ...l, quantity: l.quantity + quantity } : l));
+            if (existing) return prev.map((l) => (l.lineId === existing.lineId ? { ...l, quantity: l.quantity + adding } : l));
             return [
                 ...prev,
                 {
@@ -220,7 +225,7 @@ export const PrototypeProvider = ({
                     kind: "range",
                     name: bucket.name,
                     priceCents: bucket.priceCents,
-                    quantity,
+                    quantity: adding,
                     image: bucket.image,
                     modifiers: [`About ${bucket.ballCount} balls`],
                     rangeBucketId: bucket.id,

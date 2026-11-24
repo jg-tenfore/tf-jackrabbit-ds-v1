@@ -32,9 +32,11 @@ const meta = {
 - The code is set large and grouped in threes, with a hint to photograph it.
 - An **email and a text go out automatically** to whatever the account has on file. Each row says where it went, masked, because this is a public screen.
 - **If the account is missing a phone or an email**, that row offers to add one: it collects the number or address and sends the code there. A guest has neither, so both rows offer.
-- **Several buckets get several codes**, one per bucket, labelled.
+- **Several buckets get several codes**, one per bucket, one full-size card at a time with the next peeking in (swipe, or click and drag) — up to six, which is where the quantity steppers stop.
 
 **Six Options** shows a busier range — the three sizes plus a Party Pack, a Range Gift Card and a Punch Card — in the same grid, two rows deep. The extras are sample items with placeholder prices; only buckets go on to issue ball codes.
+
+**Without text or email.** For a venue that does not send codes, the screen can show **how to use the ball machine** or the **driving range rules** under the code instead (\`info="machine"\` / \`info="rules"\`). The steps and rules are sample copy.
 
 **Edge cases covered here:** a sold-out size (dimmed, like a sold-out sandwich); two buckets; members with both contacts, email only and phone only; a guest with neither; and the add-contact entry screens, where Send stays off until the number or address is valid.
 
@@ -62,6 +64,10 @@ const totals = (lines: OrderLine[]) => {
 
 const [JUSTIN, DANA, MARCUS] = MEMBERS;
 const ONE_CODE: BallCode[] = [{ code: "482193", bucket: bucket("Medium") }];
+const SIX_CODES: BallCode[] = ["482193", "907514", "315862", "640297", "158403", "776021"].map((code, i) => ({
+    code,
+    bucket: bucket(i < 2 ? "Large" : i < 4 ? "Medium" : "Small"),
+}));
 const TWO_CODES: BallCode[] = [
     { code: "482193", bucket: bucket("Large") },
     { code: "907514", bucket: bucket("Large") },
@@ -326,8 +332,52 @@ export const BallCodeGuest: Story = {
     render: () => <BallCodeFlow />,
 };
 
-/** Two buckets, two codes — each labelled, set smaller so both fit. */
+/** Two buckets, two codes — one full-size card at a time, the next peeking in. Swipe, or click and drag. */
 export const BallCodeTwoBuckets: Story = {
     decorators: [withKioskSession({ member: JUSTIN }), withKioskFrame()],
     render: () => <BallCodeFlow member={JUSTIN} codes={TWO_CODES} />,
+};
+
+/** The most one purchase shows: six codes, swiped through one card at a time. */
+export const BallCodeSixBuckets: Story = {
+    decorators: [withKioskSession({ member: JUSTIN }), withKioskFrame()],
+    render: () => <BallCodeFlow member={JUSTIN} codes={SIX_CODES} />,
+};
+
+// ---------------------------------------------------------------------------
+// For a venue that does not send codes
+// ---------------------------------------------------------------------------
+
+/**
+ * No text or email: under the code, how to use the ball machine instead. For a
+ * venue that does not send codes, or a guest who just wants to get hitting.
+ */
+export const BallCodeMachineInstructions: Story = {
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: () => (
+        <KioskScreen scroll={false}>
+            <BallCodeScreen codes={ONE_CODE} email={{ status: "missing" }} text={{ status: "missing" }} info="machine" onDone={() => {}} />
+        </KioskScreen>
+    ),
+};
+
+/** The same, for two buckets — the last step says to do one at a time. */
+export const BallCodeMachineInstructionsTwoBuckets: Story = {
+    name: "Ball Code Machine Instructions — Two Buckets",
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: () => (
+        <KioskScreen scroll={false}>
+            <BallCodeScreen codes={TWO_CODES} email={{ status: "missing" }} text={{ status: "missing" }} info="machine" onDone={() => {}} />
+        </KioskScreen>
+    ),
+};
+
+/** No text or email: the driving range rules under the code instead. */
+export const BallCodeRangeRules: Story = {
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: () => (
+        <KioskScreen scroll={false}>
+            <BallCodeScreen codes={ONE_CODE} email={{ status: "missing" }} text={{ status: "missing" }} info="rules" onDone={() => {}} />
+        </KioskScreen>
+    ),
 };
