@@ -1,7 +1,8 @@
 "use client";
 
-import { type FC, useRef, useState } from "react";
+import { type FC, type MutableRefObject, useEffect, useRef, useState } from "react";
 import { Camera01, Check, CheckCircle, Mail01, MessageTextSquare01 } from "@untitledui/icons";
+import { motion, useReducedMotion } from "motion/react";
 import { BrandMark } from "@/components/kiosk/brand-mark";
 import { KioskButton } from "@/components/kiosk/kiosk-button";
 import { formatBallCode, maskEmail, maskPhone } from "@/components/kiosk/range/contact";
@@ -79,7 +80,11 @@ export const BallCodeScreen = ({
     const isMany = shown.length > 1;
     const hasNothingOnFile = email.status === "missing" && text.status === "missing";
     const [index, setIndex] = useState(0);
+    const [confirmed, setConfirmed] = useState<string[]>([]);
+    const jumpToRef = useRef<((i: number) => void) | null>(null);
     const current = shown[Math.min(index, shown.length - 1)];
+    const savedCount = shown.filter((c) => confirmed.includes(c.code)).length;
+    const allSaved = savedCount === shown.length;
 
     return (
         <div className={cx("flex h-full w-full flex-col items-center px-14 pt-12 text-center", className)}>
@@ -101,13 +106,27 @@ export const BallCodeScreen = ({
                 />
 
                 <div className="mt-4 w-full">
-                    {isMany ? <CodeCarousel codes={shown} index={index} onIndexChange={setIndex} /> : current && <CodeCard code={current} />}
+                    {isMany ? (
+                        <CodeCarousel codes={shown} index={index} onIndexChange={setIndex} jumpToRef={jumpToRef} />
+                    ) : (
+                        current && <CodeCard code={current} />
+                    )}
                 </div>
 
-                <p className="mt-5 flex items-center gap-2 text-[20px] text-tertiary">
-                    <Camera01 className="size-6 text-fg-quaternary" aria-hidden="true" />
-                    Snap a photo of your code, just in case.
-                </p>
+                {current && (
+                    <GotItButton
+                        isConfirmed={confirmed.includes(current.code)}
+                        position={isMany ? `${index + 1} of ${shown.length}` : undefined}
+                        onConfirm={() => {
+                            const next = [...confirmed, current.code];
+                            setConfirmed(next);
+                            // With several codes, carry them straight on to the
+                            // next one they have not saved yet.
+                            const nextIndex = shown.findIndex((c) => !next.includes(c.code));
+                            if (isMany && nextIndex >= 0) setTimeout(() => jumpToRef.current?.(nextIndex), 450);
+                        }}
+                    />
+                )}
 
                 {info === "delivery" ? (
                     <div className="mt-8 w-full text-left">
@@ -139,12 +158,22 @@ export const BallCodeScreen = ({
             </div>
 
             <div className="w-full pb-10">
-                <KioskButton tone="primary" size="lg" isFullWidth onPress={onDone}>
-                    Done
+                {/* Done waits until every code is saved, and until then says
+                    exactly what is left to do — a disabled button with no
+                    reason reads as broken. */}
+                <KioskButton tone="primary" size="lg" isFullWidth isDisabled={!allSaved} onPress={onDone}>
+                    {doneLabel(savedCount, shown.length)}
                 </KioskButton>
             </div>
         </div>
     );
+};
+
+/** Done's label: the condition for leaving, until it is met. */
+export const doneLabel = (saved: number, total: number) => {
+    if (saved >= total) return "Done";
+    if (total === 1) return "Tap “Got it” above to finish";
+    return `Save all ${total} codes to finish · ${saved} of ${total} saved`;
 };
 
 /** One code at full size, labelled with its bucket — and its place, when there are several. */
@@ -164,6 +193,38 @@ const CodeCard = ({ code: { code, bucket }, position }: { code: BallCode; positi
 );
 
 /**
+ * "Got it" — the guest confirms they have the code, by photo or memory, before
+ * walking away from the screen. Done waits until every code has been confirmed
+ * this way, and its label says how many are left. Once tapped this turns green
+ * and stays that way for that code.
+ */
+const GotItButton = ({ isConfirmed, position, onConfirm }: { isConfirmed: boolean; position?: string; onConfirm: () => void }) => (
+    <button
+        type="button"
+        onClick={isConfirmed ? undefined : onConfirm}
+        aria-pressed={isConfirmed}
+        className={cx(
+            "mt-5 flex h-[65px] w-full items-center justify-center gap-3 rounded-lg text-[20px] font-semibold transition duration-100 ease-linear ring-inset",
+            isConfirmed
+                ? "ring-success-secondary bg-success-primary text-success-primary ring-1"
+                : "text-brand-secondary ring-2 ring-brand active:bg-secondary",
+        )}
+    >
+        {isConfirmed ? (
+            <>
+                <CheckCircle className="size-6" aria-hidden="true" />
+                Code saved{position && ` · ${position}`}
+            </>
+        ) : (
+            <>
+                <Camera01 className="size-6" aria-hidden="true" />
+                Got it — I snapped a photo{position && ` · ${position}`}
+            </>
+        )}
+    </button>
+);
+
+/**
  * Several codes, one card at a time, with the **next card peeking in** from
  * the right edge. No arrows or dots: the cut-off card is the cue that there is
  * more to swipe to, which is how people already read a row of cards.
@@ -173,19 +234,51 @@ const CodeCard = ({ code: { code, bucket }, position }: { code: BallCode; positi
  * rather than out of the code. Scroll-snap does the swiping on a touch panel;
  * for a mouse in a demo, click-and-drag scrolls it too, and lets go onto the
  * nearest card.
+ *
+ * Until someone touches it, the row gives a little **nudge** every few
+ * seconds — slides a card-width's hint to the left and back — so the peeking
+ * card reads as "there's another one", not as a layout glitch. It stops for
+ * good on the first touch, and never runs under reduced motion.
  */
 const PEEK_GAP = 16;
 
-const CodeCarousel = ({ codes, index, onIndexChange }: { codes: BallCode[]; index: number; onIndexChange: (index: number) => void }) => {
+const CodeCarousel = ({
+    codes,
+    index,
+    onIndexChange,
+    jumpToRef,
+}: {
+    codes: BallCode[];
+    index: number;
+    onIndexChange: (index: number) => void;
+    /** Filled with a function that scrolls to a card, for the "Got it" hand-off. */
+    jumpToRef?: MutableRefObject<((i: number) => void) | null>;
+}) => {
     const trackRef = useRef<HTMLDivElement>(null);
     const drag = useRef<{ x: number; left: number } | null>(null);
     const [isDragging, setIsDragging] = useState(false);
+    const [hasInteracted, setHasInteracted] = useState(false);
+    const reduceMotion = useReducedMotion();
+    const shouldNudge = !hasInteracted && !reduceMotion && index === 0;
 
     const cardStep = (el: HTMLDivElement) => (el.firstElementChild as HTMLElement | null)?.offsetWidth ?? el.clientWidth;
     const settle = (el: HTMLDivElement) => {
         const step = cardStep(el) + PEEK_GAP;
         el.scrollTo({ left: Math.round(el.scrollLeft / step) * step, behavior: "smooth" });
     };
+    useEffect(() => {
+        if (!jumpToRef) return;
+        jumpToRef.current = (i: number) => {
+            const el = trackRef.current;
+            if (!el) return;
+            setHasInteracted(true);
+            const card = el.querySelector<HTMLElement>("[aria-roledescription='slide']");
+            el.scrollTo({ left: i * ((card?.offsetWidth ?? el.clientWidth) + PEEK_GAP), behavior: "smooth" });
+        };
+        return () => {
+            jumpToRef.current = null;
+        };
+    }, [jumpToRef]);
 
     return (
         <div
@@ -198,6 +291,7 @@ const CodeCarousel = ({ codes, index, onIndexChange }: { codes: BallCode[]; inde
                 if (next !== index) onIndexChange(Math.min(next, codes.length - 1));
             }}
             onPointerDown={(e) => {
+                setHasInteracted(true);
                 if (e.pointerType !== "mouse") return;
                 drag.current = { x: e.clientX, left: e.currentTarget.scrollLeft };
                 e.currentTarget.setPointerCapture(e.pointerId);
@@ -226,9 +320,21 @@ const CodeCarousel = ({ codes, index, onIndexChange }: { codes: BallCode[]; inde
             )}
         >
             {codes.map((code, i) => (
-                <div key={code.code} aria-roledescription="slide" aria-label={`Code ${i + 1} of ${codes.length}`} className="w-full shrink-0 snap-start">
+                <motion.div
+                    key={code.code}
+                    aria-roledescription="slide"
+                    aria-label={`Code ${i + 1} of ${codes.length}`}
+                    className="w-full shrink-0 snap-start"
+                    // Every card moves together, so the row slides as one.
+                    animate={shouldNudge ? { x: [0, -64, 0, -18, 0] } : { x: 0 }}
+                    transition={
+                        shouldNudge
+                            ? { duration: 1.4, times: [0, 0.35, 0.6, 0.8, 1], ease: "easeInOut", delay: 0.9, repeat: Infinity, repeatDelay: 3.2 }
+                            : { duration: 0.2 }
+                    }
+                >
                     <CodeCard code={code} position={`Bucket ${i + 1} of ${codes.length}`} />
-                </div>
+                </motion.div>
             ))}
         </div>
     );
