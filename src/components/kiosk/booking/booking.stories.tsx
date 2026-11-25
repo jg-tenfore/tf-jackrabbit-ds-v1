@@ -1,10 +1,11 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { DueBar, PriceBreakdown, VenueSummary } from "@/components/kiosk/booking/booking-summary";
+import type { DayAvailability } from "@/components/kiosk/booking/kiosk-date-picker";
 import { GroupSizeSelector, SegmentedSelector, TransportSelector } from "@/components/kiosk/booking/segmented-selector";
 import { SlotCard, TimeSlotCard } from "@/components/kiosk/booking/slot-card";
 import { TeeTimeBooking } from "@/components/kiosk/booking/tee-time-booking";
-import { GlobalNav } from "@/components/kiosk/app-chrome/global-nav";
 import { TEE_TIMES, VENUE } from "@/data/booking";
 import { KioskScreen } from "@/kiosk/kiosk-frame";
 import { withKioskFrame, withKioskSession } from "@/kiosk/story-helpers";
@@ -32,6 +33,39 @@ type Story = StoryObj<typeof meta>;
 /** The full tee sheet. Tap any slot to open the rate picker. */
 export const BookATime: Story = {
     args: { slots: TEE_TIMES },
+    decorators: [withKioskSession(), withKioskFrame()],
+    render: (args) => (
+        <KioskScreen scroll={false} footer={<GlobalNav />}>
+            <TeeTimeBooking {...args} />
+        </KioskScreen>
+    ),
+};
+
+/**
+ * The bookable window from today through mid-December, expanded. The window
+ * crosses a month boundary, so the calendar shows November and December
+ * stacked; days outside it stay greyed. Thanksgiving is closed and two
+ * Saturdays are fully booked — sample availability. Scroll for the times.
+ */
+const throughMidDecember = (): DayAvailability[] => {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start.getFullYear(), 11, 15);
+    if (end < start) end.setFullYear(end.getFullYear() + 1);
+    const days: DayAvailability[] = [];
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const date = new Date(d);
+        // Thanksgiving: the fourth Thursday of November.
+        const isThanksgiving = date.getMonth() === 10 && date.getDay() === 4 && Math.ceil(date.getDate() / 7) === 4;
+        const isFullyBooked = date.getMonth() === 11 && date.getDay() === 6 && date.getDate() <= 14;
+        days.push({ date, isAvailable: !isThanksgiving && !isFullyBooked, hasInventory: !isThanksgiving && !isFullyBooked });
+    }
+    return days;
+};
+
+export const BookATimeThroughMidDecember: Story = {
+    name: "Book A Time — Through Mid December",
+    args: { slots: TEE_TIMES, dateMode: "month", days: throughMidDecember() },
     decorators: [withKioskSession(), withKioskFrame()],
     render: (args) => (
         <KioskScreen scroll={false} footer={<GlobalNav />}>
@@ -85,7 +119,14 @@ export const ReviewSummary: Story = {
     args: { slots: [] },
     decorators: [withKioskSession(), withKioskFrame()],
     render: () => (
-        <KioskScreen footer={<><DueBar dueNow="$20.74" dueLater="$1.71" total="$55.22" /><GlobalNav /></>}>
+        <KioskScreen
+            footer={
+                <>
+                    <DueBar dueNow="$20.74" dueLater="$1.71" total="$55.22" />
+                    <GlobalNav />
+                </>
+            }
+        >
             <div className="flex flex-col gap-8 px-16 py-12">
                 <VenueSummary
                     venueName={VENUE.name}

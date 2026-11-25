@@ -1,10 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { KioskDatePicker } from "@/components/kiosk/booking/kiosk-date-picker";
-import { FilterRail } from "@/components/kiosk/booking/step-rail";
+import { type DayAvailability, KioskDatePicker } from "@/components/kiosk/booking/kiosk-date-picker";
 import { SlotCard, type TeeTimeSlot } from "@/components/kiosk/booking/slot-card";
+import { FilterRail } from "@/components/kiosk/booking/step-rail";
 import { RatePickerDialog } from "@/components/kiosk/modals/dialog-variants";
+import { ScrollFade } from "@/components/kiosk/scroll-fade";
 import { RATES_FOR_TIME } from "@/data/booking";
 import { cx } from "@/utils/cx";
 
@@ -39,7 +40,7 @@ const toMinutes = (time: string) => {
     const match = time.match(/^(\d+):(\d+)\s*(AM|PM)$/i);
     if (!match) return 0;
     const [, h, m, period] = match;
-    const hour = Number(h) % 12 + (period.toUpperCase() === "PM" ? 12 : 0);
+    const hour = (Number(h) % 12) + (period.toUpperCase() === "PM" ? 12 : 0);
     return hour * 60 + Number(m);
 };
 
@@ -59,11 +60,14 @@ export const TeeTimeBooking = ({
      * story without forking the screen into a second component.
      */
     dateMode = "week",
+    days,
     onSelectSlot,
     className,
 }: {
     slots: TeeTimeSlot[];
     dateMode?: "week" | "month";
+    /** The bookable window. Defaults to the date picker's next 14 days. */
+    days?: DayAvailability[];
     /**
      * Fires when a rate is confirmed for a slot, with the day the sheet was
      * showing. Optional because a story is a still — but the prototype has to
@@ -113,11 +117,13 @@ export const TeeTimeBooking = ({
                     would leave the slot area a 30px sliver of clipped cards, so
                     in month mode the picker scrolls away with the content it
                     filters, which is also how the reference draws it. */}
-                {!isMonth && <KioskDatePicker selected={selectedDate} onSelect={setSelectedDate} mode={mode} onModeChange={setMode} />}
+                {!isMonth && <KioskDatePicker selected={selectedDate} onSelect={setSelectedDate} days={days} mode={mode} onModeChange={setMode} />}
             </div>
 
-            <div className="mt-6 flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto pr-8 pb-8 pl-[232px] scrollbar-hide">
-                {isMonth && <KioskDatePicker selected={selectedDate} onSelect={setSelectedDate} mode={mode} onModeChange={setMode} />}
+            {/* Fades out at the foot while more tee times are below, rather
+                than slicing the last visible row of cards in half. */}
+            <ScrollFade className="mt-6" contentClassName="flex flex-col gap-6 pr-8 pb-8 pl-[232px]">
+                {isMonth && <KioskDatePicker selected={selectedDate} onSelect={setSelectedDate} days={days} mode={mode} onModeChange={setMode} />}
 
                 {/* The month grid replaces the day strip, and with it the label
                     that said which day the slots below belong to. Restating the
@@ -138,7 +144,7 @@ export const TeeTimeBooking = ({
                         ))}
                     </div>
                 )}
-            </div>
+            </ScrollFade>
 
             {openSlot && (
                 <RatePickerDialog

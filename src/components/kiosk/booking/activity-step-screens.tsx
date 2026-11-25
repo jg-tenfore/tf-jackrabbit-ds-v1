@@ -3,10 +3,11 @@
 import type { ReactNode } from "react";
 import { Users01 } from "@untitledui/icons";
 import { type ActivityConfig, stepsFor } from "@/components/kiosk/booking/activity-config";
-import { KioskDatePicker, type DayAvailability } from "@/components/kiosk/booking/kiosk-date-picker";
+import { type DayAvailability, KioskDatePicker } from "@/components/kiosk/booking/kiosk-date-picker";
 import { TimeSlotCard } from "@/components/kiosk/booking/slot-card";
 import { type BookingStep, StepRail } from "@/components/kiosk/booking/step-rail";
 import { BrandMark } from "@/components/kiosk/brand-mark";
+import { ScrollFade } from "@/components/kiosk/scroll-fade";
 import { cx } from "@/utils/cx";
 
 /**
@@ -91,7 +92,11 @@ export const ActivityStepFrame = ({
             <p className="text-lg text-tertiary">{subtitle ?? config.subtitle}</p>
         </div>
 
-        <div className="mt-10 min-h-0 flex-1 overflow-y-auto pr-[59px] pb-8 pl-[219px] scrollbar-hide">{children}</div>
+        {/* Fades out at the foot while more slots are below, rather than
+            slicing the last visible row of buttons in half. */}
+        <ScrollFade className="mt-10" contentClassName="pr-[59px] pb-8 pl-[219px]">
+            {children}
+        </ScrollFade>
     </div>
 );
 
@@ -191,9 +196,7 @@ export const ActivityDayTimePicker = ({
 
         <KioskDatePicker selected={selected} onSelect={onSelect} days={days} mode={mode} onModeChange={onModeChange} />
 
-        <h3 className="text-2xl font-bold text-primary">
-            {selected.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
-        </h3>
+        <h3 className="text-2xl font-bold text-primary">{selected.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}</h3>
 
         {/* Three columns: a bare time needs far less width than a tee sheet
             card, so the grid buys back vertical space. */}
@@ -242,12 +245,7 @@ export const ActivityResourceGrid = ({
 
         <div className="grid grid-cols-2 gap-3">
             {resources.map((resource) => (
-                <ActivityResourceCard
-                    key={resource.id}
-                    resource={resource}
-                    isSelected={resource.id === selectedId}
-                    onSelect={() => onSelect?.(resource.id)}
-                />
+                <ActivityResourceCard key={resource.id} resource={resource} isSelected={resource.id === selectedId} onSelect={() => onSelect?.(resource.id)} />
             ))}
         </div>
     </div>
@@ -322,7 +320,7 @@ export const ActivityBackBar = ({ onBack, label = "Back" }: { onBack?: () => voi
         <button
             type="button"
             onClick={onBack}
-            className="h-[65px] w-full rounded-lg text-[20px] text-tertiary ring-1 ring-border-primary ring-inset transition duration-100 ease-linear active:bg-secondary"
+            className="h-[65px] w-full rounded-lg text-[20px] text-tertiary ring-1 ring-border-primary transition duration-100 ease-linear ring-inset active:bg-secondary"
         >
             {label}
         </button>
